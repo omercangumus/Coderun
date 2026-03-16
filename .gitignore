@@ -52,6 +52,7 @@ hypothesis/
 # Flutter / Dart
 # ========================
 .dart_tool/
+*.g.dart
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
