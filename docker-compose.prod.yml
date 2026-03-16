@@ -1,0 +1,11 @@
+services:
+  backend:
+    volumes: []
+    command: ""
+    restart: always
+
+  db:
+    restart: always
+
+  redis:
+    restart: always
