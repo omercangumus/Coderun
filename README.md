@@ -40,3 +40,14 @@ docker compose up -d
 - **Veritabanı**: PostgreSQL 15, Redis 7
 - **AI**: Ollama + Llama 3.1
 - **Altyapı**: Docker Compose, Terraform (AWS)
+
+---
+
+## Geliştirme Takvimi
+
+### Hafta 1 — Proje Kurulumu ve Altyapı
+
+- [x] Monorepo klasör yapısının oluşturulması
+- [x] GitHub repository ve branch stratejisi
+- [x] Docker Compose ile PostgreSQL ve Redis'in ayağa kaldırılması
+- [x] .env yapısı ve ortam değişkenlerinin tanımlanması
