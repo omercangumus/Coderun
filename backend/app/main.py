@@ -63,6 +63,7 @@ async def on_startup() -> None:
     Raises:
         SystemExit: Veritabanı bağlantısı başarısız olduğunda.
     """
+    # Opsiyonel: subprocess ile "alembic upgrade head" çalıştırılabilir.
     try:
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))

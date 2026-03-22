@@ -1,44 +1,46 @@
-# Coderun backend — kimlik doğrulama Pydantic şemaları.
-# Giriş isteği, token yanıtı ve token verisi için kullanılır.
+# Coderun backend — auth, token ve kayıt akışında kullanılan Pydantic şemaları.
 
+import re
 import uuid
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
-class LoginRequest(BaseModel):
-    """Kullanıcı giriş isteği için şema.
-
-    Attributes:
-        email: Kullanıcının e-posta adresi.
-        password: Düz metin parola.
-    """
+class UserCreate(BaseModel):
+    """Kullanıcı kayıt isteği şeması."""
 
     email: EmailStr
-    password: str
+    username: str = Field(min_length=3, max_length=30, pattern=r"^[a-zA-Z0-9_]+$")
+    password: str = Field(min_length=8)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, value: str) -> str:
+        """Parola gücünü doğrular."""
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Şifre en az bir büyük harf içermelidir.")
+        if not re.search(r"\d", value):
+            raise ValueError("Şifre en az bir rakam içermelidir.")
+        return value
 
 
 class TokenResponse(BaseModel):
-    """Başarılı kimlik doğrulama sonrası döndürülen token şeması.
-
-    Attributes:
-        access_token: Kısa ömürlü erişim token'ı.
-        refresh_token: Uzun ömürlü yenileme token'ı.
-        token_type: Token türü; varsayılan olarak "bearer".
-    """
+    """Token üretim yanıtı şeması."""
 
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+    expires_in: int
+
+
+class RefreshTokenRequest(BaseModel):
+    """Refresh token yenileme isteği şeması."""
+
+    refresh_token: str
 
 
 class TokenData(BaseModel):
-    """JWT token içinden çözümlenen veri için şema.
-
-    Attributes:
-        user_id: Token'a ait kullanıcının UUID'si.
-        email: Token'a ait kullanıcının e-posta adresi.
-    """
+    """JWT payload'dan çözümlenen kullanıcı verisi."""
 
     user_id: uuid.UUID | None = None
     email: str | None = None

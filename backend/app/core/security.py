@@ -11,10 +11,10 @@ from passlib.context import CryptContext
 from backend.app.core.config import settings
 
 # ---------------------------------------------------------------------------
-# Passlib CryptContext — bcrypt şeması
+# Passlib CryptContext — pbkdf2_sha256 şeması
 # ---------------------------------------------------------------------------
 
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+_pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
 # ---------------------------------------------------------------------------
@@ -23,13 +23,13 @@ _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    """Verilen düz metin parolayı bcrypt ile hashler.
+    """Verilen düz metin parolayı güvenli biçimde hashler.
 
     Args:
         password: Hashlenmemiş düz metin parola.
 
     Returns:
-        bcrypt hash dizesi.
+        Hash dizesi.
 
     Note:
         Düz metin parola hiçbir zaman loglanmaz.
@@ -38,11 +38,11 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Düz metin parolayı bcrypt hash ile doğrular.
+    """Düz metin parolayı hash ile doğrular.
 
     Args:
         plain: Kullanıcının girdiği düz metin parola.
-        hashed: Veritabanında saklanan bcrypt hash.
+        hashed: Veritabanında saklanan parola hash'i.
 
     Returns:
         Parola eşleşiyorsa True, aksi hâlde False.
