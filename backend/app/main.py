@@ -33,13 +33,25 @@ app = FastAPI(
 # Middleware
 # ---------------------------------------------------------------------------
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if settings.ENVIRONMENT == "development" or "*" in settings.ALLOWED_ORIGINS:
+    # Geliştirme ortamında veya "*" eklendiğinde tüm originlere izin ver
+    # allow_origins=["*"] ile allow_credentials=True kullanılamadığı için regex kullanılır.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=".*",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Production ortamında sıkı CORS kuralları
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # ---------------------------------------------------------------------------
 # Router'lar
