@@ -1,11 +1,11 @@
 # Coderun backend — modül Pydantic şemaları; API giriş/çıkış doğrulaması için.
 
-from __future__ import annotations
-
 import uuid
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
+
+from backend.app.schemas.lesson import LessonResponse
 
 
 class ModuleBase(BaseModel):
@@ -61,9 +61,3 @@ class ModuleProgressResponse(BaseModel):
     total_lessons: int
 
     model_config = ConfigDict(from_attributes=True)
-
-
-# Döngüsel import'u çözmek için forward reference güncelleme
-from backend.app.schemas.lesson import LessonResponse  # noqa: E402
-
-ModuleDetailResponse.model_rebuild()

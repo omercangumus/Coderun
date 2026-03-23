@@ -6,7 +6,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from backend.app.models.lesson import Lesson
 from backend.app.models.module import Module
 from backend.app.repositories.base_repository import BaseRepository
 
@@ -73,9 +72,7 @@ class ModuleRepository(BaseRepository[Module]):
         """
         result = await self._session.execute(
             select(Module)
-            .options(
-                joinedload(Module.lessons.and_(Lesson.is_active.is_(True)))  # type: ignore[attr-defined]
-            )
+            .options(joinedload(Module.lessons))
             .where(Module.id == module_id)
         )
         return result.unique().scalars().first()
