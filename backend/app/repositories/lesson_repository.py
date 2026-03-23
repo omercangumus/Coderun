@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from backend.app.models.lesson import Lesson
-from backend.app.models.question import Question
 from backend.app.repositories.base_repository import BaseRepository
 
 
@@ -81,7 +80,7 @@ class LessonRepository(BaseRepository[Lesson]):
     async def get_with_questions(self, lesson_id: UUID) -> Lesson | None:
         """Dersi soruları ile birlikte getirir.
 
-        Sorular order alanına göre sıralanır.
+        Sorular relationship tanımındaki order_by'a göre sıralanır.
 
         Args:
             lesson_id: Getirilecek dersin UUID'si.
@@ -91,7 +90,7 @@ class LessonRepository(BaseRepository[Lesson]):
         """
         result = await self._session.execute(
             select(Lesson)
-            .options(joinedload(Lesson.questions).order_by(Question.order))  # type: ignore[attr-defined]
+            .options(joinedload(Lesson.questions))
             .where(Lesson.id == lesson_id)
         )
         return result.unique().scalars().first()
