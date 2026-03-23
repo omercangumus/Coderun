@@ -11,7 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.core.config import settings
 from backend.app.core.database import AsyncSessionLocal
 from backend.app.models.user import User
+from backend.app.repositories.lesson_repository import LessonRepository
+from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
+from backend.app.repositories.question_repository import QuestionRepository
 from backend.app.repositories.user_repository import UserRepository
 from backend.app.services.auth_service import get_current_user as resolve_current_user
 
@@ -40,6 +43,27 @@ async def get_progress_repository(
 ) -> ProgressRepository:
     """ProgressRepository bağımlılığını sağlar."""
     return ProgressRepository(db)
+
+
+async def get_module_repository(
+    db: AsyncSession = Depends(get_db),
+) -> ModuleRepository:
+    """ModuleRepository bağımlılığını sağlar."""
+    return ModuleRepository(db)
+
+
+async def get_lesson_repository(
+    db: AsyncSession = Depends(get_db),
+) -> LessonRepository:
+    """LessonRepository bağımlılığını sağlar."""
+    return LessonRepository(db)
+
+
+async def get_question_repository(
+    db: AsyncSession = Depends(get_db),
+) -> QuestionRepository:
+    """QuestionRepository bağımlılığını sağlar."""
+    return QuestionRepository(db)
 
 
 async def get_current_user(

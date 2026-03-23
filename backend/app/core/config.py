@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     APP_TITLE: str = "Coderun"
     APP_VERSION: str = "0.1.0"
 
+    # --- Seviye Testi (Placement) Eşikleri ---
+    PLACEMENT_BEGINNER_MAX: float = 0.30
+    PLACEMENT_INTERMEDIATE_MAX: float = 0.60
+    PLACEMENT_ADVANCED_MAX: float = 0.80
+    PLACEMENT_QUESTION_COUNT: int = 15
+    LESSON_PASS_SCORE: int = 70
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property

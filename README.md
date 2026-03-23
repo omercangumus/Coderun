@@ -55,6 +55,29 @@ http://localhost:8000/docs
 | GET | /api/v1/auth/me | Profil bilgisi |
 | POST | /api/v1/auth/logout | Çıkış yap |
 
+### Modüller
+
+| Method | Endpoint | Auth | Açıklama |
+|--------|----------|------|----------|
+| GET | /api/v1/modules | Hayır | Tüm modülleri listele |
+| GET | /api/v1/modules/{slug} | Hayır | Modül detayı |
+| GET | /api/v1/modules/{module_id}/progress | Evet | Kullanıcı ilerleme bilgisi |
+
+### Dersler
+
+| Method | Endpoint | Auth | Açıklama |
+|--------|----------|------|----------|
+| GET | /api/v1/lessons/module/{module_id} | Evet | Modüle ait dersler |
+| GET | /api/v1/lessons/{lesson_id} | Evet | Ders detayı + sorular |
+| POST | /api/v1/lessons/{lesson_id}/submit | Evet | Ders cevaplarını gönder |
+
+### Seviye Testi
+
+| Method | Endpoint | Auth | Açıklama |
+|--------|----------|------|----------|
+| GET | /api/v1/placement/{module_slug} | Evet | 15 soruluk seviye testi |
+| POST | /api/v1/placement/{module_slug}/submit | Evet | Cevapları gönder ve yerleştir |
+
 ## Proje Yapısı
 
 ```
@@ -85,3 +108,23 @@ coderun/
 - **Veritabanı**: PostgreSQL 15, Redis 7
 - **AI**: Ollama + Llama 3.1
 - **Altyapı**: Docker Compose, Terraform (AWS)
+
+---
+
+## Geliştirme Takvimi
+
+### Hafta 1 — Proje Kurulumu ve Altyapı
+
+- [x] Monorepo klasör yapısının oluşturulması
+- [x] GitHub repository ve branch stratejisi
+- [x] Docker Compose ile PostgreSQL ve Redis'in ayağa kaldırılması
+- [x] .env yapısı ve ortam değişkenlerinin tanımlanması
+
+### Hafta 3 — Modül, Ders ve Seviye Testi API'leri
+
+- [x] Module, Lesson, Question repository katmanı
+- [x] Module, Lesson, Placement servis katmanı
+- [x] Pydantic şemalar (module, lesson, question, progress)
+- [x] Modül, ders ve seviye testi endpoint'leri
+- [x] Akıllı seviye yerleştirme algoritması
+- [x] Python, DevOps, Cloud seed verisi (3 modül × 5 ders × 4 soru)

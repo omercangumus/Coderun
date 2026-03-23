@@ -10,6 +10,7 @@ from backend.app.api.v1.endpoints.health import router as health_router
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import settings
 from backend.app.core.database import AsyncSessionLocal
+from backend.app.core.seed import seed_database
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +81,8 @@ async def on_startup() -> None:
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
         logger.info("Veritabanı bağlantısı başarılı.")
+        async with AsyncSessionLocal() as session:
+            await seed_database(session)
     except Exception as exc:
         logger.critical("Veritabanı bağlantısı kurulamadı: %s", exc)
         raise SystemExit(1) from exc
