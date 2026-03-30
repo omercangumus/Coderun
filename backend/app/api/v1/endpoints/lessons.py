@@ -5,13 +5,16 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from backend.app.api.v1.dependencies import (
+    get_badge_repository,
     get_current_active_user,
     get_lesson_repository,
     get_progress_repository,
     get_question_repository,
+    get_redis,
     get_user_repository,
 )
 from backend.app.models.user import User
+from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
@@ -81,11 +84,13 @@ async def submit_lesson(
     question_repo: QuestionRepository = Depends(get_question_repository),
     progress_repo: ProgressRepository = Depends(get_progress_repository),
     user_repo: UserRepository = Depends(get_user_repository),
+    badge_repo: BadgeRepository = Depends(get_badge_repository),
+    redis: object = Depends(get_redis),
     current_user: User = Depends(get_current_active_user),
 ) -> LessonResultResponse:
-    """Ders cevaplarını gönderir ve sonucu döner.
+    """Ders cevaplarını gönderir, gamification uygular ve sonucu döner.
 
-    Auth gerekir. Skor >= 70 ise ders tamamlandı sayılır ve XP eklenir.
+    Auth gerekir. Skor >= 70 ise ders tamamlandı sayılır, XP ve rozetler verilir.
 
     Args:
         lesson_id: Cevaplanan dersin UUID'si.
@@ -94,10 +99,12 @@ async def submit_lesson(
         question_repo: Soru repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
         user_repo: Kullanıcı repository bağımlılığı.
+        badge_repo: Rozet repository bağımlılığı.
+        redis: Redis client (liderboard için).
         current_user: Kimliği doğrulanmış aktif kullanıcı.
 
     Returns:
-        Skor, doğru/yanlış sayısı, kazanılan XP ve tamamlanma durumu.
+        Skor, XP, seviye, streak ve rozet bilgisi.
     """
     return await lesson_service.submit_lesson_answer(
         lesson_id,
@@ -107,4 +114,6 @@ async def submit_lesson(
         question_repo,
         progress_repo,
         user_repo,
+        badge_repo,
+        redis,  # type: ignore[arg-type]
     )

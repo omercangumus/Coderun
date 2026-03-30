@@ -10,6 +10,7 @@ from backend.app.api.v1.endpoints.health import router as health_router
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import settings
 from backend.app.core.database import AsyncSessionLocal
+from backend.app.core.redis import close_redis, init_redis
 from backend.app.core.seed import seed_database
 
 logger = logging.getLogger(__name__)
@@ -68,15 +69,11 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def on_startup() -> None:
-    """Uygulama başlangıcında veritabanı bağlantısını doğrular.
-
-    ``SELECT 1`` sorgusu ile bağlantı sağlığını kontrol eder.
-    Bağlantı kurulamazsa ``SystemExit(1)`` fırlatarak uygulamayı durdurur.
+    """Uygulama başlangıcında veritabanı ve Redis bağlantılarını doğrular.
 
     Raises:
         SystemExit: Veritabanı bağlantısı başarısız olduğunda.
     """
-    # Opsiyonel: subprocess ile "alembic upgrade head" çalıştırılabilir.
     try:
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
@@ -86,3 +83,11 @@ async def on_startup() -> None:
     except Exception as exc:
         logger.critical("Veritabanı bağlantısı kurulamadı: %s", exc)
         raise SystemExit(1) from exc
+
+    await init_redis()
+
+
+@app.on_event("shutdown")
+async def on_shutdown() -> None:
+    """Uygulama kapanırken Redis bağlantısını kapatır."""
+    await close_redis()

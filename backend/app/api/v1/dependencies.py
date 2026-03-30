@@ -6,11 +6,14 @@ from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.config import settings
 from backend.app.core.database import AsyncSessionLocal
+from backend.app.core.redis import get_redis as _get_redis
 from backend.app.models.user import User
+from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
@@ -64,6 +67,22 @@ async def get_question_repository(
 ) -> QuestionRepository:
     """QuestionRepository bağımlılığını sağlar."""
     return QuestionRepository(db)
+
+
+async def get_badge_repository(
+    db: AsyncSession = Depends(get_db),
+) -> BadgeRepository:
+    """BadgeRepository bağımlılığını sağlar."""
+    return BadgeRepository(db)
+
+
+async def get_redis() -> Redis | None:
+    """Redis client bağımlılığını sağlar.
+
+    Redis bağlantısı yoksa None döner.
+    """
+    redis_gen = _get_redis()
+    return await redis_gen.__anext__()
 
 
 async def get_current_user(

@@ -1,21 +1,26 @@
-# Coderun backend — ders servis katmanı; ders iş mantığını ve cevap değerlendirmesini yönetir.
+# Coderun backend — ders servis katmanı; ders iş mantığını, cevap değerlendirmesini ve gamification'ı yönetir.
 
 from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
+from redis.asyncio import Redis
 
 from backend.app.core.config import settings
+from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
 from backend.app.repositories.user_repository import UserRepository
+from backend.app.schemas.gamification import BadgeResponse
 from backend.app.schemas.lesson import (
     LessonDetailResponse,
     LessonResultResponse,
     LessonWithProgressResponse,
 )
 from backend.app.schemas.progress import AnswerSubmit
+from backend.app.services import gamification_service
+from backend.app.services.leaderboard_service import add_xp_to_leaderboard
 
 
 async def get_lessons_by_module(
@@ -42,7 +47,7 @@ async def get_lessons_by_module(
     progress_map = {p.lesson_id: p for p in progress_list}
 
     result: list[LessonWithProgressResponse] = []
-    previous_completed = True  # İlk ders her zaman açık
+    previous_completed = True
 
     for lesson in lessons:
         progress = progress_map.get(lesson.id)
@@ -94,6 +99,25 @@ async def get_lesson_detail(
     return LessonDetailResponse.model_validate(lesson)
 
 
+async def _check_module_completed(
+    module_id: UUID,
+    user_id: UUID,
+    progress_repo: ProgressRepository,
+) -> bool:
+    """Kullanıcının bir modüldeki tüm dersleri tamamlayıp tamamlamadığını kontrol eder.
+
+    Args:
+        module_id: Modülün UUID'si.
+        user_id: Kullanıcının UUID'si.
+        progress_repo: İlerleme repository bağımlılığı.
+
+    Returns:
+        Tüm dersler tamamlandıysa True.
+    """
+    rate = await progress_repo.get_module_completion_rate(user_id, module_id)
+    return rate >= 1.0
+
+
 async def submit_lesson_answer(
     lesson_id: UUID,
     user_id: UUID,
@@ -102,12 +126,14 @@ async def submit_lesson_answer(
     question_repo: QuestionRepository,
     progress_repo: ProgressRepository,
     user_repo: UserRepository,
+    badge_repo: BadgeRepository,
+    redis: Redis | None = None,
 ) -> LessonResultResponse:
-    """Ders cevaplarını değerlendirir ve ilerlemeyi günceller.
+    """Ders cevaplarını değerlendirir, ilerlemeyi günceller ve gamification uygular.
 
     Skor = (doğru sayısı / toplam soru) * 100.
-    Skor >= LESSON_PASS_SCORE ise ders tamamlandı sayılır ve XP eklenir.
-    Her denemede attempt_count artar.
+    Skor >= LESSON_PASS_SCORE ise ders tamamlandı sayılır.
+    Tamamlandıysa gamification_service.award_xp_and_update_streak() çağrılır.
 
     Args:
         lesson_id: Cevaplanan dersin UUID'si.
@@ -117,9 +143,11 @@ async def submit_lesson_answer(
         question_repo: Soru repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
         user_repo: Kullanıcı repository bağımlılığı.
+        badge_repo: Rozet repository bağımlılığı.
+        redis: Redis client (liderboard için, opsiyonel).
 
     Returns:
-        Skor, doğru/yanlış sayısı, kazanılan XP ve tamamlanma durumu.
+        Skor, doğru/yanlış sayısı, kazanılan XP, seviye ve rozet bilgisi.
 
     Raises:
         HTTPException: Ders bulunamazsa 404 döner.
@@ -145,8 +173,6 @@ async def submit_lesson_answer(
     score = int((correct_count / total_questions) * 100) if total_questions > 0 else 0
     is_completed = score >= settings.LESSON_PASS_SCORE
 
-    xp_earned = lesson.xp_reward if is_completed else 0
-
     # İlerleme kaydını güncelle veya oluştur
     existing_progress = await progress_repo.get_user_lesson_progress(user_id, lesson_id)
     now = datetime.now(timezone.utc)
@@ -170,14 +196,62 @@ async def submit_lesson_answer(
             update_data["completed_at"] = now
         await progress_repo.update(existing_progress.id, update_data)
 
-    # XP ekle
-    if xp_earned > 0:
-        user = await user_repo.get_by_id(user_id)
-        if user is not None:
-            await user_repo.update_xp(user_id, user.xp + xp_earned)
+    # Gamification — sadece ders tamamlandıysa
+    xp_result = None
+    level_up = False
+    new_level = 1
+    new_streak = 0
+    badges_earned: list[BadgeResponse] = []
 
     if is_completed:
-        message = f"Tebrikler! Dersi tamamladınız. {xp_earned} XP kazandınız."
+        # Modül tamamlandı mı kontrol et
+        module_completed = await _check_module_completed(
+            lesson.module_id, user_id, progress_repo
+        )
+
+        xp_result = await gamification_service.award_xp_and_update_streak(
+            user_id=user_id,
+            base_xp=lesson.xp_reward,
+            module_completed=module_completed,
+            user_repo=user_repo,
+            badge_repo=badge_repo,
+            progress_repo=progress_repo,
+        )
+
+        level_up = xp_result.level_up
+        new_level = xp_result.new_level
+        new_streak = xp_result.new_streak
+
+        # Rozet yanıtlarını oluştur
+        from backend.app.schemas.gamification import BADGE_META
+        for badge_type in xp_result.badges_earned:
+            meta = BADGE_META.get(badge_type, {"title": badge_type, "description": ""})
+            badges_earned.append(
+                BadgeResponse(
+                    id=__import__("uuid").uuid4(),
+                    badge_type=badge_type,
+                    earned_at=now,
+                    title=meta["title"],
+                    description=meta["description"],
+                )
+            )
+
+        # Liderboard güncelle
+        user = await user_repo.get_by_id(user_id)
+        if user is not None:
+            await add_xp_to_leaderboard(
+                redis=redis,
+                user_id=user_id,
+                username=user.username,
+                xp_earned=xp_result.total_xp_earned,
+                level=new_level,
+                streak=new_streak,
+            )
+
+    xp_earned = xp_result.total_xp_earned if xp_result else 0
+
+    if is_completed:
+        message = xp_result.message if xp_result else f"Tebrikler! {xp_earned} XP kazandınız."
     else:
         message = f"Skor: {score}/100. Geçmek için en az {settings.LESSON_PASS_SCORE} puan gerekiyor."
 
@@ -188,5 +262,9 @@ async def submit_lesson_answer(
         wrong_count=wrong_count,
         xp_earned=xp_earned,
         is_completed=is_completed,
+        level_up=level_up,
+        new_level=new_level,
+        new_streak=new_streak,
+        badges_earned=badges_earned,
         message=message,
     )

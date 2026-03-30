@@ -128,3 +128,38 @@ coderun/
 - [x] Modül, ders ve seviye testi endpoint'leri
 - [x] Akıllı seviye yerleştirme algoritması
 - [x] Python, DevOps, Cloud seed verisi (3 modül × 5 ders × 4 soru)
+
+### Hafta 4 — Gamification Backend
+
+- [x] XP kazanma ve seviye hesaplama algoritması
+- [x] Streak takip mekanizması (36 saatlik donma süresi)
+- [x] Rozet kazanma sistemi (6 farklı rozet)
+- [x] Redis üzerinde haftalık liderboard
+- [x] Gamification endpoint'leri
+
+## Gamification Sistemi Nasıl Çalışır?
+
+**XP ve Seviye:**
+Her ders tamamlandığında ders.xp_reward kadar XP kazanılır.
+7+ günlük streak varsa %50 bonus, 30+ günlük streak varsa %125 bonus uygulanır.
+Her 100 XP'de bir seviye atlanır (maksimum 50. seviye).
+
+**Streak:**
+Her gün uygulama açıldığında streak güncellenir.
+36 saat içinde giriş yapılmazsa streak sıfırlanır.
+7 ve 30 günlük streakler rozet kazandırır.
+
+**Liderboard:**
+Haftalık XP bazlı sıralama Redis'te tutulur.
+Her pazartesi otomatik sıfırlanır.
+İlk 100 kullanıcı gösterilir.
+
+### Gamification API Endpoint'leri
+
+| Method | Endpoint | Auth | Açıklama |
+|--------|----------|------|----------|
+| GET | /api/v1/gamification/leaderboard | Evet | Haftalık liderboard |
+| GET | /api/v1/gamification/stats | Evet | Kullanıcı istatistikleri |
+| GET | /api/v1/gamification/badges | Evet | Kazanılan rozetler |
+| GET | /api/v1/gamification/level-progress | Evet | Seviye ilerlemesi |
+| GET | /api/v1/gamification/streak | Evet | Streak bilgisi |

@@ -38,6 +38,24 @@ class Settings(BaseSettings):
     PLACEMENT_QUESTION_COUNT: int = 15
     LESSON_PASS_SCORE: int = 70
 
+    # --- XP & Seviye Sistemi ---
+    XP_PER_LEVEL: int = 100
+    MAX_LEVEL: int = 50
+    STREAK_BONUS_MULTIPLIER: float = 1.5
+    STREAK_FREEZE_HOURS: int = 36
+
+    # --- Rozet Eşikleri ---
+    BADGE_FIRST_LESSON_XP: int = 0
+    BADGE_STREAK_7_DAYS: int = 7
+    BADGE_STREAK_30_DAYS: int = 30
+    BADGE_MODULE_COMPLETE: int = 100
+    BADGE_LEVEL_5: int = 5
+    BADGE_LEVEL_10: int = 10
+
+    # --- Redis Liderboard ---
+    LEADERBOARD_TTL_SECONDS: int = 604800
+    LEADERBOARD_TOP_N: int = 100
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property

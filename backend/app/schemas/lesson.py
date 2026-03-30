@@ -71,8 +71,12 @@ class LessonResultResponse(BaseModel):
         score: Hesaplanan puan (0–100).
         correct_count: Doğru cevap sayısı.
         wrong_count: Yanlış cevap sayısı.
-        xp_earned: Kazanılan XP miktarı.
+        xp_earned: Kazanılan XP miktarı (streak bonusu dahil).
         is_completed: Ders tamamlandı mı (skor >= eşik değeri).
+        level_up: Seviye atlandı mı.
+        new_level: Güncel seviye.
+        new_streak: Güncel streak değeri.
+        badges_earned: Bu işlemde kazanılan rozetler.
         message: Kullanıcıya gösterilecek mesaj.
     """
 
@@ -82,6 +86,10 @@ class LessonResultResponse(BaseModel):
     wrong_count: int
     xp_earned: int
     is_completed: bool
+    level_up: bool = False
+    new_level: int = 1
+    new_streak: int = 0
+    badges_earned: list = []
     message: str
 
     model_config = ConfigDict(from_attributes=True)
