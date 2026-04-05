@@ -9,6 +9,7 @@ from backend.app.api.v1.dependencies import (
     get_redis,
     get_user_repository,
 )
+from backend.app.core.config import settings
 from backend.app.models.user import User
 from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.progress_repository import ProgressRepository
@@ -88,7 +89,7 @@ async def get_user_stats(
         xp_needed_for_next=xp_info["xp_needed"],
         xp_remaining=xp_info["xp_remaining"],
         progress_percentage=xp_info["progress_percentage"],
-        is_max_level=current_user.level >= 50,
+        is_max_level=current_user.level >= settings.MAX_LEVEL,
     )
 
     streak_info = StreakResponse(
@@ -152,7 +153,7 @@ async def get_level_progress(
         xp_needed_for_next=xp_info["xp_needed"],
         xp_remaining=xp_info["xp_remaining"],
         progress_percentage=xp_info["progress_percentage"],
-        is_max_level=current_user.level >= 50,
+        is_max_level=current_user.level >= settings.MAX_LEVEL,
     )
 
 

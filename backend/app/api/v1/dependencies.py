@@ -78,9 +78,10 @@ async def get_badge_repository(
 async def get_redis() -> Redis | None:
     """Redis client bağımlılığını sağlar.
 
-    Redis bağlantısı yoksa None döner.
+    Global Redis client'ı döner. Redis bağlantısı yoksa None döner;
+    çağıran kod None kontrolü yapmalıdır.
     """
-    from backend.app.core.redis import _redis_client
+    from backend.app.core.redis import _redis_client  # noqa: PLC0415
     return _redis_client
 
 
