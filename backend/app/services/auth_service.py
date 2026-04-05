@@ -46,14 +46,14 @@ async def register_user(
     if existing_email is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=settings.AUTH_INVALID_CREDENTIALS_MESSAGE,
+            detail="Bu e-posta adresi zaten kullanımda",
         )
 
     existing_username = await user_repo.get_by_username(user_create.username)
     if existing_username is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=settings.AUTH_INVALID_CREDENTIALS_MESSAGE,
+            detail="Bu kullanıcı adı zaten kullanımda",
         )
 
     created_user = await user_repo.create(
