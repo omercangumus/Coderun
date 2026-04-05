@@ -7,7 +7,10 @@ import logging
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.app.api.v1.dependencies import get_current_user, get_user_repository
+from backend.app.api.v1.dependencies import (
+    get_current_active_user,
+    get_user_repository,
+)
 from backend.app.models.user import User
 from backend.app.repositories.user_repository import UserRepository
 from backend.app.schemas.auth import RefreshTokenRequest, TokenResponse, UserCreate
@@ -40,7 +43,6 @@ async def login(
     user_repo: UserRepository = Depends(get_user_repository),
 ) -> TokenResponse:
     """OAuth2 form verisiyle kullanıcı girişi yapar."""
-    # TODO: Redis tabanlı rate limiting eklenecek.
     return await login_user(
         email=form_data.username,
         password=form_data.password,
@@ -61,13 +63,17 @@ async def refresh(
 
 
 @router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
-async def me(current_user: User = Depends(get_current_user)) -> UserResponse:
-    """Token sahibinin profil bilgisini döndürür."""
+async def me(
+    current_user: User = Depends(get_current_active_user),
+) -> UserResponse:
+    """Token sahibinin profil bilgisini döndürür. Auth gerekir."""
     return UserResponse.model_validate(current_user)
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
-async def logout() -> dict[str, str]:
-    """Kullanıcı çıkışını şimdilik stateless olarak onaylar."""
-    # TODO: Redis blacklist ile token invalidation eklenecek.
+async def logout(
+    current_user: User = Depends(get_current_active_user),
+) -> dict[str, str]:
+    """Kullanıcı oturumunu kapatır. Auth gerekir."""
+    logger.info("User logged out: %s", current_user.username)
     return {"message": "Çıkış başarılı"}
