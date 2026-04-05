@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.config import settings
 from backend.app.core.database import AsyncSessionLocal
-from backend.app.core.redis import get_redis as _get_redis
 from backend.app.models.user import User
 from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.lesson_repository import LessonRepository
@@ -81,8 +80,8 @@ async def get_redis() -> Redis | None:
 
     Redis bağlantısı yoksa None döner.
     """
-    redis_gen = _get_redis()
-    return await redis_gen.__anext__()
+    from backend.app.core.redis import _redis_client
+    return _redis_client
 
 
 async def get_current_user(

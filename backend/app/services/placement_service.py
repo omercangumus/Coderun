@@ -4,8 +4,11 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
+from sqlalchemy import func, select
 
 from backend.app.core.config import settings
+from backend.app.models.lesson import Lesson
+from backend.app.models.question import Question
 from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
@@ -136,9 +139,6 @@ async def submit_placement_test(
 
     correct_count = 0
     for question_id in question_ids:
-        from sqlalchemy import select
-        from backend.app.models.question import Question
-
         result = await question_repo._session.execute(
             select(Question).where(Question.id == question_id)
         )
@@ -152,9 +152,6 @@ async def submit_placement_test(
     percentage = (correct_count / total_count * 100) if total_count > 0 else 0.0
 
     # Modüldeki toplam ders sayısını al
-    from sqlalchemy import func, select
-    from backend.app.models.lesson import Lesson
-
     total_lessons_result = await progress_repo._session.execute(
         select(func.count()).where(
             Lesson.module_id == module.id,

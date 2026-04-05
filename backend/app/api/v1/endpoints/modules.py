@@ -39,25 +39,8 @@ async def list_modules(
     return await module_service.get_all_modules(module_repo)
 
 
-@router.get("/{slug}", response_model=ModuleDetailResponse)
-async def get_module(
-    slug: str,
-    module_repo: ModuleRepository = Depends(get_module_repository),
-) -> ModuleDetailResponse:
-    """Slug ile modül detayını derslerle birlikte getirir.
-
-    Auth gerekmez.
-
-    Args:
-        slug: Modülün URL dostu tanımlayıcısı.
-        module_repo: Modül repository bağımlılığı.
-
-    Returns:
-        Dersleri dahil modül detay bilgisi.
-    """
-    return await module_service.get_module_detail(slug, module_repo)
-
-
+# DİKKAT: /{module_id}/progress route'u /{slug}'dan ÖNCE tanımlanmalı.
+# Aksi hâlde FastAPI "progress" string'ini slug parametresi olarak yakalar.
 @router.get("/{module_id}/progress", response_model=ModuleProgressResponse)
 async def get_module_progress(
     module_id: UUID,
@@ -81,3 +64,22 @@ async def get_module_progress(
     return await module_service.get_module_progress(
         module_id, current_user.id, module_repo, progress_repo
     )
+
+
+@router.get("/{slug}", response_model=ModuleDetailResponse)
+async def get_module(
+    slug: str,
+    module_repo: ModuleRepository = Depends(get_module_repository),
+) -> ModuleDetailResponse:
+    """Slug ile modül detayını derslerle birlikte getirir.
+
+    Auth gerekmez.
+
+    Args:
+        slug: Modülün URL dostu tanımlayıcısı.
+        module_repo: Modül repository bağımlılığı.
+
+    Returns:
+        Dersleri dahil modül detay bilgisi.
+    """
+    return await module_service.get_module_detail(slug, module_repo)
