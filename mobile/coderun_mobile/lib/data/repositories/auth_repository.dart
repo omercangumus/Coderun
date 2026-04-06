@@ -82,6 +82,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> clearTokens() async {
+    // Backend'e logout isteği gönder (hata olsa bile storage temizlenir)
+    try {
+      await _remoteDataSource.logout();
+    } catch (_) {
+      // Backend erişilemese bile local token'ları temizle
+    }
     await _storage.deleteAll();
   }
 
