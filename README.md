@@ -163,3 +163,22 @@ Her pazartesi otomatik sıfırlanır.
 | GET | /api/v1/gamification/badges | Evet | Kazanılan rozetler |
 | GET | /api/v1/gamification/level-progress | Evet | Seviye ilerlemesi |
 | GET | /api/v1/gamification/streak | Evet | Streak bilgisi |
+
+### Hafta 5 — Flutter Kurulum ve Auth Ekranları
+
+- [x] Flutter projesi kurulumu ve Clean Architecture klasör yapısı
+- [x] Riverpod state yönetimi entegrasyonu
+- [x] Go_router navigasyon sistemi
+- [x] Dio HTTP istemci + token interceptor
+- [x] JWT token yönetimi (flutter_secure_storage)
+- [x] Giriş ve kayıt ekranları
+- [x] Otomatik token yenileme (refresh interceptor)
+
+## Flutter Kurulum
+
+```bash
+cd mobile/coderun_mobile
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter run
+```
