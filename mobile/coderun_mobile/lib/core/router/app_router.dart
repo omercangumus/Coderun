@@ -1,5 +1,6 @@
 // Go_router navigasyon tanımları.
 // Auth durumuna göre otomatik yönlendirme yapar.
+// refreshListenable ile GoRouter yeniden oluşturulmadan redirect tetiklenir.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +11,25 @@ import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
 
+/// StateNotifier değişikliklerini ChangeNotifier'a köprüleyen yardımcı sınıf.
+class _RouterNotifier extends ChangeNotifier {
+  _RouterNotifier(this._ref) {
+    _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+  }
+
+  final Ref _ref;
+
+  AuthState get authState => _ref.read(authProvider);
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final notifier = _RouterNotifier(ref);
 
   return GoRouter(
     initialLocation: '/',
+    refreshListenable: notifier,
     redirect: (BuildContext context, GoRouterState state) {
+      final authState = notifier.authState;
       final isOnSplash = state.matchedLocation == '/';
       final isOnAuth = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';

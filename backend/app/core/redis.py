@@ -2,7 +2,6 @@
 
 import logging
 from collections.abc import AsyncGenerator
-from typing import Any
 
 import redis.asyncio as aioredis
 from redis.asyncio import Redis

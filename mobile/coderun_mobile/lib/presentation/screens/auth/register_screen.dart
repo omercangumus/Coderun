@@ -47,7 +47,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final isLoading = authState is _Loading;
+    final isLoading = authState.maybeWhen(loading: () => true, orElse: () => false);
 
     ref.listen<AuthState>(authProvider, (_, next) {
       next.whenOrNull(
