@@ -1,6 +1,6 @@
 # Coderun backend — tüm repository sınıfları için generic abstract base repository.
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Generic, TypeVar
 from uuid import UUID
 

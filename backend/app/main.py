@@ -33,10 +33,15 @@ app = FastAPI(
 # Middleware
 # ---------------------------------------------------------------------------
 
+# Güvenlik: allow_origins=["*"] ile allow_credentials=True birlikte kullanılamaz.
+# Production'da ALLOWED_ORIGINS'e gerçek domain'ler girilmeli.
+_allow_origins = settings.ALLOWED_ORIGINS
+_allow_credentials = "*" not in _allow_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=_allow_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
