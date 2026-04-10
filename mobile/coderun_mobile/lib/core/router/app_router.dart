@@ -10,6 +10,7 @@ import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
+import '../../presentation/screens/learn/learning_path_screen.dart';
 
 /// StateNotifier değişikliklerini ChangeNotifier'a köprüleyen yardımcı sınıf.
 /// GoRouter'ın refreshListenable parametresi için kullanılır.
@@ -59,6 +60,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (_, __) => const HomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'learn/:moduleSlug',
+            builder: (context, state) => LearningPathScreen(
+              moduleSlug: state.pathParameters['moduleSlug']!,
+            ),
+          ),
+        ],
       ),
     ],
   );

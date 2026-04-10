@@ -1,5 +1,3 @@
-// Genel yükleme göstergesi widget'ı.
-
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -16,10 +14,10 @@ class LoadingWidget extends StatelessWidget {
         children: [
           const CircularProgressIndicator(color: AppColors.primary),
           if (message != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               message!,
-              style: const TextStyle(color: AppColors.grey),
+              style: const TextStyle(color: AppColors.grey, fontSize: 14),
             ),
           ],
         ],

@@ -5,7 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/network/dio_client.dart';
 import '../data/datasources/auth_remote_datasource.dart';
+import '../data/datasources/module_remote_datasource.dart';
+import '../data/datasources/gamification_remote_datasource.dart';
 import '../data/repositories/auth_repository.dart';
+import '../data/repositories/module_repository.dart';
+import '../data/repositories/gamification_repository.dart';
 
 /// Şifreli depolama provider'ı.
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
@@ -34,4 +38,29 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
     remoteDataSource: dataSource,
     storage: storage,
   );
+});
+
+/// Module uzak veri kaynağı provider'ı.
+final moduleRemoteDataSourceProvider = Provider<ModuleRemoteDataSource>((ref) {
+  final dio = ref.watch(dioProvider);
+  return ModuleRemoteDataSourceImpl(dio: dio);
+});
+
+/// Module repository provider'ı.
+final moduleRepositoryProvider = Provider<ModuleRepository>((ref) {
+  final dataSource = ref.watch(moduleRemoteDataSourceProvider);
+  return ModuleRepositoryImpl(remoteDataSource: dataSource);
+});
+
+/// Gamification uzak veri kaynağı provider'ı.
+final gamificationRemoteDataSourceProvider =
+    Provider<GamificationRemoteDataSource>((ref) {
+  final dio = ref.watch(dioProvider);
+  return GamificationRemoteDataSourceImpl(dio: dio);
+});
+
+/// Gamification repository provider'ı.
+final gamificationRepositoryProvider = Provider<GamificationRepository>((ref) {
+  final dataSource = ref.watch(gamificationRemoteDataSourceProvider);
+  return GamificationRepositoryImpl(remoteDataSource: dataSource);
 });

@@ -14,6 +14,19 @@ abstract class ApiConstants {
 
   // Modül endpoint'leri
   static const String modules = '/modules';
+  static const String moduleBySlug = '/modules/{slug}';
+  static const String moduleProgress = '/modules/{slug}/progress';
+
+  static String getModuleBySlug(String slug) => '/modules/$slug';
+  static String getModuleProgress(String slug) => '/modules/$slug/progress';
+
+  // Ders endpoint'leri
+  static const String lessonsByModule = '/lessons/module/{moduleId}';
+  static const String lessonDetail = '/lessons/{lessonId}';
+
+  static String getLessonsByModule(String moduleId) => '/lessons/module/$moduleId';
+  static String getLessonDetail(String lessonId) => '/lessons/$lessonId';
+  static String submitLesson(String lessonId) => '/lessons/$lessonId/submit';
 
   // Gamification endpoint'leri
   static const String leaderboard = '/gamification/leaderboard';

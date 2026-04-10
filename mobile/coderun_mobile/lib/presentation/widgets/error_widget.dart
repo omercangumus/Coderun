@@ -1,5 +1,3 @@
-// Genel hata göstergesi widget'ı.
-
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -7,11 +5,7 @@ class AppErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const AppErrorWidget({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const AppErrorWidget({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +15,19 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
+            const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+            const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.greyDark),
+              style: const TextStyle(fontSize: 14, color: AppColors.greyDark),
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: onRetry,
-                child: const Text('Tekrar Dene'),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Tekrar Dene'),
               ),
             ],
           ],
