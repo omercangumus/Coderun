@@ -12,6 +12,7 @@ import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
 
 /// StateNotifier değişikliklerini ChangeNotifier'a köprüleyen yardımcı sınıf.
+/// GoRouter'ın refreshListenable parametresi için kullanılır.
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
     _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
