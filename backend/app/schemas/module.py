@@ -50,7 +50,7 @@ class ModuleProgressResponse(BaseModel):
 
     Attributes:
         module: Modül bilgisi.
-        completion_rate: 0.0–1.0 arasında tamamlama oranı.
+        completion_rate: 0.0–100.0 arasında tamamlama yüzdesi.
         completed_lessons: Tamamlanan ders sayısı.
         total_lessons: Modüldeki toplam ders sayısı.
     """

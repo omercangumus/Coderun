@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -130,8 +130,6 @@ class LessonRepository(BaseRepository[Lesson]):
         Returns:
             Aktif ders sayısı.
         """
-        from sqlalchemy import func
-
         result = await self._session.execute(
             select(func.count()).where(
                 Lesson.module_id == module_id,

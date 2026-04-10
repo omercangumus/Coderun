@@ -154,27 +154,28 @@ class ProgressRepository(BaseRepository[UserProgress]):
         row = stats_result.one()
         completed_lessons: int = row.completed_lessons or 0
 
-        # Tamamlanan modül sayısı: tüm dersleri tamamlanmış modüller
-        completed_modules_result = await self._session.execute(
-            select(func.count(Module.id)).where(
-                ~Module.id.in_(  # type: ignore[attr-defined]
-                    select(Lesson.module_id)
-                    .outerjoin(
-                        UserProgress,
-                        (UserProgress.lesson_id == Lesson.id)
-                        & (UserProgress.user_id == user_id)
-                        & UserProgress.is_completed.is_(True),
+        # Tamamlanan modül sayısı: tüm aktif dersleri tamamlanmış modüller
+        # Yaklaşım: her aktif modül için, o modüldeki tüm aktif dersler tamamlanmış mı?
+        # Tamamlanmamış ders olan modülleri bul, sonra toplam aktif modülden çıkar
+        modules_with_incomplete_result = await self._session.execute(
+            select(func.count(func.distinct(Lesson.module_id))).where(
+                Lesson.is_active.is_(True),
+                ~Lesson.id.in_(  # type: ignore[attr-defined]
+                    select(UserProgress.lesson_id).where(
+                        UserProgress.user_id == user_id,
+                        UserProgress.is_completed.is_(True),
                     )
-                    .where(
-                        Lesson.is_active.is_(True),
-                        UserProgress.id.is_(None),  # type: ignore[attr-defined]
-                    )
-                    .distinct()
                 ),
-                Module.is_active.is_(True),
             )
         )
-        completed_modules: int = completed_modules_result.scalar_one()
+        modules_with_incomplete: int = modules_with_incomplete_result.scalar_one()
+
+        total_active_modules_result = await self._session.execute(
+            select(func.count(Module.id)).where(Module.is_active.is_(True))
+        )
+        total_active_modules: int = total_active_modules_result.scalar_one()
+
+        completed_modules = max(0, total_active_modules - modules_with_incomplete)
 
         # Devam eden modül: en son ilerleme kaydının modülü
         ongoing_result = await self._session.execute(

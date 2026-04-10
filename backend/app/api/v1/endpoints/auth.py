@@ -9,7 +9,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from backend.app.api.v1.dependencies import (
     get_current_active_user,
-    get_current_user,
     get_user_repository,
 )
 from backend.app.models.user import User

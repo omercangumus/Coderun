@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import (
 
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./backend/tests/test_auth.db")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
-os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only-32ch")
 os.environ.setdefault("ENVIRONMENT", "development")
 
 from backend.app.api.v1.dependencies import get_db

@@ -46,10 +46,12 @@ def calculate_xp_for_next_level(current_xp: int) -> dict:
     current_level = calculate_level(current_xp)
     is_max = current_level >= settings.MAX_LEVEL
 
-    # Bir sonraki seviye için gereken toplam XP eşiği
-    xp_needed = current_level * settings.XP_PER_LEVEL  # bu seviyenin başlangıç XP'si
-    xp_for_next = xp_needed + settings.XP_PER_LEVEL    # bir sonraki seviye için gereken toplam XP
-    xp_in_current_level = current_xp - xp_needed if current_xp >= xp_needed else current_xp % settings.XP_PER_LEVEL
+    # Mevcut seviyenin başlangıç XP eşiği: (level - 1) * XP_PER_LEVEL
+    level_start_xp = (current_level - 1) * settings.XP_PER_LEVEL
+    # Bir sonraki seviye için gereken toplam XP
+    xp_for_next = current_level * settings.XP_PER_LEVEL
+    # Mevcut seviye içindeki ilerleme
+    xp_in_current_level = current_xp - level_start_xp
     xp_remaining = settings.XP_PER_LEVEL - xp_in_current_level if not is_max else 0
     progress_percentage = (
         (xp_in_current_level / settings.XP_PER_LEVEL) * 100.0 if not is_max else 100.0

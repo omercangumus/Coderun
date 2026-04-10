@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -89,7 +90,7 @@ class LessonResultResponse(BaseModel):
     level_up: bool = False
     new_level: int = 1
     new_streak: int = 0
-    badges_earned: list = []
+    badges_earned: list[Any] = []
     message: str
 
     model_config = ConfigDict(from_attributes=True)
