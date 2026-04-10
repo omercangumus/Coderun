@@ -1,6 +1,7 @@
 // Tekrar kullanılabilir auth butonu widget'ı.
 
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class AuthButton extends StatelessWidget {
   final String label;
@@ -27,7 +28,7 @@ class AuthButton extends StatelessWidget {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               )
             : Text(label),

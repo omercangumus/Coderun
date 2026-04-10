@@ -23,6 +23,9 @@ class ModuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // completionRate 0.0-1.0 aralığında olmalı
+    final clampedRate = completionRate?.clamp(0.0, 1.0);
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -56,7 +59,7 @@ class ModuleCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 13, color: AppColors.grey),
               ),
-              if (completionRate != null) ...[
+              if (clampedRate != null) ...[
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +69,7 @@ class ModuleCard extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: AppColors.grey),
                     ),
                     Text(
-                      '%${(completionRate! * 100).toStringAsFixed(0)}',
+                      '%${(clampedRate * 100).toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -79,7 +82,7 @@ class ModuleCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: completionRate,
+                    value: clampedRate,
                     minHeight: 6,
                     backgroundColor: AppColors.greyLight,
                     valueColor: const AlwaysStoppedAnimation<Color>(

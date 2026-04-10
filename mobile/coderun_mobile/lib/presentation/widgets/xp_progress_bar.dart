@@ -9,6 +9,8 @@ class XpProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final progress = (levelProgress.progressPercentage / 100).clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,16 +33,17 @@ class XpProgressBar extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 6),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 600),
-          child: ClipRRect(
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: progress),
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeOut,
+          builder: (context, value, _) => ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
-              value: levelProgress.progressPercentage / 100,
+              value: value,
               minHeight: 10,
               backgroundColor: AppColors.greyLight,
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.xpGold),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.xpGold),
             ),
           ),
         ),

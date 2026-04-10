@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../data/models/leaderboard_model.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/gamification_provider.dart';
 import '../../../widgets/app_error_widget.dart';
@@ -16,14 +17,14 @@ class LeaderboardTab extends ConsumerWidget {
     final currentUsername =
         authState.whenOrNull(authenticated: (u) => u.username);
 
-    return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(leaderboardProvider),
-      child: leaderboardAsync.when(
-        data: (lb) {
-          final top3 = lb.entries.take(3).toList();
-          final rest = lb.entries.skip(3).toList();
+    return leaderboardAsync.when(
+      data: (lb) {
+        final top3 = lb.entries.take(3).toList();
+        final rest = lb.entries.skip(3).toList();
 
-          return CustomScrollView(
+        return RefreshIndicator(
+          onRefresh: () async => ref.invalidate(leaderboardProvider),
+          child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverPadding(
@@ -45,12 +46,11 @@ class LeaderboardTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      // Podium
+                      // Podium — en az 3 kullanıcı varsa göster
                       if (top3.length >= 3)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            // 2. sıra
                             Expanded(
                               child: _PodiumItem(
                                 entry: top3[1],
@@ -58,7 +58,6 @@ class LeaderboardTab extends ConsumerWidget {
                                 color: AppColors.grey,
                               ),
                             ),
-                            // 1. sıra
                             Expanded(
                               child: _PodiumItem(
                                 entry: top3[0],
@@ -66,7 +65,6 @@ class LeaderboardTab extends ConsumerWidget {
                                 color: AppColors.xpGold,
                               ),
                             ),
-                            // 3. sıra
                             Expanded(
                               child: _PodiumItem(
                                 entry: top3[2],
@@ -124,7 +122,7 @@ class LeaderboardTab extends ConsumerWidget {
                 ),
               ),
 
-              // Kullanıcının kendi sırası
+              // Kullanıcının kendi sırası — sabit alt bar
               if (lb.userRank != null)
                 SliverToBoxAdapter(
                   child: Container(
@@ -141,20 +139,20 @@ class LeaderboardTab extends ConsumerWidget {
                   ),
                 ),
             ],
-          );
-        },
-        loading: () => const LoadingWidget(message: 'Sıralama yükleniyor...'),
-        error: (e, _) => AppErrorWidget(
-          message: e.toString(),
-          onRetry: () => ref.invalidate(leaderboardProvider),
-        ),
+          ),
+        );
+      },
+      loading: () => const LoadingWidget(message: 'Sıralama yükleniyor...'),
+      error: (e, _) => AppErrorWidget(
+        message: e.toString(),
+        onRetry: () => ref.invalidate(leaderboardProvider),
       ),
     );
   }
 }
 
 class _PodiumItem extends StatelessWidget {
-  final dynamic entry;
+  final LeaderboardEntryModel entry;
   final double height;
   final Color color;
 
@@ -169,12 +167,16 @@ class _PodiumItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(entry.username,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis),
+        Text(
+          entry.username,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          overflow: TextOverflow.ellipsis,
+        ),
         const SizedBox(height: 4),
-        Text('${entry.weeklyXp} XP',
-            style: TextStyle(fontSize: 11, color: color)),
+        Text(
+          '${entry.weeklyXp} XP',
+          style: TextStyle(fontSize: 11, color: color),
+        ),
         const SizedBox(height: 4),
         Container(
           height: height,
@@ -187,9 +189,7 @@ class _PodiumItem extends StatelessWidget {
             child: Text(
               '#${entry.rank}',
               style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  color: color, fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../providers/module_provider.dart';
 import '../../../widgets/app_error_widget.dart';
 import '../../../widgets/loading_widget.dart';
@@ -22,10 +23,7 @@ class LearnTab extends ConsumerWidget {
           const SliverPadding(
             padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
             sliver: SliverToBoxAdapter(
-              child: Text(
-                'Öğrenme Yolları',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              child: Text('Öğrenme Yolları', style: AppTextStyles.heading2),
             ),
           ),
           modulesAsync.when(
@@ -37,8 +35,9 @@ class LearnTab extends ConsumerWidget {
                     final module = modules[index];
                     final progressAsync =
                         ref.watch(moduleProgressProvider(module.slug));
+                    // completionRate: API 0-100 döndürüyor, widget 0.0-1.0 bekliyor
                     final completionRate = progressAsync.whenOrNull(
-                      data: (p) => p.completionRate / 100,
+                      data: (p) => (p.completionRate / 100).clamp(0.0, 1.0),
                     );
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -64,6 +63,7 @@ class LearnTab extends ConsumerWidget {
               ),
             ),
           ),
+
           // Coming Soon bölümü
           SliverPadding(
             padding: const EdgeInsets.all(16),
@@ -80,21 +80,23 @@ class LearnTab extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   ...[
-                    'IaC (Terraform)',
-                    'Diğer Diller',
-                    'Kütüphaneler',
+                    ('IaC (Terraform)', '🏗️'),
+                    ('Diğer Diller', '💻'),
+                    ('Kütüphaneler', '📦'),
                   ].map(
-                    (title) => Opacity(
+                    (item) => Opacity(
                       opacity: 0.4,
                       child: Card(
                         elevation: 1,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                         child: ListTile(
-                          leading: const Icon(Icons.lock_outline,
-                              color: AppColors.grey),
-                          title: Text(title),
+                          leading: Text(item.$2,
+                              style: const TextStyle(fontSize: 24)),
+                          title: Text(item.$1),
                           subtitle: const Text('Yakında eklenecek'),
+                          trailing: const Icon(Icons.lock_outline,
+                              color: AppColors.grey),
                         ),
                       ),
                     ),

@@ -12,8 +12,8 @@ final userStatsProvider = FutureProvider<UserStatsModel>((ref) async {
   final response = await repository.getUserStats();
   return response.when(
     success: (data) => data,
-    error: (message, _) => throw const ApiException(message: 'Hata'),
-    loading: () => throw const ApiException(message: 'Yükleniyor'),
+    error: (message, _) => throw ApiException(message: message),
+    loading: () => throw const ApiException(message: 'Beklenmedik yükleme durumu'),
   );
 });
 
@@ -23,8 +23,8 @@ final streakProvider = FutureProvider<StreakModel>((ref) async {
   final response = await repository.getStreak();
   return response.when(
     success: (data) => data,
-    error: (message, _) => throw const ApiException(message: 'Hata'),
-    loading: () => throw const ApiException(message: 'Yükleniyor'),
+    error: (message, _) => throw ApiException(message: message),
+    loading: () => throw const ApiException(message: 'Beklenmedik yükleme durumu'),
   );
 });
 
@@ -34,8 +34,8 @@ final leaderboardProvider = FutureProvider<LeaderboardModel>((ref) async {
   final response = await repository.getLeaderboard(limit: 10);
   return response.when(
     success: (data) => data,
-    error: (message, _) => throw const ApiException(message: 'Hata'),
-    loading: () => throw const ApiException(message: 'Yükleniyor'),
+    error: (message, _) => throw ApiException(message: message),
+    loading: () => throw const ApiException(message: 'Beklenmedik yükleme durumu'),
   );
 });
 
@@ -45,7 +45,7 @@ final levelProgressProvider = FutureProvider<LevelProgressModel>((ref) async {
   final response = await repository.getLevelProgress();
   return response.when(
     success: (data) => data,
-    error: (message, _) => throw const ApiException(message: 'Hata'),
-    loading: () => throw const ApiException(message: 'Yükleniyor'),
+    error: (message, _) => throw ApiException(message: message),
+    loading: () => throw const ApiException(message: 'Beklenmedik yükleme durumu'),
   );
 });

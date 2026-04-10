@@ -20,13 +20,8 @@ class StreakWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            '🔥',
-            style: TextStyle(
-              fontSize: 28,
-              color: _streakColor,
-            ),
-          ),
+          // Emoji renk almaz — sadece boyut ayarlanır
+          const Text('🔥', style: TextStyle(fontSize: 28)),
           Text(
             '${streak.currentStreak}',
             style: TextStyle(

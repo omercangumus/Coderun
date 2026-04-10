@@ -10,19 +10,23 @@ import '../../../widgets/stat_card.dart';
 import '../../../widgets/streak_widget.dart';
 import '../../../widgets/xp_progress_bar.dart';
 
-class ProfileTab extends ConsumerWidget {
+class ProfileTab extends ConsumerStatefulWidget {
   const ProfileTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileTab> createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends ConsumerState<ProfileTab> {
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final statsAsync = ref.watch(userStatsProvider);
     final streakAsync = ref.watch(streakProvider);
 
     final username =
         authState.whenOrNull(authenticated: (u) => u.username) ?? '';
-    final email =
-        authState.whenOrNull(authenticated: (u) => u.email) ?? '';
+    final email = authState.whenOrNull(authenticated: (u) => u.email) ?? '';
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -44,9 +48,7 @@ class ProfileTab extends ConsumerWidget {
                       radius: 40,
                       backgroundColor: AppColors.primary,
                       child: Text(
-                        username.isNotEmpty
-                            ? username[0].toUpperCase()
-                            : '?',
+                        username.isNotEmpty ? username[0].toUpperCase() : '?',
                         style: const TextStyle(
                             fontSize: 32,
                             color: AppColors.white,
@@ -110,8 +112,7 @@ class ProfileTab extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(12)),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: XpProgressBar(
-                            levelProgress: stats.levelProgress),
+                        child: XpProgressBar(levelProgress: stats.levelProgress),
                       ),
                     ),
                   ) ??
@@ -164,8 +165,7 @@ class ProfileTab extends ConsumerWidget {
                           child: Row(
                             children: stats.badges
                                 .map((b) => Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8),
+                                      padding: const EdgeInsets.only(right: 8),
                                       child: BadgeChip(badge: b),
                                     ))
                                 .toList(),
@@ -190,7 +190,7 @@ class ProfileTab extends ConsumerWidget {
                   ),
                   icon: const Icon(Icons.logout),
                   label: const Text('Çıkış Yap'),
-                  onPressed: () => _confirmLogout(context, ref),
+                  onPressed: _confirmLogout,
                 ),
               ),
             ],
@@ -200,13 +200,12 @@ class ProfileTab extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmLogout() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Çıkış Yap'),
-        content:
-            const Text('Çıkış yapmak istediğinizden emin misiniz?'),
+        content: const Text('Çıkış yapmak istediğinizden emin misiniz?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -222,6 +221,8 @@ class ProfileTab extends ConsumerWidget {
         ],
       ),
     );
+    // mounted kontrolü — async gap sonrası context güvenliği
+    if (!mounted) return;
     if (confirmed == true) {
       ref.read(authProvider.notifier).logout();
     }

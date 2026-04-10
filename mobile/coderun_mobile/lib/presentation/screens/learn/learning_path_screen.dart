@@ -17,18 +17,19 @@ class LearningPathScreen extends ConsumerWidget {
 
     return moduleAsync.when(
       data: (progress) {
-        final lessonsAsync =
-            ref.watch(lessonsProvider(progress.module.id));
+        // API 0-100 döndürüyor, LinearProgressIndicator 0.0-1.0 bekliyor
+        final progressValue =
+            (progress.completionRate / 100).clamp(0.0, 1.0);
         final allCompleted = progress.completionRate >= 100;
+        final lessonsAsync = ref.watch(lessonsProvider(progress.module.id));
 
         return Scaffold(
           appBar: AppBar(
             title: Text(progress.module.title),
           ),
           body: RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(moduleProgressProvider(moduleSlug));
-            },
+            onRefresh: () async =>
+                ref.invalidate(moduleProgressProvider(moduleSlug)),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
@@ -60,7 +61,7 @@ class LearningPathScreen extends ConsumerWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: LinearProgressIndicator(
-                            value: progress.completionRate / 100,
+                            value: progressValue,
                             minHeight: 12,
                             backgroundColor: AppColors.greyLight,
                             valueColor: const AlwaysStoppedAnimation<Color>(
@@ -85,8 +86,7 @@ class LearningPathScreen extends ConsumerWidget {
                             child: ElevatedButton(
                               onPressed: () =>
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Yakında!')),
+                                const SnackBar(content: Text('Yakında!')),
                               ),
                               child: const Text('Sonraki Modüle Geç'),
                             ),
@@ -99,24 +99,40 @@ class LearningPathScreen extends ConsumerWidget {
 
                 // Ders listesi
                 lessonsAsync.when(
-                  data: (lessons) => SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => LessonTile(
-                        lesson: lessons[index],
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Yakında!')),
-                          );
-                        },
+                  data: (lessons) {
+                    if (lessons.isEmpty) {
+                      return const SliverFillRemaining(
+                        child: Center(
+                          child: Text(
+                            'Bu modülde henüz ders yok.',
+                            style: TextStyle(color: AppColors.grey),
+                          ),
+                        ),
+                      );
+                    }
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => LessonTile(
+                          lesson: lessons[index],
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Yakında!')),
+                            );
+                          },
+                        ),
+                        childCount: lessons.length,
                       ),
-                      childCount: lessons.length,
-                    ),
-                  ),
+                    );
+                  },
                   loading: () => const SliverFillRemaining(
                     child: LoadingWidget(message: 'Dersler yükleniyor...'),
                   ),
                   error: (e, _) => SliverFillRemaining(
-                    child: AppErrorWidget(message: e.toString()),
+                    child: AppErrorWidget(
+                      message: e.toString(),
+                      onRetry: () =>
+                          ref.invalidate(lessonsProvider(progress.module.id)),
+                    ),
                   ),
                 ),
               ],
