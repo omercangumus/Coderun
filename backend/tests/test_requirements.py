@@ -65,7 +65,7 @@ class TestRequirementsPinning:
             "pydantic",
             "pydantic-settings",
             "python-jose",
-            "passlib",
+            "argon2-cffi",
             "redis",
             "httpx",
         ]

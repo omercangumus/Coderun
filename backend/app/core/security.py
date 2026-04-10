@@ -4,17 +4,24 @@
 from datetime import datetime, timedelta, timezone
 
 # third party
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 # local
 from backend.app.core.config import settings
 
 # ---------------------------------------------------------------------------
-# Passlib CryptContext — bcrypt şeması
+# Argon2 PasswordHasher — modern, güvenli parola hashleme
 # ---------------------------------------------------------------------------
 
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+_ph = PasswordHasher(
+    time_cost=2,       # iterasyon sayısı
+    memory_cost=65536, # 64 MB
+    parallelism=2,
+    hash_len=32,
+    salt_len=16,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -23,22 +30,22 @@ _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    """Verilen düz metin parolayı güvenli biçimde hashler.
+    """Verilen düz metin parolayı Argon2 ile güvenli biçimde hashler.
 
     Args:
         password: Hashlenmemiş düz metin parola.
 
     Returns:
-        Hash dizesi.
+        Argon2 hash dizesi.
 
     Note:
         Düz metin parola hiçbir zaman loglanmaz.
     """
-    return _pwd_context.hash(password)
+    return _ph.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Düz metin parolayı hash ile doğrular.
+    """Düz metin parolayı Argon2 hash ile doğrular.
 
     Args:
         plain: Kullanıcının girdiği düz metin parola.
@@ -50,7 +57,10 @@ def verify_password(plain: str, hashed: str) -> bool:
     Note:
         Düz metin parola hiçbir zaman loglanmaz.
     """
-    return _pwd_context.verify(plain, hashed)
+    try:
+        return _ph.verify(hashed, plain)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        return False
 
 
 # ---------------------------------------------------------------------------
