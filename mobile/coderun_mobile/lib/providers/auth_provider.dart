@@ -50,18 +50,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState.loading();
     try {
       final tokenResponse = await _authRepository.login(email, password);
-      await tokenResponse.when(
-        success: (_) async {
-          final userResponse = await _authRepository.getCurrentUser();
-          userResponse.when(
-            success: (user) => state = AuthState.authenticated(user),
-            error: (message, _) => state = AuthState.error(message),
-            loading: () {},
-          );
-        },
-        error: (message, _) => state = AuthState.error(message),
-        loading: () {},
+      final isSuccess = tokenResponse.maybeWhen(
+        success: (_) => true,
+        orElse: () => false,
       );
+      if (isSuccess) {
+        final userResponse = await _authRepository.getCurrentUser();
+        userResponse.when(
+          success: (user) => state = AuthState.authenticated(user),
+          error: (message, _) => state = AuthState.error(message),
+          loading: () {},
+        );
+      } else {
+        tokenResponse.whenOrNull(
+          error: (message, _) => state = AuthState.error(message),
+        );
+      }
     } catch (e) {
       state = AuthState.error(e.toString());
     }
@@ -76,11 +80,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState.loading();
     try {
       final response = await _authRepository.register(email, username, password);
-      await response.when(
-        success: (_) => login(email, password),
-        error: (message, _) => state = AuthState.error(message),
-        loading: () {},
+      final isSuccess = response.maybeWhen(
+        success: (_) => true,
+        orElse: () => false,
       );
+      if (isSuccess) {
+        await login(email, password);
+      } else {
+        response.whenOrNull(
+          error: (message, _) => state = AuthState.error(message),
+        );
+      }
     } catch (e) {
       state = AuthState.error(e.toString());
     }

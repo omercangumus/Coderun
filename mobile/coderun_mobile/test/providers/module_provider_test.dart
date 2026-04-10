@@ -11,7 +11,7 @@ import 'package:coderun_mobile/providers/providers.dart';
 
 class MockModuleRepository extends Mock implements ModuleRepository {}
 
-final _testModule = const ModuleModel(
+const _testModule = ModuleModel(
   id: '1',
   title: 'Python',
   slug: 'python',
@@ -71,7 +71,7 @@ void main() {
   });
 
   test('test_module_progress_family', () async {
-    final progress = ModuleProgressModel(
+    const progress = ModuleProgressModel(
       module: _testModule,
       completionRate: 50.0,
       completedLessons: 2,

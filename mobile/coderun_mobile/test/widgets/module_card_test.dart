@@ -5,7 +5,7 @@ import 'package:coderun_mobile/data/models/module_model.dart';
 import 'package:coderun_mobile/presentation/widgets/lesson_tile.dart';
 import 'package:coderun_mobile/presentation/widgets/module_card.dart';
 
-final _module = const ModuleModel(
+const _module = ModuleModel(
   id: '1',
   title: 'Python Temelleri',
   slug: 'python-basics',
