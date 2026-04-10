@@ -182,3 +182,50 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
+
+### Hafta 6 — Flutter Ana Ekranlar
+
+- [x] Modül ve gamification data katmanı (model, datasource, repository, provider)
+- [x] Ana sayfa: hoş geldin, XP bar, devam et, mini liderboard
+- [x] Öğren sekmesi: modül kartları, ilerleme yüzdeleri, coming soon bölümü
+- [x] Liderboard sekmesi: podium, tam liste, kullanıcı sırası
+- [x] Profil sekmesi: istatistikler, streak, rozetler, çıkış
+- [x] Öğrenme yolu ekranı: ders listesi, kilit/tamamlanma durumları
+- [x] 7 tekrar kullanılabilir widget
+
+## Ekran Yapısı
+
+Ana Sayfa (Bottom Nav):
+```
+├── Ana Sayfa sekmesi (dashboard)
+├── Öğren sekmesi (modül listesi)
+├── Liderboard sekmesi (haftalık sıralama)
+└── Profil sekmesi (kullanıcı bilgileri)
+```
+
+Öğrenme Yolu:
+```
+Ana Sayfa → Öğren → Modül Seç → LearningPathScreen → (Hafta 7'de) LessonScreen
+```
+
+## Bileşen Hiyerarşisi
+
+```
+HomeScreen
+├── HomeTab
+│   ├── StreakWidget
+│   ├── XpProgressBar
+│   ├── ModuleCard (devam et)
+│   ├── StatCard x3
+│   └── LeaderboardEntry x3
+├── LearnTab
+│   └── ModuleCard x N
+├── LeaderboardTab
+│   ├── Podium (top 3)
+│   └── LeaderboardList
+└── ProfileTab
+    ├── StatCard x4
+    ├── XpProgressBar
+    ├── StreakWidget
+    └── BadgeChip x N
+```

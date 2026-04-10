@@ -87,7 +87,8 @@ class BadgeRepository(BaseRepository[UserBadge]):
                 earned_at=datetime.now(timezone.utc),
             )
             self._session.add(new_badge)
-            await self._session.flush()
+            await self._session.commit()
+            await self._session.refresh(new_badge)
             return new_badge
         except Exception:
             await self._session.rollback()

@@ -117,7 +117,9 @@ async def get_weekly_leaderboard(
         total_count = await redis.zcard(week_key)
 
         entries: list[LeaderboardEntry] = []
-        for rank, (uid_str, score) in enumerate(raw_entries, start=1):
+        for rank, entry in enumerate(raw_entries, start=1):
+            # zrevrange withscores=True → (member, score) tuple listesi döner
+            uid_str, score = entry
             info_key = f"user:info:{uid_str}"
             info = await redis.hgetall(info_key)
             entries.append(
@@ -125,13 +127,11 @@ async def get_weekly_leaderboard(
                     rank=rank,
                     user_id=UUID(uid_str),
                     username=info.get("username", "Bilinmiyor"),
-                    weekly_xp=int(score),
+                    weekly_xp=int(float(score)),
                     level=int(info.get("level", 1)),
                     streak=int(info.get("streak", 0)),
                 )
             )
-
-        # Kullanıcının sırasını bul
         user_rank: int | None = None
         if user_id is not None:
             rank_result = await redis.zrevrank(week_key, str(user_id))

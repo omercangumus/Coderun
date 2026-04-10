@@ -12,7 +12,7 @@ from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
 from backend.app.repositories.user_repository import UserRepository
-from backend.app.schemas.gamification import BadgeResponse
+from backend.app.schemas.gamification import BADGE_META, BadgeResponse
 from backend.app.schemas.lesson import (
     LessonDetailResponse,
     LessonResultResponse,
@@ -223,7 +223,6 @@ async def submit_lesson_answer(
         new_streak = xp_result.new_streak
 
         # Rozet yanıtlarını oluştur
-        from backend.app.schemas.gamification import BADGE_META
         for badge_type in xp_result.badges_earned:
             meta = BADGE_META.get(badge_type, {"title": badge_type, "description": ""})
             badges_earned.append(

@@ -142,11 +142,10 @@ class ProgressRepository(BaseRepository[UserProgress]):
             Toplam tamamlanan ders, kazanılan XP, tamamlanan modül sayısı
             ve devam eden modül bilgisini içeren sözlük.
         """
-        # Toplam tamamlanan ders ve XP
+        # Toplam tamamlanan ders sayısı
         stats_result = await self._session.execute(
             select(
                 func.count(UserProgress.id).label("completed_lessons"),
-                func.sum(UserProgress.score).label("total_xp"),
             ).where(
                 UserProgress.user_id == user_id,
                 UserProgress.is_completed.is_(True),
@@ -154,7 +153,6 @@ class ProgressRepository(BaseRepository[UserProgress]):
         )
         row = stats_result.one()
         completed_lessons: int = row.completed_lessons or 0
-        total_xp: int = row.total_xp or 0
 
         # Tamamlanan modül sayısı: tüm dersleri tamamlanmış modüller
         completed_modules_result = await self._session.execute(
@@ -194,7 +192,6 @@ class ProgressRepository(BaseRepository[UserProgress]):
 
         return {
             "completed_lessons": completed_lessons,
-            "total_xp": total_xp,
             "completed_modules": completed_modules,
             "ongoing_module": ongoing_module,
         }

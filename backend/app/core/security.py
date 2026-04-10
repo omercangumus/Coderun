@@ -14,7 +14,7 @@ from backend.app.core.config import settings
 # Passlib CryptContext — pbkdf2_sha256 şeması
 # ---------------------------------------------------------------------------
 
-_pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # ---------------------------------------------------------------------------

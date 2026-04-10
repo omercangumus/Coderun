@@ -26,7 +26,7 @@ class ModuleRepository(BaseRepository[Module]):
         """
         super().__init__(session, Module)
 
-    async def get_all_active(self, skip: int = 0, limit: int = 10) -> list[Module]:
+    async def get_all_active(self, skip: int = 0, limit: int = 100) -> list[Module]:
         """Aktif modülleri sıra numarasına göre döner.
 
         Args:

@@ -6,10 +6,12 @@ from fastapi import APIRouter, Depends
 
 from backend.app.api.v1.dependencies import (
     get_current_active_user,
+    get_lesson_repository,
     get_module_repository,
     get_progress_repository,
 )
 from backend.app.models.user import User
+from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.schemas.module import (
@@ -46,6 +48,7 @@ async def get_module_progress(
     module_id: UUID,
     module_repo: ModuleRepository = Depends(get_module_repository),
     progress_repo: ProgressRepository = Depends(get_progress_repository),
+    lesson_repo: LessonRepository = Depends(get_lesson_repository),
     current_user: User = Depends(get_current_active_user),
 ) -> ModuleProgressResponse:
     """Kullanıcının bir modüldeki ilerleme bilgisini döner.
@@ -56,13 +59,14 @@ async def get_module_progress(
         module_id: Modülün UUID'si.
         module_repo: Modül repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
+        lesson_repo: Ders repository bağımlılığı.
         current_user: Kimliği doğrulanmış aktif kullanıcı.
 
     Returns:
         Modül bilgisi ve tamamlama oranı.
     """
     return await module_service.get_module_progress(
-        module_id, current_user.id, module_repo, progress_repo
+        module_id, current_user.id, module_repo, progress_repo, lesson_repo
     )
 
 

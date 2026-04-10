@@ -3,9 +3,8 @@
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
 
-from backend.app.models.lesson import Lesson
+from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.schemas.module import (
@@ -64,6 +63,7 @@ async def get_module_progress(
     user_id: UUID,
     module_repo: ModuleRepository,
     progress_repo: ProgressRepository,
+    lesson_repo: LessonRepository,
 ) -> ModuleProgressResponse:
     """Kullanıcının bir modüldeki ilerleme bilgisini döner.
 
@@ -72,6 +72,7 @@ async def get_module_progress(
         user_id: Kullanıcının UUID'si.
         module_repo: Modül repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
+        lesson_repo: Ders repository bağımlılığı.
 
     Returns:
         Modül bilgisi ve tamamlama oranını içeren yanıt.
@@ -90,17 +91,12 @@ async def get_module_progress(
     user_progress_list = await progress_repo.get_user_module_progress(user_id, module_id)
     completed_lessons = sum(1 for p in user_progress_list if p.is_completed)
 
-    total_result = await progress_repo._session.execute(
-        select(func.count()).where(
-            Lesson.module_id == module_id,
-            Lesson.is_active.is_(True),
-        )
-    )
-    total_lessons: int = total_result.scalar_one()
+    # _session doğrudan erişimi yerine lesson_repo kullan
+    total_lessons = await lesson_repo.count_by_module(module_id)
 
     return ModuleProgressResponse(
         module=ModuleResponse.model_validate(module),
-        completion_rate=completion_rate,
+        completion_rate=round(completion_rate * 100, 2),  # 0.0-1.0 → 0-100
         completed_lessons=completed_lessons,
         total_lessons=total_lessons,
     )

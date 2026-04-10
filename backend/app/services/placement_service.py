@@ -4,11 +4,9 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
 
 from backend.app.core.config import settings
-from backend.app.models.lesson import Lesson
-from backend.app.models.question import Question
+from backend.app.repositories.lesson_repository import LessonRepository
 from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
@@ -107,6 +105,7 @@ async def submit_placement_test(
     module_repo: ModuleRepository,
     question_repo: QuestionRepository,
     progress_repo: ProgressRepository,
+    lesson_repo: LessonRepository,
 ) -> PlacementResultResponse:
     """Seviye testi cevaplarını değerlendirir ve kullanıcıyı yerleştirir.
 
@@ -119,6 +118,7 @@ async def submit_placement_test(
         module_repo: Modül repository bağımlılığı.
         question_repo: Soru repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
+        lesson_repo: Ders repository bağımlılığı.
 
     Returns:
         Doğru sayısı, yüzde, başlangıç dersi ve atlanan ders bilgisi.
@@ -134,31 +134,20 @@ async def submit_placement_test(
         )
 
     # Cevaplanan soruları doğrula
-    question_ids = [a.question_id for a in answers]
     answer_map = {a.question_id: a.answer for a in answers}
 
     correct_count = 0
-    for question_id in question_ids:
-        result = await question_repo._session.execute(
-            select(Question).where(Question.id == question_id)
-        )
-        question = result.scalars().first()
+    for question_id, user_answer in answer_map.items():
+        question = await question_repo.get_by_id(question_id)
         if question is not None:
-            user_answer = answer_map.get(question_id, "")
             if user_answer.strip().lower() == question.correct_answer.strip().lower():
                 correct_count += 1
 
     total_count = len(answers)
     percentage = (correct_count / total_count * 100) if total_count > 0 else 0.0
 
-    # Modüldeki toplam ders sayısını al
-    total_lessons_result = await progress_repo._session.execute(
-        select(func.count()).where(
-            Lesson.module_id == module.id,
-            Lesson.is_active.is_(True),
-        )
-    )
-    total_lessons: int = total_lessons_result.scalar_one()
+    # Modüldeki toplam ders sayısını lesson_repo üzerinden al
+    total_lessons = await lesson_repo.count_by_module(module.id)
 
     starting_order, skipped_lessons = calculate_placement(
         correct_count, total_count, total_lessons
@@ -166,16 +155,8 @@ async def submit_placement_test(
 
     # Başlangıç dersine kadar olan dersleri otomatik tamamla
     if skipped_lessons > 0:
-        lessons_to_complete_result = await progress_repo._session.execute(
-            select(Lesson)
-            .where(
-                Lesson.module_id == module.id,
-                Lesson.order < starting_order,
-                Lesson.is_active.is_(True),
-            )
-            .order_by(Lesson.order)
-        )
-        lessons_to_complete = list(lessons_to_complete_result.scalars().all())
+        lessons_to_complete = await lesson_repo.get_by_module(module.id)
+        lessons_to_complete = [lesson for lesson in lessons_to_complete if lesson.order < starting_order]
         now = datetime.now(timezone.utc)
 
         for lesson in lessons_to_complete:
@@ -194,7 +175,7 @@ async def submit_placement_test(
     if starting_order > total_lessons:
         message = f"Harika! Tüm {module.title} modülünü tamamladınız sayılırsınız. Bir sonraki modüle geçebilirsiniz."
     elif skipped_lessons == 0:
-        message = f"1. dersten başlıyorsunuz. Başarılar!"
+        message = "1. dersten başlıyorsunuz. Başarılar!"
     else:
         message = f"{starting_order}. dersten başlıyorsunuz. {skipped_lessons} ders atlandı."
 

@@ -79,7 +79,7 @@ async def get_user_stats(
     next_milestone = (
         7 if current_streak < 7
         else 30 if current_streak < 30
-        else 30
+        else current_streak + 30  # 30+ streak: bir sonraki 30'un katı
     )
     days_to_milestone = max(0, next_milestone - current_streak)
 
@@ -173,7 +173,7 @@ async def get_streak(
     """
     streak_alive = gamification_service.is_streak_alive(current_user.last_active_date)
     current_streak = current_user.streak
-    next_milestone = 7 if current_streak < 7 else 30 if current_streak < 30 else 30
+    next_milestone = 7 if current_streak < 7 else 30 if current_streak < 30 else current_streak + 30
     days_to_milestone = max(0, next_milestone - current_streak)
 
     return StreakResponse(
