@@ -28,6 +28,10 @@ abstract class ApiConstants {
   static String getLessonDetail(String lessonId) => '/lessons/$lessonId';
   static String submitLesson(String lessonId) => '/lessons/$lessonId/submit';
 
+  // Placement endpoint'leri
+  static String getPlacementQuestions(String slug) => '/placement/$slug';
+  static String submitPlacement(String slug) => '/placement/$slug/submit';
+
   // Gamification endpoint'leri
   static const String leaderboard = '/gamification/leaderboard';
   static const String stats = '/gamification/stats';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../providers/module_provider.dart';
 import '../../widgets/app_error_widget.dart';
@@ -115,8 +116,8 @@ class LearningPathScreen extends ConsumerWidget {
                         (context, index) => LessonTile(
                           lesson: lessons[index],
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Yakında!')),
+                            context.push(
+                              '/home/learn/$moduleSlug/lesson/${lessons[index].id}',
                             );
                           },
                         ),

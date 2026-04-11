@@ -4,12 +4,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/network/dio_client.dart';
+import '../core/notifications/notification_service.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/datasources/module_remote_datasource.dart';
 import '../data/datasources/gamification_remote_datasource.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/module_repository.dart';
 import '../data/repositories/gamification_repository.dart';
+
+/// NotificationService provider — main.dart'ta override edilir.
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  throw UnimplementedError('main.dart\'ta override edilmeli');
+});
 
 /// Şifreli depolama provider'ı.
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {

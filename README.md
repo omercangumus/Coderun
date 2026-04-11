@@ -229,3 +229,51 @@ HomeScreen
     ├── StreakWidget
     └── BadgeChip x N
 ```
+
+## Hafta 7 — Flutter Ders Ekranları ve Bildirimler
+
+### Bu Haftada Yapılanlar
+
+- Ders detayı data katmanı (model, datasource, repository, provider)
+- LessonScreen: soru tiplerine göre dinamik widget sistemi
+- MultipleChoiceWidget: animasyonlu çoktan seçmeli soru
+- CodeCompletionWidget: kod tamamlama alanı (monospace)
+- MiniProjectWidget: çok satırlı proje görevi
+- LessonResultScreen: XP animasyonu, seviye atlama, rozet
+- FCM push bildirim kurulumu
+- Mikrofon ile sesli cevap verme özelliği
+
+### Ders Akışı
+
+```
+LearningPathScreen
+└── LessonTile (tıkla)
+    └── LessonScreen
+        ├── MultipleChoiceWidget
+        ├── CodeCompletionWidget
+        └── MiniProjectWidget
+        └── (Tamamla butonu)
+            └── LessonResultScreen
+                ├── Başarı: XP animasyonu + rozetler
+                └── Başarısız: Tekrar dene
+```
+
+### Bildirim Sistemi
+
+FCM ile push bildirim:
+- Günlük streak hatırlatması
+- Yeni içerik bildirimi
+- Liderboard sıralama değişikliği (ilerleyen sürüm)
+
+Yerel bildirimler:
+- Uygulama açıkken foreground mesaj → local notification
+- Streak tehlikede → manuel tetikleme
+
+### Mikrofon Kullanımı
+
+Desteklenen ekranlar:
+- Kod tamamlama: sesli cevap
+- Mini proje: sesli görev açıklaması
+
+Dil: Türkçe (tr_TR locale)
+İzin: İlk kullanımda permission_handler ile isteniyor

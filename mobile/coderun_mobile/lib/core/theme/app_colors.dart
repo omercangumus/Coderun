@@ -22,6 +22,10 @@ abstract class AppColors {
   static const Color warning = Color(0xFFFF9800);
   static const Color info = Color(0xFF2196F3);
 
+  // Metin renkleri
+  static const Color textPrimary = Color(0xFF212121);
+  static const Color textSecondary = Color(0xFF757575);
+
   // XP ve gamification renkleri
   static const Color xpGold = Color(0xFFFFD700);
   static const Color streakOrange = Color(0xFFFF6B35);
