@@ -12,15 +12,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.x"
+          cache: true
+
       - name: Install dependencies
         run: flutter pub get
-        working-directory: mobile
+        working-directory: mobile/coderun_mobile
+
+      - name: Run Flutter analyze
+        run: flutter analyze
+        working-directory: mobile/coderun_mobile
+
       - name: Run tests
         run: flutter test
-        working-directory: mobile
+        working-directory: mobile/coderun_mobile

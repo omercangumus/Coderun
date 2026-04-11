@@ -12,13 +12,54 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://testuser:testpass@localhost:5432/testdb
+      REDIS_URL: redis://localhost:6379/0
+      SECRET_KEY: test-secret-key-for-ci-only-32chars
+      ENVIRONMENT: test
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
+          cache: "pip"
+
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
+
+      - name: Run ruff lint
+        run: |
+          pip install ruff
+          ruff check backend/app/
+
       - name: Run tests
         run: pytest backend/tests/ --asyncio-mode=auto -v

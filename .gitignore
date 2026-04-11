@@ -15,8 +15,9 @@ var/
 sdist/
 develop-eggs/
 .installed.cfg
-lib/
-lib64/
+# Python root lib klasörleri (Flutter lib/ klasörünü etkilememesi için path belirtildi)
+/lib/
+/lib64/
 .eggs/
 *.pyo
 *.pyd

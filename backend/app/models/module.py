@@ -1,10 +1,17 @@
 # Coderun backend — öğrenme modülü ORM modeli.
 # Python, DevOps, Cloud gibi üst düzey konu gruplarını temsil eder.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.models.base import BaseModel
+
+if TYPE_CHECKING:
+    from backend.app.models.lesson import Lesson
 
 
 class Module(BaseModel):
@@ -17,35 +24,21 @@ class Module(BaseModel):
         order: Modüllerin sıralanma indeksi.
         is_active: Modülün aktif olup olmadığı.
         is_published: Modülün yayınlanıp yayınlanmadığı.
+        lessons: Modüle ait dersler (lazy loaded).
     """
 
     __tablename__ = "modules"
 
-    title: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-    )
-    slug: Mapped[str] = mapped_column(
-        String,
-        unique=True,
-        index=True,
-        nullable=False,
-    )
-    description: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-    )
-    order: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-        nullable=False,
-    )
-    is_published: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
-        nullable=False,
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    slug: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=False)
+    order: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    lessons: Mapped[list[Lesson]] = relationship(
+        "Lesson",
+        back_populates="module",
+        order_by="Lesson.order",
+        lazy="select",
     )
