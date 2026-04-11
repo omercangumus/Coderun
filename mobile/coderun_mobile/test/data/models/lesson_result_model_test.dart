@@ -1,5 +1,4 @@
-// Bu testler build_runner çalıştırıldıktan sonra (generated dosyalar oluşunca) çalışır.
-// Çalıştırmak için: dart run build_runner build --delete-conflicting-outputs
+// LessonState unit testleri — copyWith ve immutability doğrulaması.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coderun_mobile/providers/lesson_provider.dart';
 

@@ -2,6 +2,7 @@
 // Interceptor'ları ve temel yapılandırmayı burada tanımlar.
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/api_constants.dart';
 import 'network_interceptor.dart';
@@ -14,8 +15,10 @@ class DioClient {
     final dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(milliseconds: ApiConstants.connectTimeout),
-        receiveTimeout: const Duration(milliseconds: ApiConstants.receiveTimeout),
+        connectTimeout:
+            const Duration(milliseconds: ApiConstants.connectTimeout),
+        receiveTimeout:
+            const Duration(milliseconds: ApiConstants.receiveTimeout),
         headers: const {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -27,8 +30,8 @@ class DioClient {
       NetworkInterceptor(storage: storage, dio: dio),
     );
 
-    // Debug modda loglama — sadece debug build'de çalışır
-    assert(() {
+    // Debug modda loglama — kDebugMode ile release build'de devre dışı
+    if (kDebugMode) {
       dio.interceptors.add(
         LogInterceptor(
           requestBody: true,
@@ -38,8 +41,7 @@ class DioClient {
           responseHeader: false,
         ),
       );
-      return true;
-    }());
+    }
 
     return dio;
   }

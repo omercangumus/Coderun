@@ -65,9 +65,8 @@ void main() {
     expect(state.currentQuestionIndex, equals(0));
   });
 
-  test('submitLesson başarılıysa result state\'e kaydedilmeli', () async {
-    // LessonResultModel.fromJson ile oluştur (generated gerektirir)
-    // Burada sadece mock response test ediyoruz
+  test('submitLesson tamamlandıktan sonra isSubmitting false olmalı', () async {
+    // Hata durumunda bile isSubmitting false'a dönmeli
     when(() => mockRepo.submitLesson(any(), any()))
         .thenAnswer((_) async => const ApiResponse.error('test'));
 

@@ -29,8 +29,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
   Future<List<ModuleModel>> getAllModules() async {
     try {
       final response = await _dio.get(ApiConstants.modules);
-      return (response.data as List)
-          .map((json) => ModuleModel.fromJson(json as Map<String, dynamic>))
+      final data = response.data;
+      if (data is! List) throw const ApiException(message: 'Geçersiz yanıt formatı');
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(ModuleModel.fromJson)
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -41,7 +44,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
   Future<ModuleModel> getModuleBySlug(String slug) async {
     try {
       final response = await _dio.get(ApiConstants.getModuleBySlug(slug));
-      return ModuleModel.fromJson(response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw const ApiException(message: 'Geçersiz yanıt formatı');
+      }
+      return ModuleModel.fromJson(data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -51,8 +58,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
   Future<ModuleProgressModel> getModuleProgress(String slug) async {
     try {
       final response = await _dio.get(ApiConstants.getModuleProgress(slug));
-      return ModuleProgressModel.fromJson(
-          response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw const ApiException(message: 'Geçersiz yanıt formatı');
+      }
+      return ModuleProgressModel.fromJson(data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -63,8 +73,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
     try {
       final response =
           await _dio.get(ApiConstants.getLessonsByModule(moduleId));
-      return (response.data as List)
-          .map((json) => LessonModel.fromJson(json as Map<String, dynamic>))
+      final data = response.data;
+      if (data is! List) throw const ApiException(message: 'Geçersiz yanıt formatı');
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(LessonModel.fromJson)
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -76,8 +89,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
     try {
       final response =
           await _dio.get(ApiConstants.getLessonDetail(lessonId));
-      return LessonDetailModel.fromJson(
-          response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw const ApiException(message: 'Geçersiz yanıt formatı');
+      }
+      return LessonDetailModel.fromJson(data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -93,8 +109,11 @@ class ModuleRemoteDataSourceImpl implements ModuleRemoteDataSource {
         ApiConstants.submitLesson(lessonId),
         data: answers.map((a) => a.toJson()).toList(),
       );
-      return LessonResultModel.fromJson(
-          response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw const ApiException(message: 'Geçersiz yanıt formatı');
+      }
+      return LessonResultModel.fromJson(data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
