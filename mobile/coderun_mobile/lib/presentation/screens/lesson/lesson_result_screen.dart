@@ -84,11 +84,11 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
               Expanded(
                 child: SingleChildScrollView(
                   child: result.isCompleted
-                      ? _buildSuccess(context, result)
-                      : _buildFailure(context, result),
+                      ? _buildSuccess(result)
+                      : _buildFailure(result),
                 ),
               ),
-              _buildButtons(context, result),
+              _buildButtons(result),
             ],
           ),
         ),
@@ -96,7 +96,7 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
     );
   }
 
-  Widget _buildSuccess(BuildContext context, LessonResultModel result) {
+  Widget _buildSuccess(LessonResultModel result) {
     return Column(
       children: [
         const SizedBox(height: 24),
@@ -194,7 +194,7 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
     );
   }
 
-  Widget _buildFailure(BuildContext context, LessonResultModel result) {
+  Widget _buildFailure(LessonResultModel result) {
     return Column(
       children: [
         const SizedBox(height: 24),
@@ -240,7 +240,7 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
     );
   }
 
-  Widget _buildButtons(BuildContext context, LessonResultModel result) {
+  Widget _buildButtons(LessonResultModel result) {
     if (result.isCompleted) {
       return SizedBox(
         width: double.infinity,

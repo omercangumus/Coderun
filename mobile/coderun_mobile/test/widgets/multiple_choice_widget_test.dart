@@ -1,79 +1,75 @@
-// Widget testleri — build_runner çalıştırıldıktan sonra tam çalışır.
-// dart run build_runner build --delete-conflicting-outputs
+// MultipleChoiceWidget layout ve etkileşim testleri.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:coderun_mobile/data/models/question_model.dart';
 import 'package:coderun_mobile/presentation/screens/lesson/widgets/multiple_choice_widget.dart';
 
-// QuestionModel freezed generated olmadan test için basit mock
-class _FakeQuestion {
-  final String id;
-  final String questionText;
-  final String questionType;
-  final Map<String, dynamic>? options;
-  final int order;
-  final String lessonId;
-
-  const _FakeQuestion({
-    required this.id,
-    required this.questionText,
-    required this.questionType,
-    required this.options,
-    required this.order,
-    required this.lessonId,
-  });
-}
-
 void main() {
-  group('MultipleChoiceWidget layout', () {
-    testWidgets('seçenek listesi render edilmeli', (tester) async {
-      final choices = ['Seçenek A', 'Seçenek B', 'Seçenek C', 'Seçenek D'];
-      String? selected;
+  const question = QuestionModel(
+    id: 'q1',
+    lessonId: 'l1',
+    questionType: 'multiple_choice',
+    questionText: 'Python\'da değişken nasıl tanımlanır?',
+    options: {
+      'choices': ['var x = 1', 'x = 1', 'int x = 1', 'let x = 1'],
+    },
+    order: 1,
+  );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ListView(
-              children: choices.asMap().entries.map((entry) {
-                final label = ['A', 'B', 'C', 'D'][entry.key];
-                final choice = entry.value;
-                final isSelected = selected == choice;
-                return InkWell(
-                  key: ValueKey(choice),
-                  onTap: () => selected = choice,
-                  child: Row(
-                    children: [
-                      CircleAvatar(child: Text(label)),
-                      Text(choice),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
+  Widget buildWidget({
+    String? selectedAnswer,
+    void Function(String)? onTap,
+  }) {
+    return MaterialApp(
+      home: Scaffold(
+        body: MultipleChoiceWidget(
+          question: question,
+          selectedAnswer: selectedAnswer,
+          onAnswerSelected: onTap ?? (_) {},
         ),
-      );
+      ),
+    );
+  }
 
-      expect(find.text('Seçenek A'), findsOneWidget);
-      expect(find.text('Seçenek B'), findsOneWidget);
-      expect(find.text('Seçenek C'), findsOneWidget);
-      expect(find.text('Seçenek D'), findsOneWidget);
+  group('MultipleChoiceWidget', () {
+    testWidgets('4 seçenek görünmeli', (tester) async {
+      await tester.pumpWidget(buildWidget());
+      expect(find.text('var x = 1'), findsOneWidget);
+      expect(find.text('x = 1'), findsOneWidget);
+      expect(find.text('int x = 1'), findsOneWidget);
+      expect(find.text('let x = 1'), findsOneWidget);
     });
 
-    testWidgets('seçim callback\'i çağrılmalı', (tester) async {
-      String? tapped;
+    testWidgets('soru metni görünmeli', (tester) async {
+      await tester.pumpWidget(buildWidget());
+      expect(
+        find.text('Python\'da değişken nasıl tanımlanır?'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('seçim yapılınca callback çağrılmalı', (tester) async {
+      String? selected;
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: InkWell(
-              onTap: () => tapped = 'x = 1',
-              child: const Text('x = 1'),
-            ),
-          ),
-        ),
+        buildWidget(onTap: (v) => selected = v),
       );
       await tester.tap(find.text('x = 1'));
       await tester.pump();
-      expect(tapped, equals('x = 1'));
+      expect(selected, equals('x = 1'));
+    });
+
+    testWidgets('seçili seçenek widget ağacında bulunmalı', (tester) async {
+      await tester.pumpWidget(buildWidget(selectedAnswer: 'x = 1'));
+      await tester.pump();
+      expect(find.text('x = 1'), findsOneWidget);
+    });
+
+    testWidgets('A/B/C/D etiketleri görünmeli', (tester) async {
+      await tester.pumpWidget(buildWidget());
+      expect(find.text('A'), findsOneWidget);
+      expect(find.text('B'), findsOneWidget);
+      expect(find.text('C'), findsOneWidget);
+      expect(find.text('D'), findsOneWidget);
     });
   });
 }
