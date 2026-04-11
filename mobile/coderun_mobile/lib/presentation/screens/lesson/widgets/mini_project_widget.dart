@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/question_model.dart';
 
-class MiniProjectWidget extends ConsumerStatefulWidget {
+class MiniProjectWidget extends StatefulWidget {
   final QuestionModel question;
   final String? currentAnswer;
   final void Function(String) onAnswerChanged;
@@ -16,10 +15,10 @@ class MiniProjectWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MiniProjectWidget> createState() => _MiniProjectWidgetState();
+  State<MiniProjectWidget> createState() => _MiniProjectWidgetState();
 }
 
-class _MiniProjectWidgetState extends ConsumerState<MiniProjectWidget> {
+class _MiniProjectWidgetState extends State<MiniProjectWidget> {
   bool _hintExpanded = false;
   late final TextEditingController _controller;
 
@@ -58,36 +57,32 @@ class _MiniProjectWidgetState extends ConsumerState<MiniProjectWidget> {
             ),
           ),
           const SizedBox(height: 20),
-          Stack(
-            children: [
-              TextField(
-                controller: _controller,
-                onChanged: (val) {
-                  setState(() {});
-                  widget.onAnswerChanged(val);
-                },
-                maxLines: 8,
-                maxLength: 500,
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 14,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Çözümünü buraya yaz...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Colors.grey[300]!),
-                  ),
-                  counterText: '$charCount / 500',
-                ),
+          TextField(
+            controller: _controller,
+            onChanged: (val) {
+              setState(() {});
+              widget.onAnswerChanged(val);
+            },
+            maxLines: 8,
+            maxLength: 500,
+            style: const TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 14,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Çözümünü buraya yaz...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
               ),
-            ],
+              counterText: '$charCount / 500',
+            ),
           ),
           if (hint != null) ...[
             const SizedBox(height: 12),
             InkWell(
-              onTap: () => setState(() => _hintExpanded = !_hintExpanded),
+              onTap: () =>
+                  setState(() => _hintExpanded = !_hintExpanded),
               child: Row(
                 children: [
                   Icon(
@@ -116,7 +111,8 @@ class _MiniProjectWidgetState extends ConsumerState<MiniProjectWidget> {
                   color: AppColors.primary.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                      color: AppColors.primary.withOpacity(0.2)),
+                    color: AppColors.primary.withOpacity(0.2),
+                  ),
                 ),
                 child: Text(
                   hint,

@@ -30,7 +30,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget build(BuildContext context) {
     final lessonAsync = ref.watch(lessonDetailProvider(widget.lessonId));
     final lessonState = ref.watch(lessonNotifierProvider(widget.lessonId));
-    final notifier = ref.read(lessonNotifierProvider(widget.lessonId).notifier);
+    final notifier =
+        ref.read(lessonNotifierProvider(widget.lessonId).notifier);
 
     // Result gelince sonuç ekranına geç
     if (lessonState.result != null) {
@@ -50,13 +51,16 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         final currentIndex = lessonState.currentQuestionIndex;
         final currentQuestion =
             questions.isNotEmpty ? questions[currentIndex] : null;
-        final currentAnswer =
-            currentQuestion != null ? lessonState.answers[currentQuestion.id] : null;
+        final currentAnswer = currentQuestion != null
+            ? lessonState.answers[currentQuestion.id]
+            : null;
         final isLastQuestion = currentIndex == questions.length - 1;
-        final hasAnswer = currentAnswer != null && currentAnswer.isNotEmpty;
+        final hasAnswer =
+            currentAnswer != null && currentAnswer.isNotEmpty;
 
         final answeredStatus = questions
-            .map((q) => lessonState.answers.containsKey(q.id) &&
+            .map((q) =>
+                lessonState.answers.containsKey(q.id) &&
                 lessonState.answers[q.id]!.isNotEmpty)
             .toList();
 
@@ -96,31 +100,33 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                             currentAnswer,
                             notifier,
                           ),
-                        ),                      ),
+                        ),
+                      ),
                       const SizedBox(height: 16),
-                      // Hata mesajı
                       if (lessonState.errorMessage != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
                             lessonState.errorMessage!,
-                            style: const TextStyle(color: AppColors.error),
+                            style:
+                                const TextStyle(color: AppColors.error),
                             textAlign: TextAlign.center,
                           ),
                         ),
-                      // Alt navigasyon butonları
                       Row(
                         children: [
                           if (currentIndex > 0)
                             IconButton(
                               onPressed: notifier.previousQuestion,
-                              icon: const Icon(Icons.arrow_back_ios),
+                              icon:
+                                  const Icon(Icons.arrow_back_ios),
                               color: AppColors.primary,
                             ),
                           const Spacer(),
                           if (isLastQuestion)
                             ElevatedButton(
-                              onPressed: hasAnswer && !lessonState.isSubmitting
+                              onPressed: hasAnswer &&
+                                      !lessonState.isSubmitting
                                   ? () => notifier.submitLesson()
                                   : null,
                               child: lessonState.isSubmitting
@@ -128,14 +134,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white),
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
                                     )
                                   : const Text('Tamamla'),
                             )
                           else
                             ElevatedButton(
-                              onPressed: hasAnswer ? notifier.nextQuestion : null,
+                              onPressed: hasAnswer
+                                  ? notifier.nextQuestion
+                                  : null,
                               child: const Text('Sonraki'),
                             ),
                         ],
@@ -213,7 +222,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            style:
+                TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Çıkış'),
           ),
         ],
