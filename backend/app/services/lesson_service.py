@@ -9,6 +9,7 @@ from redis.asyncio import Redis
 from backend.app.core.config import settings
 from backend.app.repositories.badge_repository import BadgeRepository
 from backend.app.repositories.lesson_repository import LessonRepository
+from backend.app.repositories.module_repository import ModuleRepository
 from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.question_repository import QuestionRepository
 from backend.app.repositories.user_repository import UserRepository
@@ -72,6 +73,39 @@ async def get_lessons_by_module(
         previous_completed = is_completed
 
     return result
+
+
+async def get_lessons_by_module_slug(
+    module_slug: str,
+    user_id: UUID,
+    module_repo: "ModuleRepository",
+    lesson_repo: LessonRepository,
+    progress_repo: ProgressRepository,
+) -> list[LessonWithProgressResponse]:
+    """Modül slug'ına göre dersleri kullanıcının ilerleme bilgisiyle birlikte döner.
+
+    Mobile app slug gönderiyor, bu yüzden önce slug ile module bulup sonra dersleri getiriyoruz.
+
+    Args:
+        module_slug: Modülün slug'ı (örn: "python", "devops", "cloud").
+        user_id: Kullanıcının UUID'si.
+        module_repo: Modül repository bağımlılığı.
+        lesson_repo: Ders repository bağımlılığı.
+        progress_repo: İlerleme repository bağımlılığı.
+
+    Returns:
+        İlerleme bilgisi eklenmiş ders listesi.
+
+    Raises:
+        HTTPException: Modül bulunamazsa 404 döner.
+    """
+    module = await module_repo.get_by_slug(module_slug)
+    if module is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Modül bulunamadı",
+        )
+    return await get_lessons_by_module(module.id, user_id, lesson_repo, progress_repo)
 
 
 async def get_lesson_detail(

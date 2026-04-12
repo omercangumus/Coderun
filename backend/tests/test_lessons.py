@@ -25,11 +25,11 @@ async def test_get_lessons_by_module_slug(
     modules = modules_response.json()
     
     if len(modules) > 0:
-        module_id = modules[0]["id"]
+        module_slug = modules[0]["slug"]
         
-        # Get lessons by module ID
+        # Get lessons by module slug
         response = await client.get(
-            f"/api/v1/lessons/module/{module_id}",
+            f"/api/v1/lessons/module/{module_slug}",
             headers=headers,
         )
         assert response.status_code == 200
@@ -65,11 +65,11 @@ async def test_get_lesson_detail(
     modules = modules_response.json()
     
     if len(modules) > 0:
-        module_id = modules[0]["id"]
+        module_slug = modules[0]["slug"]
         
         # Get lessons
         lessons_response = await client.get(
-            f"/api/v1/lessons/module/{module_id}",
+            f"/api/v1/lessons/module/{module_slug}",
             headers=headers,
         )
         lessons = lessons_response.json()
@@ -116,11 +116,11 @@ async def test_submit_lesson_answer(
     modules = modules_response.json()
     
     if len(modules) > 0:
-        module_id = modules[0]["id"]
+        module_slug = modules[0]["slug"]
         
         # Get lessons
         lessons_response = await client.get(
-            f"/api/v1/lessons/module/{module_id}",
+            f"/api/v1/lessons/module/{module_slug}",
             headers=headers,
         )
         lessons = lessons_response.json()

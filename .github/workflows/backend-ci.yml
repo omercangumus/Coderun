@@ -39,7 +39,7 @@ jobs:
           --health-retries 3
 
     env:
-      DATABASE_URL: sqlite+aiosqlite:///./backend/tests/test_auth.db
+      DATABASE_URL: sqlite+aiosqlite:///./tests/test_auth.db
       REDIS_URL: redis://localhost:6379/0
       SECRET_KEY: test-secret-key-for-ci-only-32chars
       ENVIRONMENT: test
@@ -54,11 +54,13 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install -r backend/requirements.txt
+        run: pip install -r requirements.txt
+        working-directory: backend
 
       - name: Run ruff lint
-        run: ruff check backend/app/
+        run: ruff check app/
+        working-directory: backend
 
       - name: Run tests
-        run: pytest backend/tests/ -v
-        working-directory: .
+        run: pytest tests/ -v
+        working-directory: backend
