@@ -240,3 +240,147 @@ class TestSubmitLessonAnswer:
             )
         
         assert exc_info.value.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_submit_lesson_update_existing_progress(self) -> None:
+        """Mevcut ilerleme kaydı güncellenebilmeli."""
+        # Mock repositories
+        mock_lesson_repo = AsyncMock()
+        mock_question_repo = AsyncMock()
+        mock_progress_repo = AsyncMock()
+        mock_user_repo = AsyncMock()
+        mock_badge_repo = AsyncMock()
+        mock_redis = AsyncMock()
+        
+        # Mock lesson
+        lesson_id = uuid.uuid4()
+        mock_lesson = MagicMock(spec=Lesson)
+        mock_lesson.id = lesson_id
+        mock_lesson.module_id = uuid.uuid4()
+        mock_lesson.xp_reward = 10
+        mock_lesson.order = 1
+        mock_lesson_repo.get_by_id.return_value = mock_lesson
+        
+        # Mock questions
+        question_id = uuid.uuid4()
+        mock_question = MagicMock(spec=Question)
+        mock_question.id = question_id
+        mock_question.correct_answer = "A"
+        mock_question_repo.get_by_lesson.return_value = [mock_question]
+        
+        # Mock user
+        user_id = uuid.uuid4()
+        mock_user = MagicMock()
+        mock_user.id = user_id
+        mock_user.xp = 10
+        mock_user.level = 1
+        mock_user.streak = 1
+        mock_user.last_active_date = datetime.now(timezone.utc).date()
+        mock_user.username = "testuser"
+        mock_user_repo.get_by_id.return_value = mock_user
+        
+        # Mock updated user
+        updated_user = MagicMock()
+        updated_user.id = user_id
+        updated_user.xp = 20
+        updated_user.level = 1
+        updated_user.streak = 2
+        updated_user.last_active_date = datetime.now(timezone.utc).date()
+        mock_user_repo.update_xp.return_value = updated_user
+        
+        # Mock existing progress
+        existing_progress = MagicMock(spec=UserProgress)
+        existing_progress.id = uuid.uuid4()
+        existing_progress.user_id = user_id
+        existing_progress.lesson_id = lesson_id
+        existing_progress.is_completed = False
+        existing_progress.score = 50
+        existing_progress.attempt_count = 1
+        mock_progress_repo.get_user_lesson_progress.return_value = existing_progress
+        mock_progress_repo.get_user_module_progress.return_value = []
+        mock_progress_repo.get_module_completion_rate.return_value = 0.5
+        
+        # Mock badges
+        mock_badge_repo.get_user_badges.return_value = []
+        mock_badge_repo.has_badge.return_value = False
+        
+        # Submit answers
+        from backend.app.schemas.progress import AnswerSubmit
+        
+        answers = [AnswerSubmit(question_id=question_id, answer="A")]
+        
+        result = await submit_lesson_answer(
+            lesson_id,
+            user_id,
+            answers,
+            mock_lesson_repo,
+            mock_question_repo,
+            mock_progress_repo,
+            mock_user_repo,
+            mock_badge_repo,
+            mock_redis,
+        )
+        
+        assert result.score == 100
+        assert result.is_completed is True
+        mock_progress_repo.update.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_submit_lesson_failed_score(self) -> None:
+        """Düşük skorla ders tamamlanmamalı."""
+        # Mock repositories
+        mock_lesson_repo = AsyncMock()
+        mock_question_repo = AsyncMock()
+        mock_progress_repo = AsyncMock()
+        mock_user_repo = AsyncMock()
+        mock_badge_repo = AsyncMock()
+        mock_redis = AsyncMock()
+        
+        # Mock lesson
+        lesson_id = uuid.uuid4()
+        mock_lesson = MagicMock(spec=Lesson)
+        mock_lesson.id = lesson_id
+        mock_lesson.module_id = uuid.uuid4()
+        mock_lesson.xp_reward = 10
+        mock_lesson.order = 1
+        mock_lesson_repo.get_by_id.return_value = mock_lesson
+        
+        # Mock questions - 4 questions
+        questions = []
+        for i in range(4):
+            q = MagicMock(spec=Question)
+            q.id = uuid.uuid4()
+            q.correct_answer = "A"
+            questions.append(q)
+        mock_question_repo.get_by_lesson.return_value = questions
+        
+        # Mock progress
+        mock_progress_repo.get_user_lesson_progress.return_value = None
+        mock_progress_repo.get_user_module_progress.return_value = []
+        
+        # Submit wrong answers (only 1 correct out of 4 = 25%)
+        from backend.app.schemas.progress import AnswerSubmit
+        
+        answers = [
+            AnswerSubmit(question_id=questions[0].id, answer="A"),  # Correct
+            AnswerSubmit(question_id=questions[1].id, answer="B"),  # Wrong
+            AnswerSubmit(question_id=questions[2].id, answer="C"),  # Wrong
+            AnswerSubmit(question_id=questions[3].id, answer="D"),  # Wrong
+        ]
+        
+        result = await submit_lesson_answer(
+            lesson_id,
+            uuid.uuid4(),
+            answers,
+            mock_lesson_repo,
+            mock_question_repo,
+            mock_progress_repo,
+            mock_user_repo,
+            mock_badge_repo,
+            None,
+        )
+        
+        assert result.score == 25
+        assert result.is_completed is False
+        assert result.xp_earned == 0
+        assert "Geçmek için en az" in result.message

@@ -115,3 +115,48 @@ async def test_award_badge_no_duplicate(db_session: AsyncSession) -> None:
     
     # Should only have one badge
     assert len(module_complete_badges) == 1
+
+
+@pytest.mark.asyncio
+async def test_award_badge_exception_handling(db_session: AsyncSession) -> None:
+    """award_badge should handle database exceptions."""
+    from unittest.mock import AsyncMock, patch
+    
+    user_repo = UserRepository(db_session)
+    badge_repo = BadgeRepository(db_session)
+    
+    # Create user
+    user = await user_repo.create({
+        "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "hashed_password": "hashed_password_123",
+    })
+    
+    # Mock commit to raise exception
+    with patch.object(badge_repo._session, "commit", side_effect=Exception("DB Error")):
+        with pytest.raises(Exception, match="DB Error"):
+            await badge_repo.award_badge(user.id, "test_badge")
+
+
+@pytest.mark.asyncio
+async def test_get_users_badge_count(db_session: AsyncSession) -> None:
+    """get_users_badge_count should return total badge count."""
+    user_repo = UserRepository(db_session)
+    badge_repo = BadgeRepository(db_session)
+    
+    # Create user
+    user = await user_repo.create({
+        "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "hashed_password": "hashed_password_123",
+    })
+    
+    # Award multiple badges
+    await badge_repo.award_badge(user.id, "first_lesson")
+    await badge_repo.award_badge(user.id, "streak_7")
+    await badge_repo.award_badge(user.id, "level_5")
+    
+    # Get count
+    count = await badge_repo.get_users_badge_count(user.id)
+    
+    assert count == 3

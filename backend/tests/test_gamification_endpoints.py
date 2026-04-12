@@ -195,3 +195,91 @@ async def test_get_streak_unauthorized(client: AsyncClient) -> None:
     """Token olmadan streak bilgisi alınamaz."""
     response = await client.get("/api/v1/gamification/streak")
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_leaderboard_invalid_limit_too_low(
+    client: AsyncClient,
+    test_user: dict[str, str],
+) -> None:
+    """Liderboard limit 1'den küçük olamaz."""
+    # Login
+    login_response = await client.post(
+        "/api/v1/auth/login",
+        data={"username": test_user["email"], "password": test_user["password"]},
+    )
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Get leaderboard with invalid limit
+    response = await client.get(
+        "/api/v1/gamification/leaderboard?limit=0",
+        headers=headers,
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_get_leaderboard_invalid_limit_too_high(
+    client: AsyncClient,
+    test_user: dict[str, str],
+) -> None:
+    """Liderboard limit 100'den büyük olamaz."""
+    # Login
+    login_response = await client.post(
+        "/api/v1/auth/login",
+        data={"username": test_user["email"], "password": test_user["password"]},
+    )
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Get leaderboard with invalid limit
+    response = await client.get(
+        "/api/v1/gamification/leaderboard?limit=101",
+        headers=headers,
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_get_leaderboard_invalid_limit_string(
+    client: AsyncClient,
+    test_user: dict[str, str],
+) -> None:
+    """Liderboard limit string olamaz."""
+    # Login
+    login_response = await client.post(
+        "/api/v1/auth/login",
+        data={"username": test_user["email"], "password": test_user["password"]},
+    )
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Get leaderboard with invalid limit (string)
+    response = await client.get(
+        "/api/v1/gamification/leaderboard?limit=abc",
+        headers=headers,
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_get_leaderboard_invalid_limit_negative(
+    client: AsyncClient,
+    test_user: dict[str, str],
+) -> None:
+    """Liderboard limit negatif olamaz."""
+    # Login
+    login_response = await client.post(
+        "/api/v1/auth/login",
+        data={"username": test_user["email"], "password": test_user["password"]},
+    )
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Get leaderboard with negative limit
+    response = await client.get(
+        "/api/v1/gamification/leaderboard?limit=-5",
+        headers=headers,
+    )
+    assert response.status_code == 422

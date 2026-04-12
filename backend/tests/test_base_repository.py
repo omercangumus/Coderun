@@ -135,3 +135,75 @@ async def test_base_repository_delete_not_found(db_session: AsyncSession) -> Non
     result = await repo.delete(non_existent_id)
     
     assert result is False
+
+
+@pytest.mark.asyncio
+async def test_base_repository_create_exception_handling(db_session: AsyncSession) -> None:
+    """create should handle database exceptions."""
+    from unittest.mock import patch
+    
+    repo = BaseRepository(db_session, User)
+    
+    user_data = {
+        "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "hashed_password": "hashed_password_123",
+    }
+    
+    # Mock commit to raise exception
+    with patch.object(repo._session, "commit", side_effect=Exception("DB Error")):
+        with pytest.raises(Exception, match="DB Error"):
+            await repo.create(user_data)
+
+
+@pytest.mark.asyncio
+async def test_base_repository_update_exception_handling(db_session: AsyncSession) -> None:
+    """update should handle database exceptions."""
+    from unittest.mock import patch
+    
+    repo = BaseRepository(db_session, User)
+    
+    # Create a user
+    user_data = {
+        "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "hashed_password": "hashed_password_123",
+    }
+    user = await repo.create(user_data)
+    
+    # Mock commit to raise exception
+    with patch.object(repo._session, "commit", side_effect=Exception("DB Error")):
+        with pytest.raises(Exception, match="DB Error"):
+            await repo.update(user.id, {"username": "new_name"})
+
+
+@pytest.mark.asyncio
+async def test_base_repository_update_not_found(db_session: AsyncSession) -> None:
+    """update should return None for non-existent UUID."""
+    repo = BaseRepository(db_session, User)
+    
+    non_existent_id = uuid.uuid4()
+    result = await repo.update(non_existent_id, {"username": "new_name"})
+    
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_base_repository_delete_exception_handling(db_session: AsyncSession) -> None:
+    """delete should handle database exceptions."""
+    from unittest.mock import patch
+    
+    repo = BaseRepository(db_session, User)
+    
+    # Create a user
+    user_data = {
+        "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+        "username": f"testuser_{uuid.uuid4().hex[:8]}",
+        "hashed_password": "hashed_password_123",
+    }
+    user = await repo.create(user_data)
+    
+    # Mock commit to raise exception
+    with patch.object(repo._session, "commit", side_effect=Exception("DB Error")):
+        with pytest.raises(Exception, match="DB Error"):
+            await repo.delete(user.id)

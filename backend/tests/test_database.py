@@ -53,3 +53,34 @@ async def test_base_declarative() -> None:
     
     assert hasattr(Base, "metadata")
     assert hasattr(Base, "registry")
+
+
+@pytest.mark.asyncio
+async def test_get_db_rollback_on_exception() -> None:
+    """get_db should rollback on exception and re-raise."""
+    from backend.app.core.database import get_db
+    from unittest.mock import AsyncMock, patch
+    
+    with patch("backend.app.core.database.AsyncSessionLocal") as mock_session_local:
+        mock_session = AsyncMock()
+        mock_session.rollback = AsyncMock()
+        
+        # Mock context manager
+        async def mock_aenter():
+            return mock_session
+        
+        async def mock_aexit(exc_type, exc_val, exc_tb):
+            if exc_type:
+                await mock_session.rollback()
+            return False  # Don't suppress exception
+        
+        mock_session_local.return_value.__aenter__ = mock_aenter
+        mock_session_local.return_value.__aexit__ = mock_aexit
+        
+        # Simulate exception during session usage
+        with pytest.raises(RuntimeError):
+            async for session in get_db():
+                raise RuntimeError("Database error")
+        
+        # Rollback should have been called
+        mock_session.rollback.assert_called_once()

@@ -303,3 +303,104 @@ class TestGetCurrentUser:
             await get_current_user(token, mock_user_repo)
         
         assert exc_info.value.status_code == 401
+
+
+    @pytest.mark.asyncio
+    async def test_refresh_access_token_invalid_user_id_type(self) -> None:
+        """user_id string değilse 401 fırlatılmalı."""
+        from fastapi import HTTPException
+        
+        mock_user_repo = AsyncMock()
+        
+        # Create token with invalid user_id type
+        payload = {
+            "user_id": 12345,  # int instead of str
+            "email": "test@example.com",
+            "token_type": "refresh",
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await refresh_access_token(token, mock_user_repo)
+        
+        assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_refresh_access_token_invalid_uuid_format(self) -> None:
+        """user_id geçersiz UUID formatında ise 401 fırlatılmalı."""
+        from fastapi import HTTPException
+        
+        mock_user_repo = AsyncMock()
+        
+        # Create token with invalid UUID format
+        payload = {
+            "user_id": "not-a-valid-uuid",
+            "email": "test@example.com",
+            "token_type": "refresh",
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await refresh_access_token(token, mock_user_repo)
+        
+        assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_refresh_access_token_user_not_found(self) -> None:
+        """Refresh token geçerli ama kullanıcı yoksa 401 fırlatılmalı."""
+        from fastapi import HTTPException
+        
+        mock_user_repo = AsyncMock()
+        mock_user_repo.get_by_id.return_value = None
+        
+        user_id = uuid.uuid4()
+        refresh_token = create_refresh_token({
+            "user_id": str(user_id),
+            "email": "test@example.com",
+            "token_type": "refresh",
+        })
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await refresh_access_token(refresh_token, mock_user_repo)
+        
+        assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_get_current_user_invalid_user_id_type(self) -> None:
+        """user_id string değilse 401 fırlatılmalı."""
+        from fastapi import HTTPException
+        
+        mock_user_repo = AsyncMock()
+        
+        # Create token with invalid user_id type
+        payload = {
+            "user_id": 12345,  # int instead of str
+            "email": "test@example.com",
+            "token_type": "access",
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await get_current_user(token, mock_user_repo)
+        
+        assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_get_current_user_invalid_uuid_format(self) -> None:
+        """user_id geçersiz UUID formatında ise 401 fırlatılmalı."""
+        from fastapi import HTTPException
+        
+        mock_user_repo = AsyncMock()
+        
+        # Create token with invalid UUID format
+        payload = {
+            "user_id": "not-a-valid-uuid",
+            "email": "test@example.com",
+            "token_type": "access",
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await get_current_user(token, mock_user_repo)
+        
+        assert exc_info.value.status_code == 401
