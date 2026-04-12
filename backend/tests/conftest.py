@@ -49,13 +49,19 @@ async def setup_test_database() -> AsyncGenerator[None, None]:
     """Test oturumu boyunca SQLite test veritabanını hazırlar."""
     db_path = Path("tests/test_auth.db")
     if db_path.exists():
-        db_path.unlink()
+        try:
+            db_path.unlink()
+        except PermissionError:
+            pass  # File is in use, will be overwritten
     async with test_engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
     yield
     await test_engine.dispose()
     if db_path.exists():
-        db_path.unlink()
+        try:
+            db_path.unlink()
+        except PermissionError:
+            pass  # File is in use, cleanup will happen later
 
 
 @pytest_asyncio.fixture()
@@ -78,6 +84,19 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def seed_test_data(db_session: AsyncSession) -> None:
+    """Test veritabanına seed data ekler (her testten önce otomatik çalışır)."""
+    from backend.app.core.seed import seed_database
+    from backend.app.models.module import Module
+    from sqlalchemy import select
+    
+    # Seed data zaten varsa tekrar ekleme
+    result = await db_session.execute(select(Module).limit(1))
+    if result.scalars().first() is None:
+        await seed_database(db_session)
 
 
 @pytest_asyncio.fixture()

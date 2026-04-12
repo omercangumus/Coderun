@@ -162,3 +162,85 @@ class TestProductionOpenAPI:
         app = _build_app("development")
         client = TestClient(app)
         assert client.get("/docs").status_code == 200
+
+
+class TestHealthEndpointWithDependencies:
+    """Health endpoint database ve Redis bağlantı testleri."""
+
+    @pytest.mark.asyncio
+    async def test_health_database_connection_error(self) -> None:
+        """Database bağlantı hatası durumunda degraded status döndürmeli."""
+        from unittest.mock import AsyncMock, MagicMock
+        from backend.app.api.v1.endpoints.health import health_check
+        
+        # Mock database session that raises error
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(side_effect=Exception("Database connection failed"))
+        
+        # Mock Redis (healthy)
+        mock_redis = MagicMock()
+        mock_redis.ping = MagicMock(return_value=True)
+        
+        result = await health_check(db=mock_db, redis=mock_redis)
+        
+        assert result["status"] == "degraded"
+        assert result["database"] == "error"
+        assert result["redis"] == "ok"
+
+    @pytest.mark.asyncio
+    async def test_health_redis_connection_error(self) -> None:
+        """Redis bağlantı hatası durumunda redis error döndürmeli."""
+        from unittest.mock import AsyncMock, MagicMock
+        from backend.app.api.v1.endpoints.health import health_check
+        from sqlalchemy import text
+        
+        # Mock database (healthy)
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(return_value=None)
+        
+        # Mock Redis that raises error
+        mock_redis = MagicMock()
+        mock_redis.ping = MagicMock(side_effect=Exception("Redis connection failed"))
+        
+        result = await health_check(db=mock_db, redis=mock_redis)
+        
+        assert result["status"] == "ok"  # Overall ok if DB is ok
+        assert result["database"] == "ok"
+        assert result["redis"] == "error"
+
+    @pytest.mark.asyncio
+    async def test_health_redis_disabled(self) -> None:
+        """Redis disabled durumunda redis disabled döndürmeli."""
+        from unittest.mock import AsyncMock
+        from backend.app.api.v1.endpoints.health import health_check
+        
+        # Mock database (healthy)
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(return_value=None)
+        
+        # Redis None (disabled)
+        result = await health_check(db=mock_db, redis=None)
+        
+        assert result["status"] == "ok"
+        assert result["database"] == "ok"
+        assert result["redis"] == "disabled"
+
+    @pytest.mark.asyncio
+    async def test_health_all_services_healthy(self) -> None:
+        """Tüm servisler healthy durumunda ok döndürmeli."""
+        from unittest.mock import AsyncMock, MagicMock
+        from backend.app.api.v1.endpoints.health import health_check
+        
+        # Mock database (healthy)
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(return_value=None)
+        
+        # Mock Redis (healthy)
+        mock_redis = MagicMock()
+        mock_redis.ping = MagicMock(return_value=True)
+        
+        result = await health_check(db=mock_db, redis=mock_redis)
+        
+        assert result["status"] == "ok"
+        assert result["database"] == "ok"
+        assert result["redis"] == "ok"
