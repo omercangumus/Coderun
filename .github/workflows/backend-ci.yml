@@ -60,4 +60,5 @@ jobs:
         run: ruff check backend/app/
 
       - name: Run tests
-        run: pytest backend/tests/ --asyncio-mode=auto -v
+        run: pytest backend/tests/ -v
+        working-directory: .

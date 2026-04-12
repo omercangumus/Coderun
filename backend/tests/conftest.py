@@ -7,7 +7,6 @@ from collections.abc import AsyncGenerator
 from pathlib import Path
 from uuid import uuid4
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
@@ -38,13 +37,7 @@ TestingSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
 )
 
 
-def pytest_configure(config: pytest.Config) -> None:
-    """pytest-asyncio için asyncio_mode=auto yapılandırmasını ayarlar."""
-    config.addinivalue_line("markers", "asyncio: mark test as async")
-    config.option.__dict__.setdefault("asyncio_mode", "auto")
-
-
-@pytest_asyncio.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
 async def setup_test_database() -> AsyncGenerator[None, None]:
     """Test oturumu boyunca SQLite test veritabanını hazırlar."""
     db_path = Path("tests/test_auth.db")
