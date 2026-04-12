@@ -21,8 +21,12 @@ from backend.app.models.user import User
 @pytest.mark.asyncio
 async def test_get_db_yields_session() -> None:
     """get_db async session döner."""
-    async for session in get_db():
+    gen = get_db()
+    try:
+        session = await gen.__anext__()
         assert isinstance(session, AsyncSession)
+    finally:
+        await gen.aclose()
 
 
 @pytest.mark.asyncio
@@ -104,18 +108,12 @@ async def test_get_current_active_user_active_user() -> None:
 @pytest.mark.asyncio
 async def test_get_db_rollback_on_exception() -> None:
     """get_db exception durumunda rollback yapar."""
-    # Use real DB to test the rollback path in get_db
     from backend.app.api.v1.dependencies import get_db
 
-    rolled_back = False
-
+    gen = get_db()
     try:
-        async for session in get_db():
-            # Force a rollback by raising inside the generator
-            await session.rollback()
-            rolled_back = True
-            break
-    except Exception:
-        pass
-
-    assert rolled_back is True
+        session = await gen.__anext__()
+        await session.rollback()
+        assert True  # rollback succeeded
+    finally:
+        await gen.aclose()

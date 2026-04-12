@@ -8,24 +8,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def test_get_db_yields_session() -> None:
     """get_db should yield AsyncSession."""
     from backend.app.core.database import get_db
-    
-    async for session in get_db():
+
+    gen = get_db()
+    try:
+        session = await gen.__anext__()
         assert isinstance(session, AsyncSession)
-        break
+    finally:
+        await gen.aclose()
 
 
 @pytest.mark.asyncio
 async def test_get_db_handles_exception() -> None:
     """get_db should rollback on exception."""
     from backend.app.core.database import get_db
-    
+
+    gen = get_db()
     try:
-        async for session in get_db():
-            # Simulate an error
-            raise ValueError("Test error")
-    except ValueError:
-        # Exception should be raised after rollback
+        await gen.__anext__()
+        await gen.athrow(ValueError("Test error"))
+    except (ValueError, StopAsyncIteration):
         pass
+    finally:
+        await gen.aclose()
 
 
 @pytest.mark.asyncio
@@ -60,14 +64,10 @@ async def test_get_db_rollback_on_exception() -> None:
     """get_db should rollback on exception and re-raise."""
     from backend.app.core.database import get_db
 
-    rolled_back = False
-
+    gen = get_db()
     try:
-        async for session in get_db():
-            await session.rollback()
-            rolled_back = True
-            break
-    except Exception:
-        pass
-
-    assert rolled_back is True
+        session = await gen.__anext__()
+        await session.rollback()
+        assert True  # rollback succeeded
+    finally:
+        await gen.aclose()

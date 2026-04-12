@@ -66,22 +66,28 @@ async def test_close_redis_when_none() -> None:
 async def test_get_redis_yields_client() -> None:
     """get_redis should yield Redis client."""
     from backend.app.core import redis as redis_module
-    
+
     mock_client = AsyncMock()
     redis_module._redis_client = mock_client
-    
-    async for client in redis_module.get_redis():
+
+    gen = redis_module.get_redis()
+    try:
+        client = await gen.__anext__()
         assert client == mock_client
-        break
+    finally:
+        await gen.aclose()
 
 
 @pytest.mark.asyncio
 async def test_get_redis_yields_none() -> None:
     """get_redis should yield None when client is not initialized."""
     from backend.app.core import redis as redis_module
-    
+
     redis_module._redis_client = None
-    
-    async for client in redis_module.get_redis():
+
+    gen = redis_module.get_redis()
+    try:
+        client = await gen.__anext__()
         assert client is None
-        break
+    finally:
+        await gen.aclose()
