@@ -47,14 +47,12 @@ def _build_app(environment: str = "development") -> FastAPI:
     }
     with patch.dict(os.environ, env_vars):
         # Modülü yeniden yüklemeden settings'i patch'le
-        import importlib
 
         import backend.app.core.config as config_module
         import backend.app.api.v1.endpoints.health as health_module
 
         # settings nesnesini geçici olarak değiştir
         original_settings = config_module.settings
-        from pydantic_settings import BaseSettings
 
         class _MockSettings:
             ENVIRONMENT = environment

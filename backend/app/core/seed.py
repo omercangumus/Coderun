@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Seed verisi tanımları
 # ---------------------------------------------------------------------------
 
-SEED_DATA: list[dict] = [
+SEED_DATA: list[dict[str, object]] = [
     {
         "slug": "python",
         "title": "Python",
@@ -608,7 +608,8 @@ async def seed_database(db: AsyncSession) -> None:
 
     try:
         for module_data in SEED_DATA:
-            lessons_data = module_data.pop("lessons")
+            # pop() yerine get() kullan — SEED_DATA global listesini mutate etme
+            lessons_data = module_data.get("lessons", [])  # type: ignore[attr-defined]
             module_id = uuid4()
 
             module = Module(
@@ -623,8 +624,8 @@ async def seed_database(db: AsyncSession) -> None:
             db.add(module)
             await db.flush()
 
-            for lesson_data in lessons_data:
-                questions_data = lesson_data.pop("questions")
+            for lesson_data in lessons_data:  # type: ignore[attr-defined]
+                questions_data = lesson_data.get("questions", [])
                 lesson_id = uuid4()
 
                 lesson = Lesson(

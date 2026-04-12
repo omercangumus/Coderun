@@ -7,6 +7,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from backend.app.models.base import BaseModel
 
@@ -45,4 +46,5 @@ class UserBadge(BaseModel):
     earned_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
+        server_default=func.now(),
     )

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import uuid
 
-import pytest
 
 from backend.app.schemas.progress import PlacementResultResponse, PlacementTestResponse
 from backend.app.schemas.question import QuestionResponse

@@ -39,7 +39,7 @@ jobs:
           --health-retries 3
 
     env:
-      DATABASE_URL: postgresql+asyncpg://testuser:testpass@localhost:5432/testdb
+      DATABASE_URL: sqlite+aiosqlite:///./backend/tests/test_auth.db
       REDIS_URL: redis://localhost:6379/0
       SECRET_KEY: test-secret-key-for-ci-only-32chars
       ENVIRONMENT: test
@@ -57,9 +57,7 @@ jobs:
         run: pip install -r backend/requirements.txt
 
       - name: Run ruff lint
-        run: |
-          pip install ruff
-          ruff check backend/app/
+        run: ruff check backend/app/
 
       - name: Run tests
         run: pytest backend/tests/ --asyncio-mode=auto -v

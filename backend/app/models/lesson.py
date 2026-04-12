@@ -42,7 +42,7 @@ class Lesson(BaseModel):
     )
     title: Mapped[str] = mapped_column(String, nullable=False)
     lesson_type: Mapped[str] = mapped_column(String, nullable=False)
-    content: Mapped[dict] = mapped_column(JSON, nullable=False)
+    content: Mapped[dict[str, object]] = mapped_column(JSON, nullable=False)
     order: Mapped[int] = mapped_column(Integer, nullable=False)
     xp_reward: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

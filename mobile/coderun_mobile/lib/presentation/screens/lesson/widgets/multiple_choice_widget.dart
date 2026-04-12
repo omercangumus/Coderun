@@ -55,7 +55,7 @@ class MultipleChoiceWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : Colors.white,
                   border: Border.all(
                     color: isSelected ? AppColors.primary : AppColors.greyLight,

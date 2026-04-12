@@ -24,7 +24,7 @@ class QuestionResponse(BaseModel):
     lesson_id: uuid.UUID
     question_type: str
     question_text: str
-    options: dict | None = None
+    options: dict[str, object] | None = None
     order: int
 
     model_config = ConfigDict(from_attributes=True)

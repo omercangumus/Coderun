@@ -68,7 +68,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () => _showExitDialog(context),
+              onPressed: () => _showExitDialog(),
             ),
             title: Text(
               'Soru ${currentIndex + 1} / ${questions.length}',
@@ -207,7 +207,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     }
   }
 
-  Future<void> _showExitDialog(BuildContext context) async {
+  Future<void> _showExitDialog() async {
+    final navigator = Navigator.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -230,7 +231,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
       ),
     );
     if (confirmed == true && mounted) {
-      context.pop();
+      navigator.pop();
     }
   }
 }

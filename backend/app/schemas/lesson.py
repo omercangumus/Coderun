@@ -1,11 +1,12 @@
 # Coderun backend — ders Pydantic şemaları; API giriş/çıkış doğrulaması için.
 
+from __future__ import annotations
+
 import uuid
-from datetime import datetime
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
+from backend.app.schemas.gamification import BadgeResponse
 from backend.app.schemas.question import QuestionResponse
 
 
@@ -90,7 +91,7 @@ class LessonResultResponse(BaseModel):
     level_up: bool = False
     new_level: int = 1
     new_streak: int = 0
-    badges_earned: list[Any] = []
+    badges_earned: list[BadgeResponse] = []
     message: str
 
     model_config = ConfigDict(from_attributes=True)

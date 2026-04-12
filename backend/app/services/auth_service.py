@@ -30,7 +30,7 @@ class UserRepositoryProtocol(Protocol):
     async def get_by_username(self, username: str) -> User | None:
         """Kullanıcı adı ile kullanıcı döndürür."""
 
-    async def create(self, obj_in: dict) -> User:
+    async def create(self, obj_in: dict[str, object]) -> User:
         """Yeni kullanıcı oluşturur."""
 
     async def get_by_id(self, id: UUID) -> User | None:

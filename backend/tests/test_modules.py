@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi.testclient import TestClient
 
 from backend.app.schemas.lesson import (
     LessonDetailResponse,
@@ -130,7 +128,6 @@ class TestGetLessonsByModule:
 
     def test_get_lessons_by_module_returns_list(self) -> None:
         """Ders listesinin döndüğünü doğrular."""
-        from datetime import datetime, timezone
 
         module_id = uuid.uuid4()
         lessons = [
@@ -153,7 +150,6 @@ class TestGetLessonsByModule:
 
     def test_first_lesson_not_locked(self) -> None:
         """İlk dersin kilitli olmadığını doğrular."""
-        from datetime import datetime, timezone
 
         module_id = uuid.uuid4()
         first_lesson = LessonWithProgressResponse(

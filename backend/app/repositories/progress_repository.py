@@ -132,7 +132,7 @@ class ProgressRepository(BaseRepository[UserProgress]):
         completed: int = completed_result.scalar_one()
         return completed / total
 
-    async def get_user_stats(self, user_id: UUID) -> dict:
+    async def get_user_stats(self, user_id: UUID) -> dict[str, object]:
         """Kullanıcının genel istatistiklerini döner.
 
         Args:
@@ -160,7 +160,7 @@ class ProgressRepository(BaseRepository[UserProgress]):
         modules_with_incomplete_result = await self._session.execute(
             select(func.count(func.distinct(Lesson.module_id))).where(
                 Lesson.is_active.is_(True),
-                ~Lesson.id.in_(  # type: ignore[attr-defined]
+                ~Lesson.id.in_(
                     select(UserProgress.lesson_id).where(
                         UserProgress.user_id == user_id,
                         UserProgress.is_completed.is_(True),
@@ -186,7 +186,7 @@ class ProgressRepository(BaseRepository[UserProgress]):
                 UserProgress.user_id == user_id,
                 UserProgress.is_completed.is_(False),
             )
-            .order_by(UserProgress.updated_at.desc())  # type: ignore[attr-defined]
+            .order_by(UserProgress.updated_at.desc())
             .limit(1)
         )
         ongoing_module: str | None = ongoing_result.scalar_one_or_none()

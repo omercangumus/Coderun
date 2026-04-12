@@ -152,7 +152,7 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
             padding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.xpGold.withOpacity(0.15),
+              color: AppColors.xpGold.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.xpGold),
             ),

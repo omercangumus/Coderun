@@ -61,7 +61,7 @@ class BaseRepository(Generic[T], ABC):
         )
         return list(result.scalars().all())
 
-    async def create(self, obj_in: dict) -> T:
+    async def create(self, obj_in: dict[str, object]) -> T:
         """Yeni bir kayıt oluşturur ve veritabanına kaydeder.
 
         Args:
@@ -83,7 +83,7 @@ class BaseRepository(Generic[T], ABC):
             await self._session.rollback()
             raise
 
-    async def update(self, id: UUID, obj_in: dict) -> T | None:
+    async def update(self, id: UUID, obj_in: dict[str, object]) -> T | None:
         """Mevcut bir kaydı günceller.
 
         Args:
@@ -122,12 +122,14 @@ class BaseRepository(Generic[T], ABC):
             Exception: Veritabanı hatası durumunda rollback yapılır ve hata yeniden fırlatılır.
         """
         try:
+            obj = await self.get_by_id(id)
+            if obj is None:
+                return False
             result = await self._session.execute(
                 delete(self._model).where(self._model.id == id)  # type: ignore[attr-defined]
-                .returning(self._model.id)  # type: ignore[attr-defined]
             )
             await self._session.commit()
-            return result.first() is not None
+            return result.rowcount > 0
         except Exception:
             await self._session.rollback()
             raise

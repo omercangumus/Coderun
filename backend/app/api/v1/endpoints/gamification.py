@@ -24,13 +24,15 @@ from backend.app.schemas.gamification import (
 from backend.app.services import gamification_service
 from backend.app.services.leaderboard_service import get_weekly_leaderboard
 
+from redis.asyncio import Redis
+
 router = APIRouter(prefix="/gamification", tags=["gamification"])
 
 
 @router.get("/leaderboard", response_model=LeaderboardResponse)
 async def get_leaderboard(
     limit: int = Query(default=10, ge=1, le=100),
-    redis: object = Depends(get_redis),
+    redis: Redis | None = Depends(get_redis),
     current_user: User = Depends(get_current_active_user),
 ) -> LeaderboardResponse:
     """Haftalık XP liderboard'unu döner.
@@ -45,7 +47,7 @@ async def get_leaderboard(
     Returns:
         Sıralı haftalık liderboard.
     """
-    return await get_weekly_leaderboard(redis, current_user.id, limit)  # type: ignore[arg-type]
+    return await get_weekly_leaderboard(redis, current_user.id, limit)
 
 
 @router.get("/stats", response_model=UserStatsResponse)
@@ -86,9 +88,9 @@ async def get_user_stats(
     level_progress = LevelProgressResponse(
         current_level=current_user.level,
         current_xp=current_user.xp,
-        xp_needed_for_next=xp_info["xp_needed"],
-        xp_remaining=xp_info["xp_remaining"],
-        progress_percentage=xp_info["progress_percentage"],
+        xp_needed_for_next=xp_info["xp_needed"],  # type: ignore[arg-type]
+        xp_remaining=xp_info["xp_remaining"],  # type: ignore[arg-type]
+        progress_percentage=xp_info["progress_percentage"],  # type: ignore[arg-type]
         is_max_level=current_user.level >= settings.MAX_LEVEL,
     )
 
@@ -104,8 +106,8 @@ async def get_user_stats(
         total_xp=current_user.xp,
         level=current_user.level,
         streak=current_streak,
-        total_lessons_completed=stats["completed_lessons"],
-        total_modules_completed=stats["completed_modules"],
+        total_lessons_completed=stats["completed_lessons"],  # type: ignore[arg-type]
+        total_modules_completed=stats["completed_modules"],  # type: ignore[arg-type]
         badges=badge_responses,
         level_progress=level_progress,
         streak_info=streak_info,
@@ -150,9 +152,9 @@ async def get_level_progress(
     return LevelProgressResponse(
         current_level=current_user.level,
         current_xp=current_user.xp,
-        xp_needed_for_next=xp_info["xp_needed"],
-        xp_remaining=xp_info["xp_remaining"],
-        progress_percentage=xp_info["progress_percentage"],
+        xp_needed_for_next=xp_info["xp_needed"],  # type: ignore[arg-type]
+        xp_remaining=xp_info["xp_remaining"],  # type: ignore[arg-type]
+        progress_percentage=xp_info["progress_percentage"],  # type: ignore[arg-type]
         is_max_level=current_user.level >= settings.MAX_LEVEL,
     )
 

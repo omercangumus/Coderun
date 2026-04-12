@@ -27,6 +27,8 @@ from backend.app.schemas.lesson import (
 from backend.app.schemas.progress import AnswerSubmit
 from backend.app.services import lesson_service
 
+from redis.asyncio import Redis
+
 router = APIRouter(prefix="/lessons", tags=["lessons"])
 
 
@@ -85,7 +87,7 @@ async def submit_lesson(
     progress_repo: ProgressRepository = Depends(get_progress_repository),
     user_repo: UserRepository = Depends(get_user_repository),
     badge_repo: BadgeRepository = Depends(get_badge_repository),
-    redis: object = Depends(get_redis),
+    redis: Redis | None = Depends(get_redis),
     current_user: User = Depends(get_current_active_user),
 ) -> LessonResultResponse:
     """Ders cevaplarını gönderir, gamification uygular ve sonucu döner.
@@ -115,5 +117,5 @@ async def submit_lesson(
         progress_repo,
         user_repo,
         badge_repo,
-        redis,  # type: ignore[arg-type]
+        redis,
     )

@@ -2,10 +2,8 @@
 # Feature: coderun-monorepo-setup, Property 1: Kod Kalitesi Kuralları Evrensel Uyumu
 
 import ast
-import inspect
 from pathlib import Path
 
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 

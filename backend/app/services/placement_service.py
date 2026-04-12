@@ -183,7 +183,7 @@ async def submit_placement_test(
         correct_count=correct_count,
         total_count=total_count,
         percentage=round(percentage, 2),
-        starting_lesson_order=min(starting_order, total_lessons),
+        starting_lesson_order=starting_order,
         skipped_lessons=skipped_lessons,
         message=message,
     )

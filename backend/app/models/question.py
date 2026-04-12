@@ -40,7 +40,7 @@ class Question(BaseModel):
     )
     question_type: Mapped[str] = mapped_column(String, nullable=False)
     question_text: Mapped[str] = mapped_column(String, nullable=False)
-    options: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    options: Mapped[dict[str, object] | None] = mapped_column(JSON, nullable=True)
     correct_answer: Mapped[str] = mapped_column(String, nullable=False)
     hint: Mapped[str | None] = mapped_column(String, nullable=True)
     order: Mapped[int] = mapped_column(Integer, nullable=False)

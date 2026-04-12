@@ -100,3 +100,41 @@ async def get_module_progress(
         completed_lessons=completed_lessons,
         total_lessons=total_lessons,
     )
+
+
+async def get_module_progress_by_slug(
+    slug: str,
+    user_id: UUID,
+    module_repo: ModuleRepository,
+    progress_repo: ProgressRepository,
+    lesson_repo: LessonRepository,
+) -> ModuleProgressResponse:
+    """Kullanıcının bir modüldeki ilerleme bilgisini slug ile döner.
+
+    Mobile app slug gönderiyor, bu yüzden önce slug ile module bulup sonra progress getiriyoruz.
+
+    Args:
+        slug: Modülün slug'ı (örn: "python-basics").
+        user_id: Kullanıcının UUID'si.
+        module_repo: Modül repository bağımlılığı.
+        progress_repo: İlerleme repository bağımlılığı.
+        lesson_repo: Ders repository bağımlılığı.
+
+    Returns:
+        Modül bilgisi ve tamamlama oranını içeren yanıt.
+
+    Raises:
+        HTTPException: Modül bulunamazsa 404 döner.
+    """
+    # Önce slug ile module'ü bul
+    module = await module_repo.get_by_slug(slug)
+    if module is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Modül bulunamadı",
+        )
+
+    # Sonra progress'i getir
+    return await get_module_progress(
+        module.id, user_id, module_repo, progress_repo, lesson_repo
+    )

@@ -4,9 +4,9 @@
 from datetime import datetime, timedelta, timezone
 
 # third party
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
-from jose import JWTError, jwt
+from argon2 import PasswordHasher  # type: ignore[import-not-found]
+from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError  # type: ignore[import-not-found]
+from jose import JWTError, jwt  # type: ignore[import-untyped]
 
 # local
 from backend.app.core.config import settings
@@ -69,7 +69,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(
-    data: dict,
+    data: dict[str, object],
     expires_delta: timedelta | None = None,
 ) -> str:
     """JWT access token oluşturur.
@@ -91,7 +91,7 @@ def create_access_token(
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def create_refresh_token(data: dict) -> str:
+def create_refresh_token(data: dict[str, object]) -> str:
     """JWT refresh token oluşturur.
 
     Süre sonu settings.REFRESH_TOKEN_EXPIRE_DAYS değerinden hesaplanır.
@@ -110,7 +110,7 @@ def create_refresh_token(data: dict) -> str:
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def decode_token(token: str) -> dict | None:
+def decode_token(token: str) -> dict[str, object] | None:
     """JWT token'ı decode eder ve payload'ı döndürür.
 
     Geçersiz imza, süresi dolmuş token veya herhangi bir JWT hatası

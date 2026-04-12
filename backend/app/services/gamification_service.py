@@ -5,9 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 from uuid import UUID
 
 from backend.app.core.config import settings
-from backend.app.models.user import User
 from backend.app.repositories.badge_repository import BadgeRepository
-from backend.app.repositories.progress_repository import ProgressRepository
 from backend.app.repositories.user_repository import UserRepository
 from backend.app.schemas.gamification import BadgeType, XPAwardResult
 
@@ -33,7 +31,7 @@ def calculate_level(total_xp: int) -> int:
     return min(total_xp // settings.XP_PER_LEVEL + 1, settings.MAX_LEVEL)
 
 
-def calculate_xp_for_next_level(current_xp: int) -> dict:
+def calculate_xp_for_next_level(current_xp: int) -> dict[str, object]:
     """Bir sonraki seviye için gereken XP bilgisini döner.
 
     Args:
@@ -147,7 +145,6 @@ def calculate_new_streak(
 
 
 def check_badges_to_award(
-    user: User,
     new_xp: int,
     new_streak: int,
     new_level: int,
@@ -159,7 +156,6 @@ def check_badges_to_award(
     Zaten kazanılmış rozetler tekrar verilmez.
 
     Args:
-        user: Kullanıcı ORM nesnesi.
         new_xp: Güncellenmiş toplam XP.
         new_streak: Güncellenmiş streak değeri.
         new_level: Güncellenmiş seviye.
@@ -209,7 +205,6 @@ async def award_xp_and_update_streak(
     module_completed: bool,
     user_repo: UserRepository,
     badge_repo: BadgeRepository,
-    progress_repo: ProgressRepository,
 ) -> XPAwardResult:
     """Ders tamamlandığında XP verir, streak günceller ve rozetleri kontrol eder.
 
@@ -229,7 +224,6 @@ async def award_xp_and_update_streak(
         module_completed: Bu işlemde bir modül tamamlandı mı.
         user_repo: Kullanıcı repository bağımlılığı.
         badge_repo: Rozet repository bağımlılığı.
-        progress_repo: İlerleme repository bağımlılığı.
 
     Returns:
         XPAwardResult nesnesi.
@@ -275,7 +269,6 @@ async def award_xp_and_update_streak(
     existing_badges: list[BadgeType] = [b.badge_type for b in existing_badge_objs]  # type: ignore[misc]
 
     badges_to_award = check_badges_to_award(
-        user=user,
         new_xp=new_total_xp,
         new_streak=new_streak,
         new_level=new_level,
