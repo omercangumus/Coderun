@@ -1,6 +1,5 @@
 # Coderun backend yapılandırma testleri — Settings sınıfı davranış doğrulaması.
 
-import os
 
 import pytest
 

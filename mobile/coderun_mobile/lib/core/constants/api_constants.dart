@@ -1,9 +1,11 @@
 // API URL'leri ve endpoint sabitleri.
 // 10.0.2.2 → Android emülatörden host machine localhost'a erişim adresi.
 
+import 'app_constants.dart';
+
 abstract class ApiConstants {
-  // Base URL — production'da environment variable'dan alınacak
-  static const String baseUrl = 'http://10.0.2.2:8000/api/v1';
+  // Base URL — environment-based, AppConstants'tan alınıyor
+  static String get baseUrl => AppConstants.apiBaseUrl;
 
   // Auth endpoint'leri
   static const String register = '/auth/register';

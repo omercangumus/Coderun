@@ -9,12 +9,15 @@ class BadgeChip extends StatelessWidget {
 
   Color get _badgeColor {
     switch (badge.badgeType) {
-      case 'streak':
+      case 'streak_7':
+      case 'streak_30':
         return AppColors.streakOrange;
-      case 'xp':
+      case 'level_5':
+      case 'level_10':
         return AppColors.xpGold;
-      case 'completion':
+      case 'module_complete':
         return AppColors.success;
+      case 'first_lesson':
       default:
         return AppColors.badgePurple;
     }

@@ -81,10 +81,10 @@ async def get_redis() -> Redis | None:
     Global Redis client'ı döner. Redis bağlantısı yoksa None döner;
     çağıran kod None kontrolü yapmalıdır.
     """
-    # Private değişkene doğrudan erişim — get_redis generator'ı yerine
-    # module-level singleton'ı döndürüyoruz (FastAPI Depends ile uyumlu)
-    from backend.app.core.redis import _redis_client  # noqa: PLC0415
-    return _redis_client
+    from backend.app.core.redis import get_redis as _get_redis  # noqa: PLC0415
+    async for client in _get_redis():
+        return client
+    return None
 
 
 async def get_current_user(

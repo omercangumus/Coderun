@@ -18,6 +18,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    networks:
+      - coderun-network
 
   web:
     build: ./web
@@ -26,6 +28,8 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    networks:
+      - coderun-network
 
   db:
     image: postgres:15-alpine
@@ -43,6 +47,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - coderun-network
 
   redis:
     image: redis:7-alpine
@@ -55,6 +61,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - coderun-network
 
   ollama:
     image: ollama/ollama
@@ -62,8 +70,14 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    networks:
+      - coderun-network
 
 volumes:
   postgres_data:
   redis_data:
   ollama_data:
+
+networks:
+  coderun-network:
+    driver: bridge

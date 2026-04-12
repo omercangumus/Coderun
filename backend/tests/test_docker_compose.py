@@ -7,7 +7,6 @@ Property 5 ve servis/volume yapılandırma unit testlerini içerir.
 import re
 from pathlib import Path
 
-import pytest
 import yaml
 from hypothesis import given, settings
 from hypothesis import strategies as st

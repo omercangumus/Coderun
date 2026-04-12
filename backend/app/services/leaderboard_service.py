@@ -70,7 +70,7 @@ async def add_xp_to_leaderboard(
 
         # Kullanıcı bilgilerini hash'te sakla
         info_key = f"user:info:{user_id_str}"
-        await redis.hset(info_key, mapping={
+        await redis.hset(info_key, mapping={  # type: ignore[misc]
             "username": username,
             "level": str(level),
             "streak": str(streak),
@@ -121,7 +121,7 @@ async def get_weekly_leaderboard(
             # zrevrange withscores=True → (member, score) tuple listesi döner
             uid_str, score = entry
             info_key = f"user:info:{uid_str}"
-            info = await redis.hgetall(info_key)
+            info = await redis.hgetall(info_key)  # type: ignore[misc]
             entries.append(
                 LeaderboardEntry(
                     rank=rank,

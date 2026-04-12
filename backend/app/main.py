@@ -67,9 +67,10 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 
 _allow_origins = settings.ALLOWED_ORIGINS
-_allow_credentials = "*" not in _allow_origins
+# allow_credentials=True is incompatible with allow_origins=["*"]
+_has_wildcard = "*" in _allow_origins
 
-if not _allow_credentials:
+if _has_wildcard:
     app.add_middleware(
         CORSMiddleware,
         allow_origin_regex=r"http://localhost:\d+",

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -211,9 +211,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_first_lesson(self) -> None:
         """İlk ders tamamlandığında FIRST_LESSON rozeti verilmeli."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=10,
             new_streak=1,
             new_level=1,
@@ -224,9 +222,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_streak_7(self) -> None:
         """7 günlük streak → STREAK_7 rozeti."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=10,
             new_streak=7,
             new_level=1,
@@ -237,9 +233,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_streak_30(self) -> None:
         """30 günlük streak → STREAK_30 rozeti."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=10,
             new_streak=30,
             new_level=1,
@@ -250,9 +244,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_module_complete(self) -> None:
         """Modül tamamlandığında MODULE_COMPLETE rozeti."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=100,
             new_streak=1,
             new_level=2,
@@ -263,9 +255,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_level_5(self) -> None:
         """Seviye 5 → LEVEL_5 rozeti."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=500,
             new_streak=1,
             new_level=5,
@@ -276,9 +266,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_level_10(self) -> None:
         """Seviye 10 → LEVEL_10 rozeti."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=1000,
             new_streak=1,
             new_level=10,
@@ -289,9 +277,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_no_duplicate(self) -> None:
         """Zaten kazanılmış rozet tekrar verilmemeli."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=10,
             new_streak=7,
             new_level=1,
@@ -303,9 +289,7 @@ class TestCheckBadgesToAward:
 
     def test_check_badges_empty_when_no_conditions_met(self) -> None:
         """Hiçbir koşul sağlanmıyorsa boş liste döner."""
-        user = self._make_user()
         badges = check_badges_to_award(
-            user=user,
             new_xp=0,
             new_streak=0,
             new_level=1,
@@ -329,7 +313,6 @@ class TestLeaderboard:
         import uuid
         from backend.app.services.leaderboard_service import (
             add_xp_to_leaderboard,
-            get_weekly_leaderboard,
         )
 
         mock_redis = AsyncMock()

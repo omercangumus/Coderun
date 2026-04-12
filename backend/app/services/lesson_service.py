@@ -187,7 +187,7 @@ async def submit_lesson_answer(
             "completed_at": now if is_completed else None,
         })
     else:
-        update_data: dict = {
+        update_data: dict[str, object] = {
             "attempt_count": existing_progress.attempt_count + 1,
             "score": max(existing_progress.score, score),
         }
@@ -215,7 +215,6 @@ async def submit_lesson_answer(
             module_completed=module_completed,
             user_repo=user_repo,
             badge_repo=badge_repo,
-            progress_repo=progress_repo,
         )
 
         level_up = xp_result.level_up

@@ -29,7 +29,7 @@ async def init_redis() -> None:
             encoding="utf-8",
             decode_responses=True,
         )
-        await _redis_client.ping()
+        await _redis_client.ping()  # type: ignore[misc]
         logger.info("Redis bağlantısı başarılı.")
     except Exception as exc:
         logger.warning("Redis bağlantısı kurulamadı: %s — liderboard devre dışı.", exc)

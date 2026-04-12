@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./backend/tests/test_auth.db")
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./tests/test_auth.db")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only-32ch")
 os.environ.setdefault("ENVIRONMENT", "development")
@@ -26,7 +26,7 @@ from backend.app.core.database import Base
 from backend.app.main import app
 from backend.app import models as _models
 
-TEST_DATABASE_URL = "sqlite+aiosqlite:///./backend/tests/test_auth.db"
+TEST_DATABASE_URL = "sqlite+aiosqlite:///./tests/test_auth.db"
 _ = _models
 test_engine = create_async_engine(TEST_DATABASE_URL, future=True)
 TestingSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
@@ -47,7 +47,7 @@ def pytest_configure(config: pytest.Config) -> None:
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_test_database() -> AsyncGenerator[None, None]:
     """Test oturumu boyunca SQLite test veritabanını hazırlar."""
-    db_path = Path("backend/tests/test_auth.db")
+    db_path = Path("tests/test_auth.db")
     if db_path.exists():
         db_path.unlink()
     async with test_engine.begin() as connection:

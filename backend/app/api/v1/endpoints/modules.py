@@ -1,6 +1,5 @@
 # Coderun backend — modül endpoint'leri; modül listeleme ve detay API'leri.
 
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
@@ -41,11 +40,11 @@ async def list_modules(
     return await module_service.get_all_modules(module_repo)
 
 
-# DİKKAT: /{module_id}/progress route'u /{slug}'dan ÖNCE tanımlanmalı.
+# DİKKAT: /{slug}/progress route'u /{slug}'dan ÖNCE tanımlanmalı.
 # Aksi hâlde FastAPI "progress" string'ini slug parametresi olarak yakalar.
-@router.get("/{module_id}/progress", response_model=ModuleProgressResponse)
+@router.get("/{slug}/progress", response_model=ModuleProgressResponse)
 async def get_module_progress(
-    module_id: UUID,
+    slug: str,
     module_repo: ModuleRepository = Depends(get_module_repository),
     progress_repo: ProgressRepository = Depends(get_progress_repository),
     lesson_repo: LessonRepository = Depends(get_lesson_repository),
@@ -53,10 +52,10 @@ async def get_module_progress(
 ) -> ModuleProgressResponse:
     """Kullanıcının bir modüldeki ilerleme bilgisini döner.
 
-    Auth gerekir.
+    Auth gerekir. Mobile app slug gönderiyor, bu yüzden slug ile module bulup progress getiriyoruz.
 
     Args:
-        module_id: Modülün UUID'si.
+        slug: Modülün slug'ı (örn: "python-basics").
         module_repo: Modül repository bağımlılığı.
         progress_repo: İlerleme repository bağımlılığı.
         lesson_repo: Ders repository bağımlılığı.
@@ -65,8 +64,8 @@ async def get_module_progress(
     Returns:
         Modül bilgisi ve tamamlama oranı.
     """
-    return await module_service.get_module_progress(
-        module_id, current_user.id, module_repo, progress_repo, lesson_repo
+    return await module_service.get_module_progress_by_slug(
+        slug, current_user.id, module_repo, progress_repo, lesson_repo
     )
 
 
