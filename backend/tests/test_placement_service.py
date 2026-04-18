@@ -126,10 +126,11 @@ class TestSubmitPlacementTest:
         from backend.app.core.security import hash_password
 
         # Test kullanıcısı oluştur
+        uid = uuid4().hex[:8]
         user = User(
             id=uuid4(),
-            email="placement_test@example.com",
-            username="placement_user",
+            email=f"placement_test_{uid}@example.com",
+            username=f"placement_user_{uid}",
             hashed_password=hash_password("Test1234"),
         )
         db_session.add(user)
@@ -168,10 +169,11 @@ class TestSubmitPlacementTest:
         from backend.app.models.user import User
         from backend.app.core.security import hash_password
 
+        uid = uuid4().hex[:8]
         user = User(
             id=uuid4(),
-            email="placement_auto@example.com",
-            username="placement_auto_user",
+            email=f"placement_auto_{uid}@example.com",
+            username=f"placement_auto_user_{uid}",
             hashed_password=hash_password("Test1234"),
         )
         db_session.add(user)
@@ -239,10 +241,11 @@ class TestSubmitPlacementTest:
         from backend.app.models.user import User
         from backend.app.core.security import hash_password
 
+        uid = uuid4().hex[:8]
         user = User(
             id=uuid4(),
-            email="placement_zero@example.com",
-            username="placement_zero_user",
+            email=f"placement_zero_{uid}@example.com",
+            username=f"placement_zero_user_{uid}",
             hashed_password=hash_password("Test1234"),
         )
         db_session.add(user)

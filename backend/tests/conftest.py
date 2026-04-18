@@ -47,6 +47,7 @@ async def setup_test_database() -> AsyncGenerator[None, None]:
         except PermissionError:
             pass  # File is in use, will be overwritten
     async with test_engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
     yield
     await test_engine.dispose()
@@ -58,7 +59,7 @@ async def setup_test_database() -> AsyncGenerator[None, None]:
 
 
 @pytest_asyncio.fixture()
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session(setup_test_database: None) -> AsyncGenerator[AsyncSession, None]:
     """Her test için temiz bir transaction alanı sağlar."""
     async with TestingSessionLocal() as session:
         yield session
@@ -85,7 +86,7 @@ async def seed_test_data(db_session: AsyncSession) -> None:
     from backend.app.core.seed import seed_database
     from backend.app.models.module import Module
     from sqlalchemy import select
-    
+
     # Seed data zaten varsa tekrar ekleme
     result = await db_session.execute(select(Module).limit(1))
     if result.scalars().first() is None:
