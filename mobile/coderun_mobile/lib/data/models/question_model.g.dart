@@ -12,9 +12,7 @@ QuestionModel _$QuestionModelFromJson(Map<String, dynamic> json) =>
       lessonId: json['lesson_id'] as String,
       questionType: json['question_type'] as String,
       questionText: json['question_text'] as String,
-      options: (json['options'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e),
-      ),
+      options: json['options'] as Map<String, dynamic>?,
       order: (json['order'] as num).toInt(),
     );
 

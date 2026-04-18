@@ -277,3 +277,23 @@ Desteklenen ekranlar:
 
 Dil: Türkçe (tr_TR locale)
 İzin: İlk kullanımda permission_handler ile isteniyor
+
+## Hafta 8 — Flutter Gamification UI ve Polish
+
+### Bu Haftada Yapılanlar
+- Rozet ekranı: tüm rozetler, kazanılanlar/kazanılmayanlar
+- Rozet kazanma overlay animasyonu
+- Seviye atlama kutlama overlay'i
+- Streak milestone kutlaması (7 ve 30 gün)
+- Liderboard podium animasyonu ve hafta sayacı
+- Seviye testi (placement test) ekranı
+- Günlük hatırlatma bildirimi zamanlaması
+- Profil ekranı: avatar, grafik, bildirim ayarları
+- Skeleton loading, empty state, haptic feedback
+
+### Ekran Listesi (Toplam)
+Auth: SplashScreen, LoginScreen, RegisterScreen
+Ana Uygulama: HomeTab, LearnTab, LeaderboardTab, ProfileTab
+Öğrenme Akışı: PlacementScreen, LearningPathScreen, LessonScreen, LessonResultScreen
+Diğer: BadgesScreen
+Overlay'ler: BadgeEarnedOverlay, LevelUpOverlay, StreakMilestoneOverlay

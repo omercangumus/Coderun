@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -5,13 +6,84 @@ import '../../../../data/models/leaderboard_model.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/gamification_provider.dart';
 import '../../../widgets/app_error_widget.dart';
+import '../../../widgets/leaderboard_card.dart';
 import '../../../widgets/loading_widget.dart';
 
-class LeaderboardTab extends ConsumerWidget {
+class LeaderboardTab extends ConsumerStatefulWidget {
   const LeaderboardTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LeaderboardTab> createState() => _LeaderboardTabState();
+}
+
+class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _podiumController;
+  late List<Animation<Offset>> _podiumAnims;
+  Timer? _countdownTimer;
+  Duration _timeLeft = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _podiumController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    // 3 sütun için stagger animasyonları (100ms arayla)
+    _podiumAnims = List.generate(3, (i) {
+      final start = i * 0.1;
+      final end = start + 0.7;
+      return Tween<Offset>(
+        begin: const Offset(0, 1),
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: _podiumController,
+          curve: Interval(start, end.clamp(0.0, 1.0), curve: Curves.easeOut),
+        ),
+      );
+    });
+
+    _podiumController.forward();
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _updateTimeLeft();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) _updateTimeLeft();
+    });
+  }
+
+  void _updateTimeLeft() {
+    final now = DateTime.now();
+    // Bir sonraki pazartesi 00:00
+    final daysUntilMonday = (DateTime.monday - now.weekday + 7) % 7;
+    final nextMonday = DateTime(now.year, now.month, now.day + (daysUntilMonday == 0 ? 7 : daysUntilMonday));
+    setState(() {
+      _timeLeft = nextMonday.difference(now);
+    });
+  }
+
+  @override
+  void dispose() {
+    _podiumController.dispose();
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  String _formatCountdown(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '${h}s ${m}d ${s}sn';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final leaderboardAsync = ref.watch(leaderboardProvider);
     final authState = ref.watch(authProvider);
     final currentUsername =
@@ -39,40 +111,72 @@ class LeaderboardTab extends ConsumerWidget {
                             fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Bu hafta: ${lb.weekStart} – ${lb.weekEnd}',
-                        style: const TextStyle(
-                            fontSize: 13, color: AppColors.grey),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Bu hafta: ${lb.weekStart} – ${lb.weekEnd}',
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.grey),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '⏱ ${_formatCountdown(_timeLeft)}',
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
 
-                      // Podium — en az 3 kullanıcı varsa göster
+                      // Podium animasyonu
                       if (top3.length >= 3)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: _PodiumItem(
-                                entry: top3[1],
-                                height: 80,
-                                color: AppColors.grey,
+                        SizedBox(
+                          height: 180,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: SlideTransition(
+                                  position: _podiumAnims[1],
+                                  child: _PodiumItem(
+                                    entry: top3[1],
+                                    height: 80,
+                                    color: AppColors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: _PodiumItem(
-                                entry: top3[0],
-                                height: 110,
-                                color: AppColors.xpGold,
+                              Expanded(
+                                child: SlideTransition(
+                                  position: _podiumAnims[0],
+                                  child: _PodiumItem(
+                                    entry: top3[0],
+                                    height: 110,
+                                    color: AppColors.xpGold,
+                                  ),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: _PodiumItem(
-                                entry: top3[2],
-                                height: 60,
-                                color: AppColors.streakOrange,
+                              Expanded(
+                                child: SlideTransition(
+                                  position: _podiumAnims[2],
+                                  child: _PodiumItem(
+                                    entry: top3[2],
+                                    height: 60,
+                                    color: AppColors.streakOrange,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                     ],
                   ),
@@ -85,44 +189,18 @@ class LeaderboardTab extends ConsumerWidget {
                   (context, index) {
                     final entry = rest[index];
                     final isCurrentUser = entry.username == currentUsername;
-                    return Container(
-                      color: isCurrentUser
-                          ? AppColors.primary.withValues(alpha: 0.08)
-                          : null,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.greyLight,
-                          child: Text(
-                            '#${entry.rank}',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary),
-                          ),
-                        ),
-                        title: Text(
-                          entry.username,
-                          style: TextStyle(
-                            fontWeight: isCurrentUser
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                        subtitle: Text('🔥 ${entry.streak} gün'),
-                        trailing: Text(
-                          '${entry.weeklyXp} XP',
-                          style: const TextStyle(
-                              color: AppColors.xpGold,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                    return LeaderboardCard(
+                      entry: entry,
+                      isCurrentUser: isCurrentUser,
                     );
                   },
                   childCount: rest.length,
                 ),
               ),
 
-              // Kullanıcının kendi sırası — sabit alt bar
+              const SliverPadding(padding: EdgeInsets.only(bottom: 8)),
+
+              // Kullanıcının kendi sırası
               if (lb.userRank != null)
                 SliverToBoxAdapter(
                   child: Container(

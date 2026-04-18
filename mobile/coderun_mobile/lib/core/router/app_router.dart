@@ -13,6 +13,8 @@ import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/learn/learning_path_screen.dart';
 import '../../presentation/screens/lesson/lesson_screen.dart';
 import '../../presentation/screens/lesson/lesson_result_screen.dart';
+import '../../presentation/screens/badges/badges_screen.dart';
+import '../../presentation/screens/placement/placement_screen.dart';
 import '../../data/models/lesson_result_model.dart';
 
 /// StateNotifier değişikliklerini ChangeNotifier'a köprüleyen yardımcı sınıf.
@@ -65,11 +67,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const HomeScreen(),
         routes: [
           GoRoute(
+            path: 'badges',
+            builder: (_, __) => const BadgesScreen(),
+          ),
+          GoRoute(
             path: 'learn/:moduleSlug',
             builder: (context, state) => LearningPathScreen(
               moduleSlug: state.pathParameters['moduleSlug']!,
             ),
             routes: [
+              GoRoute(
+                path: 'placement',
+                builder: (context, state) => PlacementScreen(
+                  moduleSlug: state.pathParameters['moduleSlug']!,
+                ),
+              ),
               GoRoute(
                 path: 'lesson/:lessonId',
                 builder: (context, state) => LessonScreen(
