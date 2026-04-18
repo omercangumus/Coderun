@@ -16,8 +16,7 @@ LessonDetailModel _$LessonDetailModelFromJson(Map<String, dynamic> json) =>
       xpReward: (json['xp_reward'] as num).toInt(),
       isActive: json['is_active'] as bool,
       questions: (json['questions'] as List<dynamic>?)
-              ?.map((e) =>
-                  QuestionModel.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -31,5 +30,5 @@ Map<String, dynamic> _$LessonDetailModelToJson(LessonDetailModel instance) =>
       'order': instance.order,
       'xp_reward': instance.xpReward,
       'is_active': instance.isActive,
-      'questions': instance.questions.map((e) => e.toJson()).toList(),
+      'questions': instance.questions,
     };

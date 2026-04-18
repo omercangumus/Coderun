@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/constants/storage_keys.dart';
+import '../../../../core/notifications/notification_scheduler.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../providers/auth_provider.dart';
 import '../../../../providers/gamification_provider.dart';
@@ -17,7 +21,104 @@ class ProfileTab extends ConsumerStatefulWidget {
   ConsumerState<ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends ConsumerState<ProfileTab> {
+class _ProfileTabState extends ConsumerState<ProfileTab>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _statsController;
+  late List<Animation<Offset>> _statsAnims;
+
+  bool _notificationEnabled = false;
+  int _notificationHour = 20;
+  int _notificationMinute = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _statsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    // 4 kart için stagger animasyonları (100ms arayla)
+    _statsAnims = List.generate(4, (i) {
+      final start = i * 0.1;
+      final end = (start + 0.6).clamp(0.0, 1.0);
+      return Tween<Offset>(
+        begin: const Offset(-1, 0),
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: _statsController,
+          curve: Interval(start, end, curve: Curves.easeOut),
+        ),
+      );
+    });
+
+    _statsController.forward();
+    _loadNotificationSettings();
+  }
+
+  Future<void> _loadNotificationSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationEnabled =
+          prefs.getBool(StorageKeys.notificationEnabled) ?? false;
+      _notificationHour =
+          prefs.getInt(StorageKeys.notificationHour) ?? 20;
+      _notificationMinute =
+          prefs.getInt(StorageKeys.notificationMinute) ?? 0;
+    });
+  }
+
+  Future<void> _saveNotificationSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(StorageKeys.notificationEnabled, _notificationEnabled);
+    await prefs.setInt(StorageKeys.notificationHour, _notificationHour);
+    await prefs.setInt(StorageKeys.notificationMinute, _notificationMinute);
+
+    if (_notificationEnabled) {
+      await NotificationScheduler.scheduleDailyReminder(
+        hour: _notificationHour,
+        minute: _notificationMinute,
+      );
+    } else {
+      await NotificationScheduler.cancelDailyReminder();
+    }
+  }
+
+  Future<void> _pickNotificationTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+          hour: _notificationHour, minute: _notificationMinute),
+    );
+    if (picked != null && mounted) {
+      setState(() {
+        _notificationHour = picked.hour;
+        _notificationMinute = picked.minute;
+      });
+      await _saveNotificationSettings();
+    }
+  }
+
+  Color _getAvatarColor(String username) {
+    const colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.teal,
+    ];
+    return colors[username.hashCode.abs() % colors.length];
+  }
+
+  @override
+  void dispose() {
+    _statsController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -46,7 +147,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: _getAvatarColor(username),
                       child: Text(
                         username.isNotEmpty ? username[0].toUpperCase() : '?',
                         style: const TextStyle(
@@ -67,7 +168,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               ),
               const SizedBox(height: 24),
 
-              // İstatistik kartları 2x2
+              // İstatistik kartları 2x2 — AnimatedSlide ile
               statsAsync.when(
                 data: (stats) => GridView.count(
                   crossAxisCount: 2,
@@ -77,26 +178,38 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   mainAxisSpacing: 8,
                   childAspectRatio: 1.4,
                   children: [
-                    StatCard(
-                        title: 'Toplam XP',
-                        value: '${stats.totalXp}',
-                        icon: Icons.star,
-                        color: AppColors.xpGold),
-                    StatCard(
-                        title: 'Mevcut Seviye',
-                        value: '${stats.level}',
-                        icon: Icons.trending_up,
-                        color: AppColors.info),
-                    StatCard(
-                        title: 'Tamamlanan Ders',
-                        value: '${stats.totalLessonsCompleted}',
-                        icon: Icons.menu_book,
-                        color: AppColors.success),
-                    StatCard(
-                        title: 'Tamamlanan Modül',
-                        value: '${stats.totalModulesCompleted}',
-                        icon: Icons.layers,
-                        color: AppColors.accent),
+                    SlideTransition(
+                      position: _statsAnims[0],
+                      child: StatCard(
+                          title: 'Toplam XP',
+                          value: '${stats.totalXp}',
+                          icon: Icons.star,
+                          color: AppColors.xpGold),
+                    ),
+                    SlideTransition(
+                      position: _statsAnims[1],
+                      child: StatCard(
+                          title: 'Mevcut Seviye',
+                          value: '${stats.level}',
+                          icon: Icons.trending_up,
+                          color: AppColors.info),
+                    ),
+                    SlideTransition(
+                      position: _statsAnims[2],
+                      child: StatCard(
+                          title: 'Tamamlanan Ders',
+                          value: '${stats.totalLessonsCompleted}',
+                          icon: Icons.menu_book,
+                          color: AppColors.success),
+                    ),
+                    SlideTransition(
+                      position: _statsAnims[3],
+                      child: StatCard(
+                          title: 'Tamamlanan Modül',
+                          value: '${stats.totalModulesCompleted}',
+                          icon: Icons.layers,
+                          color: AppColors.accent),
+                    ),
                   ],
                 ),
                 loading: () => const LoadingWidget(),
@@ -112,7 +225,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                           borderRadius: BorderRadius.circular(12)),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: XpProgressBar(levelProgress: stats.levelProgress),
+                        child: XpProgressBar(
+                            levelProgress: stats.levelProgress),
                       ),
                     ),
                   ) ??
@@ -149,15 +263,64 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
               ),
               const SizedBox(height: 20),
 
+              // Haftalık aktivite grafiği
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Haftalık Aktivite',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 80,
+                        child: CustomPaint(
+                          painter: WeeklyActivityPainter(
+                            data: const [2, 0, 3, 1, 4, 0, 2],
+                          ),
+                          size: const Size(double.infinity, 80),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
+                            .map((d) => Text(d,
+                                style: const TextStyle(
+                                    fontSize: 11, color: AppColors.grey)))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               // Rozetler
               statsAsync.whenOrNull(
                     data: (stats) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Kazanılan Rozetler (${stats.badges.length})',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Kazanılan Rozetler (${stats.badges.length})',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            TextButton(
+                              onPressed: () => context.go('/home/badges'),
+                              child: const Text('Tümünü Gör'),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         SingleChildScrollView(
@@ -165,7 +328,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                           child: Row(
                             children: stats.badges
                                 .map((b) => Padding(
-                                      padding: const EdgeInsets.only(right: 8),
+                                      padding:
+                                          const EdgeInsets.only(right: 8),
                                       child: BadgeChip(badge: b),
                                     ))
                                 .toList(),
@@ -175,6 +339,56 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     ),
                   ) ??
                   const SizedBox.shrink(),
+              const SizedBox(height: 20),
+
+              // Bildirim ayarları
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bildirim Ayarları',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Günlük Hatırlatma'),
+                          Switch(
+                            value: _notificationEnabled,
+                            onChanged: (val) async {
+                              setState(() => _notificationEnabled = val);
+                              await _saveNotificationSettings();
+                            },
+                          ),
+                        ],
+                      ),
+                      if (_notificationEnabled) ...[
+                        const Divider(),
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Hatırlatma Saati'),
+                          subtitle: Text(
+                            '${_notificationHour.toString().padLeft(2, '0')}:${_notificationMinute.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: const Icon(Icons.access_time),
+                          onTap: _pickNotificationTime,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 32),
 
               // Çıkış butonu
@@ -221,10 +435,47 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
         ],
       ),
     );
-    // mounted kontrolü — async gap sonrası context güvenliği
     if (!mounted) return;
     if (confirmed == true) {
       ref.read(authProvider.notifier).logout();
     }
   }
+}
+
+// ─── Haftalık Aktivite Grafiği ────────────────────────────────────────────────
+
+class WeeklyActivityPainter extends CustomPainter {
+  final List<int> data;
+
+  const WeeklyActivityPainter({required this.data});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (data.isEmpty) return;
+
+    final maxVal = data.reduce((a, b) => a > b ? a : b);
+    if (maxVal == 0) return;
+
+    final barWidth = size.width / (data.length * 2 - 1);
+    final activePaint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.fill;
+    final inactivePaint = Paint()
+      ..color = Colors.grey[300]!
+      ..style = PaintingStyle.fill;
+
+    for (var i = 0; i < data.length; i++) {
+      final barHeight = (data[i] / maxVal) * size.height;
+      final x = i * barWidth * 2;
+      final rect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(x, size.height - barHeight, barWidth, barHeight),
+        const Radius.circular(4),
+      );
+      canvas.drawRRect(rect, data[i] > 0 ? activePaint : inactivePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(WeeklyActivityPainter oldDelegate) =>
+      oldDelegate.data != data;
 }

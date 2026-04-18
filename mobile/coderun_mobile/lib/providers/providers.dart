@@ -8,6 +8,7 @@ import '../core/notifications/notification_service.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/datasources/module_remote_datasource.dart';
 import '../data/datasources/gamification_remote_datasource.dart';
+import '../data/datasources/placement_remote_datasource.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/module_repository.dart';
 import '../data/repositories/gamification_repository.dart';
@@ -69,4 +70,9 @@ final gamificationRemoteDataSourceProvider =
 final gamificationRepositoryProvider = Provider<GamificationRepository>((ref) {
   final dataSource = ref.watch(gamificationRemoteDataSourceProvider);
   return GamificationRepositoryImpl(remoteDataSource: dataSource);
+});
+
+/// Placement uzak veri kaynağı provider'ı.
+final placementDataSourceProvider = Provider<PlacementRemoteDataSource>((ref) {
+  return PlacementRemoteDataSourceImpl(dio: ref.watch(dioProvider));
 });

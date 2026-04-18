@@ -36,6 +36,5 @@ Map<String, dynamic> _$LessonResultModelToJson(LessonResultModel instance) =>
       'level_up': instance.levelUp,
       'new_level': instance.newLevel,
       'new_streak': instance.newStreak,
-      'badges_earned':
-          instance.badgesEarned.map((e) => e.toJson()).toList(),
+      'badges_earned': instance.badgesEarned,
     };
