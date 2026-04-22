@@ -21,9 +21,9 @@ import pytest
 @pytest.mark.asyncio
 async def test_auth_register_logger_called_directly() -> None:
     """register endpoint: logger.info çağrılır (satır 44-45)."""
-    from backend.app.api.v1.endpoints.auth import register
-    from backend.app.schemas.auth import UserCreate
-    from backend.app.schemas.user import UserResponse
+    from app.api.v1.endpoints.auth import register
+    from app.schemas.auth import UserCreate
+    from app.schemas.user import UserResponse
 
     mock_user_repo = AsyncMock()
     mock_user = MagicMock()
@@ -63,7 +63,7 @@ async def test_auth_register_logger_called_directly() -> None:
 @pytest.mark.asyncio
 async def test_get_user_stats_streak_30_branch_direct() -> None:
     """get_user_stats: streak >= 30 ise next_milestone = streak + 30 (satır 74-105)."""
-    from backend.app.api.v1.endpoints.gamification import get_user_stats
+    from app.api.v1.endpoints.gamification import get_user_stats
 
     mock_user = MagicMock()
     mock_user.id = uuid.uuid4()
@@ -100,7 +100,7 @@ async def test_get_user_stats_streak_30_branch_direct() -> None:
 @pytest.mark.asyncio
 async def test_get_user_stats_streak_between_7_and_30() -> None:
     """get_user_stats: 7 <= streak < 30 ise next_milestone = 30 (satır 74-105)."""
-    from backend.app.api.v1.endpoints.gamification import get_user_stats
+    from app.api.v1.endpoints.gamification import get_user_stats
 
     mock_user = MagicMock()
     mock_user.id = uuid.uuid4()
@@ -137,7 +137,7 @@ async def test_get_user_stats_streak_between_7_and_30() -> None:
 @pytest.mark.asyncio
 async def test_get_streak_endpoint_streak_30_branch_direct() -> None:
     """get_streak: streak >= 30 ise next_milestone = streak + 30 (satır 134)."""
-    from backend.app.api.v1.endpoints.gamification import get_streak
+    from app.api.v1.endpoints.gamification import get_streak
 
     mock_user = MagicMock()
     mock_user.id = uuid.uuid4()
@@ -157,7 +157,7 @@ async def test_get_streak_endpoint_streak_30_branch_direct() -> None:
 @pytest.mark.asyncio
 async def test_get_user_stats_with_badges() -> None:
     """get_user_stats: rozetler varsa BadgeResponse.from_badge çağrılır (satır 74-105)."""
-    from backend.app.api.v1.endpoints.gamification import get_user_stats
+    from app.api.v1.endpoints.gamification import get_user_stats
     from datetime import datetime, timezone
 
     mock_user = MagicMock()
@@ -205,7 +205,7 @@ async def test_get_user_stats_with_badges() -> None:
 @pytest.mark.asyncio
 async def test_health_redis_ping_awaitable_branch() -> None:
     """health_check: redis.ping() awaitable ise await edilir (satır 43)."""
-    from backend.app.api.v1.endpoints.health import health_check
+    from app.api.v1.endpoints.health import health_check
 
     mock_db = AsyncMock()
     mock_db.execute = AsyncMock(return_value=None)
@@ -232,7 +232,7 @@ async def test_health_redis_ping_awaitable_branch() -> None:
 @pytest.mark.asyncio
 async def test_seed_database_exception_handling() -> None:
     """seed_database: exception durumunda rollback yapılır ve hata fırlatılır (satır 659-662)."""
-    from backend.app.core.seed import seed_database
+    from app.core.seed import seed_database
 
     mock_session = AsyncMock()
     # Modül yok gibi davran (seed çalışsın)
@@ -289,7 +289,7 @@ async def test_main_app_wildcard_cors_middleware() -> None:
             del sys.modules[mod]
 
         try:
-            import backend.app.main as main_module
+            import app.main as main_module
             # Verify the app was created
             assert main_module.app is not None
         except Exception:
@@ -309,9 +309,9 @@ async def test_main_app_wildcard_cors_middleware() -> None:
 @pytest.mark.asyncio
 async def test_get_module_completion_rate_empty_module(db_session) -> None:
     """get_module_completion_rate: modülde aktif ders yoksa 0.0 döner (satır 121)."""
-    from backend.app.repositories.progress_repository import ProgressRepository
-    from backend.app.repositories.module_repository import ModuleRepository
-    from backend.app.models.module import Module
+    from app.repositories.progress_repository import ProgressRepository
+    from app.repositories.module_repository import ModuleRepository
+    from app.models.module import Module
 
     progress_repo = ProgressRepository(db_session)
 
@@ -341,7 +341,7 @@ async def test_get_module_completion_rate_empty_module(db_session) -> None:
 @pytest.mark.asyncio
 async def test_update_streak_user_not_found_raises_value_error() -> None:
     """update_streak: kullanıcı bulunamazsa ValueError fırlatır (satır 102)."""
-    from backend.app.repositories.user_repository import UserRepository
+    from app.repositories.user_repository import UserRepository
 
     mock_session = AsyncMock()
     user_repo = UserRepository(mock_session)
@@ -359,7 +359,7 @@ async def test_update_streak_user_not_found_raises_value_error() -> None:
 @pytest.mark.asyncio
 async def test_award_xp_with_badges_message() -> None:
     """award_xp_and_update_streak: rozet kazanıldığında mesaja eklenir (satır 296)."""
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -395,7 +395,7 @@ async def test_award_xp_with_badges_message() -> None:
 @pytest.mark.asyncio
 async def test_award_xp_level_up_message() -> None:
     """award_xp_and_update_streak: seviye atlandığında mesaja eklenir."""
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -435,7 +435,7 @@ async def test_award_xp_level_up_message() -> None:
 async def test_get_lessons_by_module_slug_not_found() -> None:
     """get_lessons_by_module_slug: modül bulunamazsa 404 fırlatır (satır 103-108)."""
     from fastapi import HTTPException
-    from backend.app.services.lesson_service import get_lessons_by_module_slug
+    from app.services.lesson_service import get_lessons_by_module_slug
 
     mock_module_repo = AsyncMock()
     mock_lesson_repo = AsyncMock()
@@ -464,7 +464,7 @@ async def test_get_lessons_by_module_slug_not_found() -> None:
 @pytest.mark.asyncio
 async def test_award_xp_module_completed_message() -> None:
     """award_xp_and_update_streak: modül tamamlandığında module_complete rozeti verilir."""
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -505,7 +505,7 @@ async def test_award_xp_module_completed_message() -> None:
 @pytest.mark.asyncio
 async def test_update_streak_success_returns_user(db_session) -> None:
     """update_streak: başarılı güncelleme sonrası User nesnesi döner (satır 102)."""
-    from backend.app.repositories.user_repository import UserRepository
+    from app.repositories.user_repository import UserRepository
 
     user_repo = UserRepository(db_session)
 
@@ -533,7 +533,7 @@ async def test_update_streak_success_returns_user(db_session) -> None:
 @pytest.mark.asyncio
 async def test_get_lessons_by_module_slug_success() -> None:
     """get_lessons_by_module_slug: modül bulunduğunda ders listesi döner (satır 108)."""
-    from backend.app.services.lesson_service import get_lessons_by_module_slug
+    from app.services.lesson_service import get_lessons_by_module_slug
 
     mock_module_repo = AsyncMock()
     mock_lesson_repo = AsyncMock()
@@ -572,8 +572,8 @@ async def test_get_streak_endpoint_streak_30_integration(
     test_user: dict[str, str],
 ) -> None:
     """get_streak endpoint: streak >= 30 ise next_milestone = streak + 30 (satır 134)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.core.database import AsyncSessionLocal
 
     # Login
     login_response = await client.post(
@@ -638,7 +638,7 @@ def test_main_wildcard_cors_middleware_applied() -> None:
 @pytest.mark.asyncio
 async def test_main_module_wildcard_cors_branch() -> None:
     """main.py: ALLOWED_ORIGINS=['*'] ile _configure_cors wildcard branch çalışır (satır 36-38)."""
-    from backend.app.main import _configure_cors
+    from app.main import _configure_cors
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
 
@@ -662,7 +662,7 @@ async def test_main_module_wildcard_cors_branch() -> None:
 @pytest.mark.asyncio
 async def test_get_streak_elif_branch_7_to_30() -> None:
     """get_streak: 7 <= streak < 30 ise next_milestone = 30 (satır 134)."""
-    from backend.app.api.v1.endpoints.gamification import get_streak
+    from app.api.v1.endpoints.gamification import get_streak
 
     mock_user = MagicMock()
     mock_user.id = uuid.uuid4()
@@ -682,7 +682,7 @@ async def test_get_streak_elif_branch_7_to_30() -> None:
 @pytest.mark.asyncio
 async def test_get_streak_else_branch_30_plus() -> None:
     """get_streak: streak >= 30 ise next_milestone = streak + 30 (satır 181)."""
-    from backend.app.api.v1.endpoints.gamification import get_streak
+    from app.api.v1.endpoints.gamification import get_streak
 
     mock_user = MagicMock()
     mock_user.id = uuid.uuid4()
@@ -706,7 +706,7 @@ async def test_get_streak_else_branch_30_plus() -> None:
 
 def test_configure_cors_wildcard_branch() -> None:
     """_configure_cors: wildcard origins ile allow_origin_regex kullanılır (satır 36-38)."""
-    from backend.app.main import _configure_cors
+    from app.main import _configure_cors
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
 
@@ -724,7 +724,7 @@ def test_configure_cors_wildcard_branch() -> None:
 
 def test_configure_cors_specific_origins() -> None:
     """_configure_cors: specific origins ile allow_origins kullanılır (else dalı)."""
-    from backend.app.main import _configure_cors
+    from app.main import _configure_cors
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
 
@@ -748,7 +748,7 @@ def test_configure_cors_specific_origins() -> None:
 @pytest.mark.asyncio
 async def test_lifespan_database_error_raises_system_exit() -> None:
     """lifespan: DB hatası durumunda logger.critical çağrılır ve SystemExit fırlatılır (satır 36-38)."""
-    from backend.app.main import lifespan
+    from app.main import lifespan
     from fastapi import FastAPI
 
     test_app = FastAPI()
@@ -782,8 +782,8 @@ async def test_get_streak_elif_integration(
     test_user: dict[str, str],
 ) -> None:
     """get_streak endpoint: 7 <= streak < 30 ise next_milestone = 30 (satır 134)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.core.database import AsyncSessionLocal
 
     # Login
     login_response = await client.post(
@@ -822,9 +822,9 @@ async def test_get_badges_with_existing_badge(
     test_user: dict[str, str],
 ) -> None:
     """get_badges: rozeti olan kullanıcı için BadgeResponse.from_badge çağrılır (satır 134)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.repositories.badge_repository import BadgeRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.repositories.badge_repository import BadgeRepository
+    from app.core.database import AsyncSessionLocal
 
     # Login
     login_response = await client.post(
@@ -855,7 +855,7 @@ async def test_get_badges_with_existing_badge(
 @pytest.mark.asyncio
 async def test_get_badges_endpoint_direct() -> None:
     """get_badges: rozeti olan kullanıcı için endpoint doğrudan test edilir (satır 134)."""
-    from backend.app.api.v1.endpoints.gamification import get_badges
+    from app.api.v1.endpoints.gamification import get_badges
     from datetime import datetime, timezone
 
     mock_badge = MagicMock()

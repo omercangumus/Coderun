@@ -5,9 +5,9 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.lesson import Lesson
-from backend.app.models.question import Question
-from backend.app.repositories.base_repository import BaseRepository
+from app.models.lesson import Lesson
+from app.models.question import Question
+from app.repositories.base_repository import BaseRepository
 
 
 class QuestionRepository(BaseRepository[Question]):

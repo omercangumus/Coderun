@@ -5,9 +5,9 @@ from __future__ import annotations
 import uuid
 
 
-from backend.app.schemas.progress import PlacementResultResponse, PlacementTestResponse
-from backend.app.schemas.question import QuestionResponse
-from backend.app.services.placement_service import calculate_placement
+from app.schemas.progress import PlacementResultResponse, PlacementTestResponse
+from app.schemas.question import QuestionResponse
+from app.services.placement_service import calculate_placement
 
 
 # ---------------------------------------------------------------------------

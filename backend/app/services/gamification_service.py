@@ -4,10 +4,10 @@
 from datetime import date, datetime, timedelta, timezone
 from uuid import UUID
 
-from backend.app.core.config import settings
-from backend.app.repositories.badge_repository import BadgeRepository
-from backend.app.repositories.user_repository import UserRepository
-from backend.app.schemas.gamification import BadgeType, XPAwardResult
+from app.core.config import settings
+from app.repositories.badge_repository import BadgeRepository
+from app.repositories.user_repository import UserRepository
+from app.schemas.gamification import BadgeType, XPAwardResult
 
 
 # ---------------------------------------------------------------------------

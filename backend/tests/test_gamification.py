@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from backend.app.services.gamification_service import (
+from app.services.gamification_service import (
     calculate_level,
     calculate_new_streak,
     calculate_streak_bonus,
@@ -47,7 +47,7 @@ class TestCalculateLevel:
 
     def test_calculate_level_max(self) -> None:
         """Çok yüksek XP → MAX_LEVEL (50) ile sınırlı."""
-        from backend.app.core.config import settings
+        from app.core.config import settings
         assert calculate_level(999_999) == settings.MAX_LEVEL
 
     def test_calculate_level_negative_xp(self) -> None:
@@ -311,7 +311,7 @@ class TestLeaderboard:
     async def test_leaderboard_add_and_get(self) -> None:
         """XP eklenince liderboard'da görünmeli."""
         import uuid
-        from backend.app.services.leaderboard_service import (
+        from app.services.leaderboard_service import (
             add_xp_to_leaderboard,
         )
 
@@ -332,7 +332,7 @@ class TestLeaderboard:
     async def test_leaderboard_ranking(self) -> None:
         """Birden fazla kullanıcı sıralaması doğru olmalı."""
         import uuid
-        from backend.app.services.leaderboard_service import get_weekly_leaderboard
+        from app.services.leaderboard_service import get_weekly_leaderboard
 
         uid1, uid2 = str(uuid.uuid4()), str(uuid.uuid4())
         mock_redis = AsyncMock()
@@ -354,7 +354,7 @@ class TestLeaderboard:
     async def test_user_weekly_xp(self) -> None:
         """Kullanıcının haftalık XP'si doğru hesaplanmalı."""
         import uuid
-        from backend.app.services.leaderboard_service import get_user_weekly_xp
+        from app.services.leaderboard_service import get_user_weekly_xp
 
         mock_redis = AsyncMock()
         mock_redis.zscore = AsyncMock(return_value=75.0)
@@ -367,7 +367,7 @@ class TestLeaderboard:
     async def test_user_weekly_xp_none(self) -> None:
         """Kullanıcı liderboard'da yoksa 0 döner."""
         import uuid
-        from backend.app.services.leaderboard_service import get_user_weekly_xp
+        from app.services.leaderboard_service import get_user_weekly_xp
 
         mock_redis = AsyncMock()
         mock_redis.zscore = AsyncMock(return_value=None)
@@ -379,7 +379,7 @@ class TestLeaderboard:
     @pytest.mark.asyncio
     async def test_leaderboard_redis_none_returns_empty(self) -> None:
         """Redis None ise boş liderboard döner."""
-        from backend.app.services.leaderboard_service import get_weekly_leaderboard
+        from app.services.leaderboard_service import get_weekly_leaderboard
 
         result = await get_weekly_leaderboard(None, None, 10)
         assert result.entries == []

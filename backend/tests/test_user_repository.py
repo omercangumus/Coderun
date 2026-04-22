@@ -7,7 +7,7 @@ import uuid
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.repositories.user_repository import UserRepository
+from app.repositories.user_repository import UserRepository
 
 
 @pytest.mark.asyncio

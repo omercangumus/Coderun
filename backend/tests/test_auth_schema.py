@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from backend.app.schemas.auth import UserCreate, TokenResponse, RefreshTokenRequest, TokenData
+from app.schemas.auth import UserCreate, TokenResponse, RefreshTokenRequest, TokenData
 
 
 class TestUserCreate:

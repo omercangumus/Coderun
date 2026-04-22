@@ -5,10 +5,10 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.lesson import Lesson
-from backend.app.models.module import Module
-from backend.app.models.user_progress import UserProgress
-from backend.app.repositories.base_repository import BaseRepository
+from app.models.lesson import Lesson
+from app.models.module import Module
+from app.models.user_progress import UserProgress
+from app.repositories.base_repository import BaseRepository
 
 
 class ProgressRepository(BaseRepository[UserProgress]):

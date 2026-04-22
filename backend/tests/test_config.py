@@ -21,7 +21,7 @@ class TestIsProductionProperty:
         monkeypatch.setenv("ENVIRONMENT", "production")
 
         import importlib
-        import backend.app.core.config as config_module
+        import app.core.config as config_module
 
         importlib.reload(config_module)
         assert config_module.settings.is_production is True
@@ -40,7 +40,7 @@ class TestIsProductionProperty:
         monkeypatch.setenv("ENVIRONMENT", "development")
 
         import importlib
-        import backend.app.core.config as config_module
+        import app.core.config as config_module
 
         importlib.reload(config_module)
         assert config_module.settings.is_production is False
@@ -63,7 +63,7 @@ class TestSettingsDefaults:
         monkeypatch.delenv("ALGORITHM", raising=False)
 
         import importlib
-        import backend.app.core.config as config_module
+        import app.core.config as config_module
 
         importlib.reload(config_module)
         assert config_module.settings.ALGORITHM == "HS256"
@@ -82,7 +82,7 @@ class TestSettingsDefaults:
         monkeypatch.delenv("ACCESS_TOKEN_EXPIRE_MINUTES", raising=False)
 
         import importlib
-        import backend.app.core.config as config_module
+        import app.core.config as config_module
 
         importlib.reload(config_module)
         assert config_module.settings.ACCESS_TOKEN_EXPIRE_MINUTES == 30
@@ -101,7 +101,7 @@ class TestSettingsDefaults:
         monkeypatch.delenv("REFRESH_TOKEN_EXPIRE_DAYS", raising=False)
 
         import importlib
-        import backend.app.core.config as config_module
+        import app.core.config as config_module
 
         importlib.reload(config_module)
         assert config_module.settings.REFRESH_TOKEN_EXPIRE_DAYS == 7

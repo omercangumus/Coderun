@@ -6,13 +6,13 @@ import uuid
 
 import pytest
 
-from backend.app.schemas.lesson import (
+from app.schemas.lesson import (
     LessonDetailResponse,
     LessonResultResponse,
     LessonWithProgressResponse,
 )
-from backend.app.schemas.module import ModuleDetailResponse, ModuleResponse
-from backend.app.schemas.question import QuestionResponse
+from app.schemas.module import ModuleDetailResponse, ModuleResponse
+from app.schemas.question import QuestionResponse
 
 
 # ---------------------------------------------------------------------------
@@ -247,7 +247,7 @@ class TestSubmitLesson:
 
     def test_submit_lesson_fail_below_threshold(self) -> None:
         """Eşik altında skor ile dersin tamamlanmadığını doğrular."""
-        from backend.app.core.config import settings
+        from app.core.config import settings
 
         score = 60
         is_completed = score >= settings.LESSON_PASS_SCORE
@@ -255,7 +255,7 @@ class TestSubmitLesson:
 
     def test_submit_lesson_pass_at_threshold(self) -> None:
         """Eşik değerinde skor ile dersin tamamlandığını doğrular."""
-        from backend.app.core.config import settings
+        from app.core.config import settings
 
         score = settings.LESSON_PASS_SCORE
         is_completed = score >= settings.LESSON_PASS_SCORE

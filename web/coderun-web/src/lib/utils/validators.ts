@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z.string().email('Geçerli bir e-posta adresi girin'),
-  password: z.string().min(8, 'Şifre en az 8 karakter olmalıdır'),
+  email: z.string().min(1, 'E-posta zorunludur').email('Geçerli bir e-posta adresi girin'),
+  password: z.string().min(1, 'Şifre zorunludur'),
 });
 
 export const registerSchema = z
   .object({
-    email: z.string().email('Geçerli bir e-posta adresi girin'),
+    email: z.string().min(1, 'E-posta zorunludur').email('Geçerli bir e-posta adresi girin'),
     username: z
       .string()
       .min(3, 'Kullanıcı adı en az 3 karakter olmalıdır')

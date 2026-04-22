@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from backend.app.services.leaderboard_service import (
+from app.services.leaderboard_service import (
     add_xp_to_leaderboard,
     get_weekly_leaderboard,
     get_user_weekly_xp,

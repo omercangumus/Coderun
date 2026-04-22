@@ -6,8 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from backend.app.models.module import Module
-from backend.app.repositories.base_repository import BaseRepository
+from app.models.module import Module
+from app.repositories.base_repository import BaseRepository
 
 
 class ModuleRepository(BaseRepository[Module]):

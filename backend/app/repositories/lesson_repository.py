@@ -6,8 +6,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from backend.app.models.lesson import Lesson
-from backend.app.repositories.base_repository import BaseRepository
+from app.models.lesson import Lesson
+from app.repositories.base_repository import BaseRepository
 
 
 class LessonRepository(BaseRepository[Lesson]):

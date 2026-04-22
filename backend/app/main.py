@@ -8,12 +8,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from backend.app.api.v1.endpoints.health import router as health_router
-from backend.app.api.v1.router import api_router
-from backend.app.core.config import settings
-from backend.app.core.database import AsyncSessionLocal
-from backend.app.core.redis import close_redis, init_redis
-from backend.app.core.seed import seed_database
+from app.api.v1.endpoints.health import router as health_router
+from app.api.v1.router import api_router
+from app.core.config import settings
+from app.core.database import AsyncSessionLocal
+from app.core.redis import close_redis, init_redis
+from app.core.seed import seed_database
 
 logger = logging.getLogger(__name__)
 

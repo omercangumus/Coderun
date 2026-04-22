@@ -3,8 +3,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
+from redis.asyncio import Redis
 
-from backend.app.api.v1.dependencies import (
+from app.api.v1.dependencies import (
     get_badge_repository,
     get_current_active_user,
     get_lesson_repository,
@@ -14,22 +15,20 @@ from backend.app.api.v1.dependencies import (
     get_redis,
     get_user_repository,
 )
-from backend.app.models.user import User
-from backend.app.repositories.badge_repository import BadgeRepository
-from backend.app.repositories.lesson_repository import LessonRepository
-from backend.app.repositories.module_repository import ModuleRepository
-from backend.app.repositories.progress_repository import ProgressRepository
-from backend.app.repositories.question_repository import QuestionRepository
-from backend.app.repositories.user_repository import UserRepository
-from backend.app.schemas.lesson import (
+from app.models.user import User
+from app.repositories.badge_repository import BadgeRepository
+from app.repositories.lesson_repository import LessonRepository
+from app.repositories.module_repository import ModuleRepository
+from app.repositories.progress_repository import ProgressRepository
+from app.repositories.question_repository import QuestionRepository
+from app.repositories.user_repository import UserRepository
+from app.schemas.lesson import (
     LessonDetailResponse,
     LessonResultResponse,
     LessonWithProgressResponse,
 )
-from backend.app.schemas.progress import AnswerSubmit
-from backend.app.services import lesson_service
-
-from redis.asyncio import Redis
+from app.schemas.progress import AnswerSubmit
+from app.services import lesson_service
 
 router = APIRouter(prefix="/lessons", tags=["lessons"])
 

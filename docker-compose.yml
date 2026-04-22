@@ -8,7 +8,6 @@ services:
       # Docker network içinde servis adları kullanılmalı (localhost değil)
       DATABASE_URL: postgresql+asyncpg://coderun:coderun@db:5432/coderun
       REDIS_URL: redis://redis:6379/0
-      OLLAMA_URL: http://ollama:11434
     depends_on:
       db:
         condition: service_healthy
@@ -16,7 +15,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
-    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -27,11 +26,10 @@ services:
       - coderun-network
 
   web:
-    build: ./web
+    build: ./web/coderun-web
     ports:
       - "3000:3000"
     environment:
-      # Browser'dan erişim: host makinenin 8000 portuna gider
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
     depends_on:
       backend:
@@ -72,19 +70,9 @@ services:
     networks:
       - coderun-network
 
-  ollama:
-    image: ollama/ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - coderun-network
-
 volumes:
   postgres_data:
   redis_data:
-  ollama_data:
 
 networks:
   coderun-network:

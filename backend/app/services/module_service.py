@@ -4,10 +4,10 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 
-from backend.app.repositories.lesson_repository import LessonRepository
-from backend.app.repositories.module_repository import ModuleRepository
-from backend.app.repositories.progress_repository import ProgressRepository
-from backend.app.schemas.module import (
+from app.repositories.lesson_repository import LessonRepository
+from app.repositories.module_repository import ModuleRepository
+from app.repositories.progress_repository import ProgressRepository
+from app.schemas.module import (
     ModuleDetailResponse,
     ModuleProgressResponse,
     ModuleResponse,

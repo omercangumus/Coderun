@@ -7,15 +7,15 @@ import logging
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.app.api.v1.dependencies import (
+from app.api.v1.dependencies import (
     get_current_active_user,
     get_user_repository,
 )
-from backend.app.models.user import User
-from backend.app.repositories.user_repository import UserRepository
-from backend.app.schemas.auth import RefreshTokenRequest, TokenResponse, UserCreate
-from backend.app.schemas.user import UserResponse
-from backend.app.services.auth_service import (
+from app.models.user import User
+from app.repositories.user_repository import UserRepository
+from app.schemas.auth import RefreshTokenRequest, TokenResponse, UserCreate
+from app.schemas.user import UserResponse
+from app.services.auth_service import (
     login_user,
     refresh_access_token,
     register_user,

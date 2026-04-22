@@ -10,11 +10,11 @@ from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSON, UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.models.base import BaseModel
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
-    from backend.app.models.module import Module
-    from backend.app.models.question import Question
+    from app.models.module import Module
+    from app.models.question import Question
 
 # Geçerli ders türleri
 LESSON_TYPES = ("quiz", "code_completion", "code_editor", "mini_project")

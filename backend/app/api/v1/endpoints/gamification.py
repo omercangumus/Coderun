@@ -1,30 +1,29 @@
 # Coderun backend — gamification endpoint'leri; liderboard, istatistik, rozet ve seviye API'leri.
 
 from fastapi import APIRouter, Depends, Query
+from redis.asyncio import Redis
 
-from backend.app.api.v1.dependencies import (
+from app.api.v1.dependencies import (
     get_badge_repository,
     get_current_active_user,
     get_progress_repository,
     get_redis,
     get_user_repository,
 )
-from backend.app.core.config import settings
-from backend.app.models.user import User
-from backend.app.repositories.badge_repository import BadgeRepository
-from backend.app.repositories.progress_repository import ProgressRepository
-from backend.app.repositories.user_repository import UserRepository
-from backend.app.schemas.gamification import (
+from app.core.config import settings
+from app.models.user import User
+from app.repositories.badge_repository import BadgeRepository
+from app.repositories.progress_repository import ProgressRepository
+from app.repositories.user_repository import UserRepository
+from app.schemas.gamification import (
     BadgeResponse,
     LeaderboardResponse,
     LevelProgressResponse,
     StreakResponse,
     UserStatsResponse,
 )
-from backend.app.services import gamification_service
-from backend.app.services.leaderboard_service import get_weekly_leaderboard
-
-from redis.asyncio import Redis
+from app.services import gamification_service
+from app.services.leaderboard_service import get_weekly_leaderboard
 
 router = APIRouter(prefix="/gamification", tags=["gamification"])
 

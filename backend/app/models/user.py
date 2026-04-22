@@ -6,7 +6,7 @@ from datetime import date
 from sqlalchemy import Boolean, Date, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.models.base import BaseModel
+from app.models.base import BaseModel
 
 
 class User(BaseModel):

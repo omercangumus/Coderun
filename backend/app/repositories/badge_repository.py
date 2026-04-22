@@ -6,9 +6,9 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.user_badge import UserBadge
-from backend.app.repositories.base_repository import BaseRepository
-from backend.app.schemas.gamification import BadgeType
+from app.models.user_badge import UserBadge
+from app.repositories.base_repository import BaseRepository
+from app.schemas.gamification import BadgeType
 
 
 class BadgeRepository(BaseRepository[UserBadge]):

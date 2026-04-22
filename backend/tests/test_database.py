@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 @pytest.mark.asyncio
 async def test_get_db_yields_session() -> None:
     """get_db should yield AsyncSession."""
-    from backend.app.core.database import get_db
+    from app.core.database import get_db
 
     gen = get_db()
     try:
@@ -20,7 +20,7 @@ async def test_get_db_yields_session() -> None:
 @pytest.mark.asyncio
 async def test_get_db_handles_exception() -> None:
     """get_db should rollback on exception."""
-    from backend.app.core.database import get_db
+    from app.core.database import get_db
 
     gen = get_db()
     try:
@@ -35,7 +35,7 @@ async def test_get_db_handles_exception() -> None:
 @pytest.mark.asyncio
 async def test_engine_configuration() -> None:
     """Engine should be configured correctly."""
-    from backend.app.core.database import engine
+    from app.core.database import engine
     
     assert engine is not None
     assert engine.pool is not None
@@ -44,7 +44,7 @@ async def test_engine_configuration() -> None:
 @pytest.mark.asyncio
 async def test_session_factory() -> None:
     """AsyncSessionLocal should create sessions."""
-    from backend.app.core.database import AsyncSessionLocal
+    from app.core.database import AsyncSessionLocal
     
     async with AsyncSessionLocal() as session:
         assert isinstance(session, AsyncSession)
@@ -53,7 +53,7 @@ async def test_session_factory() -> None:
 @pytest.mark.asyncio
 async def test_base_declarative() -> None:
     """Base should be a valid declarative base."""
-    from backend.app.core.database import Base
+    from app.core.database import Base
     
     assert hasattr(Base, "metadata")
     assert hasattr(Base, "registry")
@@ -62,7 +62,7 @@ async def test_base_declarative() -> None:
 @pytest.mark.asyncio
 async def test_get_db_rollback_on_exception() -> None:
     """get_db should rollback on exception and re-raise."""
-    from backend.app.core.database import get_db
+    from app.core.database import get_db
 
     gen = get_db()
     try:

@@ -1,44 +1,63 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { loginSchema, type LoginFormData } from '@/lib/utils/validators';
 
 export function LoginForm() {
   const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: { email?: string; password?: string } = {};
 
-  const onSubmit = (data: LoginFormData) => {
-    login(data);
+    if (!email.trim()) {
+      newErrors.email = 'E-posta zorunludur';
+    }
+    if (!password.trim()) {
+      newErrors.password = 'Şifre zorunludur';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    login({ email: email.trim(), password });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input
         id="email"
-        type="email"
+        type="text"
         label="E-posta"
         placeholder="ornek@email.com"
-        error={errors.email?.message}
-        {...register('email')}
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+        }}
+        error={errors.email}
+        autoComplete="email"
       />
       <Input
         id="password"
         type="password"
         label="Şifre"
         placeholder="••••••••"
-        error={errors.password?.message}
-        {...register('password')}
+        value={password}
+        onChange={(e) => {
+          setPassword(e.target.value);
+          if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+        }}
+        error={errors.password}
+        autoComplete="current-password"
       />
       <Button type="submit" size="lg" isLoading={isLoading} className="w-full mt-2">
         Giriş Yap

@@ -6,8 +6,8 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict
 
-from backend.app.schemas.gamification import BadgeResponse
-from backend.app.schemas.question import QuestionResponse
+from app.schemas.gamification import BadgeResponse
+from app.schemas.question import QuestionResponse
 
 
 class LessonBase(BaseModel):

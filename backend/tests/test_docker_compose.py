@@ -83,10 +83,10 @@ def test_compose_file_exists():
 
 
 def test_required_services_defined():
-    """backend, web, db, redis, ollama servisleri tanımlı olmalı."""
+    """backend, web, db, redis servisleri tanımlı olmalı."""
     compose = load_compose()
     services = set(compose.get("services", {}).keys())
-    required = {"backend", "web", "db", "redis", "ollama"}
+    required = {"backend", "web", "db", "redis"}
     assert required.issubset(services), f"Eksik servisler: {required - services}"
 
 
@@ -181,27 +181,15 @@ def test_redis_port():
     assert "6379:6379" in compose["services"]["redis"].get("ports", [])
 
 
-def test_ollama_image():
-    """ollama servisi ollama/ollama imajını kullanmalı."""
-    compose = load_compose()
-    assert compose["services"]["ollama"]["image"] == "ollama/ollama"
-
-
-def test_ollama_port():
-    """ollama servisi 11434 portunu expose etmeli."""
-    compose = load_compose()
-    assert "11434:11434" in compose["services"]["ollama"].get("ports", [])
-
-
 # ---------------------------------------------------------------------------
 # Unit testler: Named volumes
 # ---------------------------------------------------------------------------
 
 def test_named_volumes_defined():
-    """postgres_data, redis_data, ollama_data named volume'ları tanımlı olmalı."""
+    """postgres_data, redis_data named volume'ları tanımlı olmalı."""
     compose = load_compose()
     volumes = set(compose.get("volumes", {}).keys())
-    required = {"postgres_data", "redis_data", "ollama_data"}
+    required = {"postgres_data", "redis_data"}
     assert required.issubset(volumes), f"Eksik volume'lar: {required - volumes}"
 
 
@@ -217,10 +205,3 @@ def test_redis_uses_named_volume():
     compose = load_compose()
     redis_volumes = compose["services"]["redis"].get("volumes", [])
     assert any("redis_data" in str(v) for v in redis_volumes)
-
-
-def test_ollama_uses_named_volume():
-    """ollama servisi ollama_data named volume'unu kullanmalı."""
-    compose = load_compose()
-    ollama_volumes = compose["services"]["ollama"].get("volumes", [])
-    assert any("ollama_data" in str(v) for v in ollama_volumes)

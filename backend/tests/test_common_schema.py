@@ -1,6 +1,6 @@
 # Coderun backend — common schema testleri.
 
-from backend.app.schemas.common import PaginatedResponse
+from app.schemas.common import PaginatedResponse
 
 
 class TestPaginatedResponse:

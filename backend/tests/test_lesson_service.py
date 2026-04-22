@@ -8,10 +8,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from backend.app.models.lesson import Lesson
-from backend.app.models.question import Question
-from backend.app.models.user_progress import UserProgress
-from backend.app.services.lesson_service import (
+from app.models.lesson import Lesson
+from app.models.question import Question
+from app.models.user_progress import UserProgress
+from app.services.lesson_service import (
     get_lesson_detail,
     get_lessons_by_module,
     submit_lesson_answer,
@@ -190,7 +190,7 @@ class TestSubmitLessonAnswer:
         mock_badge_repo.has_badge.return_value = False
         
         # Submit answers
-        from backend.app.schemas.progress import AnswerSubmit
+        from app.schemas.progress import AnswerSubmit
         
         answers = [AnswerSubmit(question_id=question_id, answer="A")]
         
@@ -305,7 +305,7 @@ class TestSubmitLessonAnswer:
         mock_badge_repo.has_badge.return_value = False
         
         # Submit answers
-        from backend.app.schemas.progress import AnswerSubmit
+        from app.schemas.progress import AnswerSubmit
         
         answers = [AnswerSubmit(question_id=question_id, answer="A")]
         
@@ -359,7 +359,7 @@ class TestSubmitLessonAnswer:
         mock_progress_repo.get_user_module_progress.return_value = []
         
         # Submit wrong answers (only 1 correct out of 4 = 25%)
-        from backend.app.schemas.progress import AnswerSubmit
+        from app.schemas.progress import AnswerSubmit
         
         answers = [
             AnswerSubmit(question_id=questions[0].id, answer="A"),  # Correct

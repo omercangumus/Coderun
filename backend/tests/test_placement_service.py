@@ -6,12 +6,12 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
-from backend.app.services.placement_service import (
+from app.services.placement_service import (
     calculate_placement,
     get_placement_questions,
     submit_placement_test,
 )
-from backend.app.schemas.progress import AnswerSubmit
+from app.schemas.progress import AnswerSubmit
 
 
 class TestCalculatePlacement:
@@ -67,8 +67,8 @@ class TestGetPlacementQuestions:
 
     async def test_get_placement_questions_success(self, db_session) -> None:
         """Modül bulunduğunda rastgele sorular döndürmeli."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
 
         module_repo = ModuleRepository(db_session)
         question_repo = QuestionRepository(db_session)
@@ -84,8 +84,8 @@ class TestGetPlacementQuestions:
 
     async def test_get_placement_questions_module_not_found(self, db_session) -> None:
         """Modül bulunamadığında 404 HTTPException fırlatmalı."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
 
         module_repo = ModuleRepository(db_session)
         question_repo = QuestionRepository(db_session)
@@ -98,8 +98,8 @@ class TestGetPlacementQuestions:
 
     async def test_get_placement_questions_random_selection(self, db_session) -> None:
         """Sorular rastgele seçilmeli (her çağrıda farklı olabilir)."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
 
         module_repo = ModuleRepository(db_session)
         question_repo = QuestionRepository(db_session)
@@ -118,12 +118,12 @@ class TestSubmitPlacementTest:
 
     async def test_submit_placement_test_success(self, db_session) -> None:
         """Doğru cevaplar verildiğinde yerleştirme yapmalı."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.models.user import User
-        from backend.app.core.security import hash_password
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.models.user import User
+        from app.core.security import hash_password
 
         # Test kullanıcısı oluştur
         uid = uuid4().hex[:8]
@@ -162,12 +162,12 @@ class TestSubmitPlacementTest:
 
     async def test_submit_placement_test_auto_complete_lessons(self, db_session) -> None:
         """Atlanan dersler otomatik tamamlanmalı."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.models.user import User
-        from backend.app.core.security import hash_password
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.models.user import User
+        from app.core.security import hash_password
 
         uid = uuid4().hex[:8]
         user = User(
@@ -209,10 +209,10 @@ class TestSubmitPlacementTest:
 
     async def test_submit_placement_test_module_not_found(self, db_session) -> None:
         """Modül bulunamadığında 404 HTTPException fırlatmalı."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.lesson_repository import LessonRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.lesson_repository import LessonRepository
 
         module_repo = ModuleRepository(db_session)
         question_repo = QuestionRepository(db_session)
@@ -234,12 +234,12 @@ class TestSubmitPlacementTest:
 
     async def test_submit_placement_test_zero_answers(self, db_session) -> None:
         """Hiç cevap verilmediğinde 0% ve 1. dersten başlamalı."""
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.question_repository import QuestionRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.models.user import User
-        from backend.app.core.security import hash_password
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.question_repository import QuestionRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.models.user import User
+        from app.core.security import hash_password
 
         uid = uuid4().hex[:8]
         user = User(

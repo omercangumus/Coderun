@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.models.base import BaseModel
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
-    from backend.app.models.lesson import Lesson
+    from app.models.lesson import Lesson
 
 
 class Module(BaseModel):

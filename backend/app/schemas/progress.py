@@ -4,7 +4,7 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict
 
-from backend.app.schemas.question import QuestionResponse
+from app.schemas.question import QuestionResponse
 
 
 class AnswerSubmit(BaseModel):

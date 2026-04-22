@@ -4,10 +4,10 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.module import Module
-from backend.app.models.lesson import Lesson
-from backend.app.models.question import Question
-from backend.app.core.seed import seed_database
+from app.models.module import Module
+from app.models.lesson import Lesson
+from app.models.question import Question
+from app.core.seed import seed_database
 
 
 @pytest.mark.asyncio
@@ -72,7 +72,7 @@ async def test_seed_database_rollback_on_error(db_session: AsyncSession) -> None
         
         with pytest.raises(Exception):
             # Create a new session for this test
-            from backend.app.core.database import AsyncSessionLocal
+            from app.core.database import AsyncSessionLocal
             async with AsyncSessionLocal() as new_session:
                 # Delete all modules to trigger seed
                 await new_session.execute(select(Module).limit(0))
@@ -84,7 +84,7 @@ async def test_seed_database_rollback_on_error(db_session: AsyncSession) -> None
 @pytest.mark.asyncio
 async def test_seed_data_structure() -> None:
     """SEED_DATA should have correct structure."""
-    from backend.app.core.seed import SEED_DATA
+    from app.core.seed import SEED_DATA
     
     assert len(SEED_DATA) > 0
     

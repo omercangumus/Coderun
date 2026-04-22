@@ -16,6 +16,9 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    defaultValues: { email: '', username: '', password: '', confirmPassword: '' },
   });
 
   const onSubmit = (data: RegisterFormData) => {

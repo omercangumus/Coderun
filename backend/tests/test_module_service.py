@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
-from backend.app.services import module_service
+from app.services import module_service
 
 
 @pytest.mark.asyncio
@@ -14,7 +14,7 @@ class TestGetAllModules:
 
     async def test_get_all_modules_returns_list(self, db_session):
         """Tüm aktif modülleri döndürür."""
-        from backend.app.repositories.module_repository import ModuleRepository
+        from app.repositories.module_repository import ModuleRepository
 
         module_repo = ModuleRepository(db_session)
         modules = await module_service.get_all_modules(module_repo)
@@ -30,7 +30,7 @@ class TestGetModuleDetail:
 
     async def test_get_module_detail_returns_lessons(self, db_session):
         """Slug ile modül detayını derslerle birlikte döndürür."""
-        from backend.app.repositories.module_repository import ModuleRepository
+        from app.repositories.module_repository import ModuleRepository
 
         module_repo = ModuleRepository(db_session)
         module = await module_service.get_module_detail("python", module_repo)
@@ -41,7 +41,7 @@ class TestGetModuleDetail:
 
     async def test_get_module_detail_not_found(self, db_session):
         """Olmayan slug için 404 döner."""
-        from backend.app.repositories.module_repository import ModuleRepository
+        from app.repositories.module_repository import ModuleRepository
 
         module_repo = ModuleRepository(db_session)
 
@@ -60,10 +60,10 @@ class TestGetModuleProgress:
         self, db_session, test_user
     ):
         """Kullanıcının modül ilerlemesini döndürür."""
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.user_repository import UserRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.user_repository import UserRepository
 
         user_repo = UserRepository(db_session)
         module_repo = ModuleRepository(db_session)
@@ -90,10 +90,10 @@ class TestGetModuleProgress:
 
     async def test_get_module_progress_not_found(self, db_session, test_user):
         """Olmayan modül için 404 döner."""
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.user_repository import UserRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.user_repository import UserRepository
 
         user_repo = UserRepository(db_session)
         module_repo = ModuleRepository(db_session)
@@ -121,10 +121,10 @@ class TestGetModuleProgressBySlug:
         self, db_session, test_user
     ):
         """Slug ile modül ilerlemesini döndürür."""
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.user_repository import UserRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.user_repository import UserRepository
 
         user_repo = UserRepository(db_session)
         module_repo = ModuleRepository(db_session)
@@ -146,10 +146,10 @@ class TestGetModuleProgressBySlug:
         self, db_session, test_user
     ):
         """Olmayan slug için 404 döner."""
-        from backend.app.repositories.lesson_repository import LessonRepository
-        from backend.app.repositories.module_repository import ModuleRepository
-        from backend.app.repositories.progress_repository import ProgressRepository
-        from backend.app.repositories.user_repository import UserRepository
+        from app.repositories.lesson_repository import LessonRepository
+        from app.repositories.module_repository import ModuleRepository
+        from app.repositories.progress_repository import ProgressRepository
+        from app.repositories.user_repository import UserRepository
 
         user_repo = UserRepository(db_session)
         module_repo = ModuleRepository(db_session)

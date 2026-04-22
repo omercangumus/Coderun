@@ -9,14 +9,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from jose import jwt
 
-from backend.app.core.config import settings
-from backend.app.core.security import (
+from app.core.config import settings
+from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
 )
-from backend.app.schemas.auth import UserCreate
-from backend.app.services.auth_service import (
+from app.schemas.auth import UserCreate
+from app.services.auth_service import (
     get_current_user,
     login_user,
     refresh_access_token,
@@ -106,7 +106,7 @@ class TestLoginUser:
     @pytest.mark.asyncio
     async def test_login_user_success(self) -> None:
         """Doğru bilgilerle kullanıcı giriş yapmalı."""
-        from backend.app.core.security import hash_password
+        from app.core.security import hash_password
         
         mock_user_repo = AsyncMock()
         
@@ -131,7 +131,7 @@ class TestLoginUser:
     async def test_login_user_wrong_password(self) -> None:
         """Yanlış şifre ile giriş başarısız olmalı."""
         from fastapi import HTTPException
-        from backend.app.core.security import hash_password
+        from app.core.security import hash_password
         
         mock_user_repo = AsyncMock()
         
@@ -172,7 +172,7 @@ class TestLoginUser:
     async def test_login_user_inactive(self) -> None:
         """Pasif kullanıcı giriş yapamamalı."""
         from fastapi import HTTPException
-        from backend.app.core.security import hash_password
+        from app.core.security import hash_password
         
         mock_user_repo = AsyncMock()
         

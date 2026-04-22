@@ -9,7 +9,7 @@ from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHas
 from jose import JWTError, jwt  # type: ignore[import-untyped]
 
 # local
-from backend.app.core.config import settings
+from app.core.config import settings
 
 # ---------------------------------------------------------------------------
 # Argon2 PasswordHasher — modern, güvenli parola hashleme

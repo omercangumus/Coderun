@@ -9,16 +9,16 @@ from fastapi.security import OAuth2PasswordBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.core.config import settings
-from backend.app.core.database import AsyncSessionLocal
-from backend.app.models.user import User
-from backend.app.repositories.badge_repository import BadgeRepository
-from backend.app.repositories.lesson_repository import LessonRepository
-from backend.app.repositories.module_repository import ModuleRepository
-from backend.app.repositories.progress_repository import ProgressRepository
-from backend.app.repositories.question_repository import QuestionRepository
-from backend.app.repositories.user_repository import UserRepository
-from backend.app.services.auth_service import get_current_user as resolve_current_user
+from app.core.config import settings
+from app.core.database import AsyncSessionLocal
+from app.models.user import User
+from app.repositories.badge_repository import BadgeRepository
+from app.repositories.lesson_repository import LessonRepository
+from app.repositories.module_repository import ModuleRepository
+from app.repositories.progress_repository import ProgressRepository
+from app.repositories.question_repository import QuestionRepository
+from app.repositories.user_repository import UserRepository
+from app.services.auth_service import get_current_user as resolve_current_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -88,7 +88,7 @@ async def get_redis() -> Redis | None:
     Global Redis client'ı döner. Redis bağlantısı yoksa None döner;
     çağıran kod None kontrolü yapmalıdır.
     """
-    from backend.app.core.redis import get_redis as _get_redis  # noqa: PLC0415
+    from app.core.redis import get_redis as _get_redis  # noqa: PLC0415
     async for client in _get_redis():
         return client
     return None

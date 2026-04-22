@@ -2,24 +2,24 @@
 
 from fastapi import APIRouter, Depends
 
-from backend.app.api.v1.dependencies import (
+from app.api.v1.dependencies import (
     get_current_active_user,
     get_lesson_repository,
     get_module_repository,
     get_progress_repository,
     get_question_repository,
 )
-from backend.app.models.user import User
-from backend.app.repositories.lesson_repository import LessonRepository
-from backend.app.repositories.module_repository import ModuleRepository
-from backend.app.repositories.progress_repository import ProgressRepository
-from backend.app.repositories.question_repository import QuestionRepository
-from backend.app.schemas.progress import (
+from app.models.user import User
+from app.repositories.lesson_repository import LessonRepository
+from app.repositories.module_repository import ModuleRepository
+from app.repositories.progress_repository import ProgressRepository
+from app.repositories.question_repository import QuestionRepository
+from app.schemas.progress import (
     AnswerSubmit,
     PlacementResultResponse,
     PlacementTestResponse,
 )
-from backend.app.services import placement_service
+from app.services import placement_service
 
 router = APIRouter(prefix="/placement", tags=["placement"])
 

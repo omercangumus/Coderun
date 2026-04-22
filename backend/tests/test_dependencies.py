@@ -9,13 +9,13 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.api.v1.dependencies import (
+from app.api.v1.dependencies import (
     get_current_active_user,
     get_current_user,
     get_db,
     get_redis,
 )
-from backend.app.models.user import User
+from app.models.user import User
 
 
 @pytest.mark.asyncio
@@ -108,7 +108,7 @@ async def test_get_current_active_user_active_user() -> None:
 @pytest.mark.asyncio
 async def test_get_db_rollback_on_exception() -> None:
     """get_db exception durumunda rollback yapar."""
-    from backend.app.api.v1.dependencies import get_db
+    from app.api.v1.dependencies import get_db
 
     gen = get_db()
     try:

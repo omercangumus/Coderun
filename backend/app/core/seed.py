@@ -6,9 +6,9 @@ from uuid import uuid4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.lesson import Lesson
-from backend.app.models.module import Module
-from backend.app.models.question import Question
+from app.models.lesson import Lesson
+from app.models.module import Module
+from app.models.question import Question
 
 logger = logging.getLogger(__name__)
 

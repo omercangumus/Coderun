@@ -8,17 +8,17 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 
-from backend.app.core.config import settings
-from backend.app.core.security import (
+from app.core.config import settings
+from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
     hash_password,
     verify_password,
 )
-from backend.app.models.user import User
-from backend.app.schemas.auth import TokenResponse, UserCreate
-from backend.app.schemas.user import UserResponse
+from app.models.user import User
+from app.schemas.auth import TokenResponse, UserCreate
+from app.schemas.user import UserResponse
 
 
 class UserRepositoryProtocol(Protocol):

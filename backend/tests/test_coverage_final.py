@@ -16,7 +16,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_award_xp_user_not_found() -> None:
     """award_xp_and_update_streak: kullanıcı bulunamazsa varsayılan sonuç döner (satır 233)."""
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -41,7 +41,7 @@ async def test_award_xp_user_not_found() -> None:
 async def test_award_xp_with_7day_streak_bonus() -> None:
     """award_xp_and_update_streak: 7 günlük streak bonusu uygulanır (satır 294)."""
     from datetime import date, timedelta
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -75,7 +75,7 @@ async def test_award_xp_with_7day_streak_bonus() -> None:
 async def test_award_xp_with_30day_streak_bonus() -> None:
     """award_xp_and_update_streak: 30 günlük streak bonusu uygulanır (satır 296)."""
     from datetime import date, timedelta
-    from backend.app.services.gamification_service import award_xp_and_update_streak
+    from app.services.gamification_service import award_xp_and_update_streak
 
     mock_user_repo = AsyncMock()
     mock_badge_repo = AsyncMock()
@@ -111,11 +111,11 @@ async def test_award_xp_with_30day_streak_bonus() -> None:
 @pytest.mark.asyncio
 async def test_submit_lesson_update_existing_already_completed() -> None:
     """submit_lesson_answer: zaten tamamlanmış ders tekrar tamamlanırsa update yapılır (satır 190-197)."""
-    from backend.app.models.lesson import Lesson
-    from backend.app.models.question import Question
-    from backend.app.models.user_progress import UserProgress
-    from backend.app.schemas.progress import AnswerSubmit
-    from backend.app.services.lesson_service import submit_lesson_answer
+    from app.models.lesson import Lesson
+    from app.models.question import Question
+    from app.models.user_progress import UserProgress
+    from app.schemas.progress import AnswerSubmit
+    from app.services.lesson_service import submit_lesson_answer
 
     mock_lesson_repo = AsyncMock()
     mock_question_repo = AsyncMock()
@@ -174,10 +174,10 @@ async def test_submit_lesson_update_existing_already_completed() -> None:
 @pytest.mark.asyncio
 async def test_submit_lesson_failed_message_format() -> None:
     """submit_lesson_answer: başarısız ders için doğru mesaj döner (satır 254)."""
-    from backend.app.models.lesson import Lesson
-    from backend.app.models.question import Question
-    from backend.app.schemas.progress import AnswerSubmit
-    from backend.app.services.lesson_service import submit_lesson_answer
+    from app.models.lesson import Lesson
+    from app.models.question import Question
+    from app.schemas.progress import AnswerSubmit
+    from app.services.lesson_service import submit_lesson_answer
 
     mock_lesson_repo = AsyncMock()
     mock_question_repo = AsyncMock()
@@ -256,13 +256,13 @@ def test_main_no_wildcard_cors_branch() -> None:
 @pytest.mark.asyncio
 async def test_get_db_exception_triggers_rollback() -> None:
     """get_db: exception durumunda rollback çağrılır (satır 31-33)."""
-    from backend.app.core.database import AsyncSessionLocal
+    from app.core.database import AsyncSessionLocal
 
     # Use real session to test rollback path
     async with AsyncSessionLocal() as session:
         try:
             # Simulate exception inside get_db generator
-            from backend.app.api.v1.dependencies import get_db
+            from app.api.v1.dependencies import get_db
             gen = get_db()
             db = await gen.__anext__()
             assert db is not None
@@ -283,7 +283,7 @@ async def test_get_db_exception_triggers_rollback() -> None:
 async def test_seed_database_logs_success(db_session) -> None:
     """seed_database: başarılı seed sonrası log mesajı yazılır (satır 659-662)."""
     import logging
-    from backend.app.core.seed import seed_database
+    from app.core.seed import seed_database
 
     # Seed already ran in conftest, run again to hit the "already exists" branch
     with patch("backend.app.core.seed.logger") as mock_logger:
@@ -302,8 +302,8 @@ async def test_get_user_stats_streak_30_milestone(
     test_user: dict[str, str],
 ) -> None:
     """get_user_stats: streak >= 30 ise next_milestone = streak + 30 (satır 74-105)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.core.database import AsyncSessionLocal
 
     # Login
     login_response = await client.post(
@@ -335,8 +335,8 @@ async def test_get_user_stats_streak_7_milestone(
     test_user: dict[str, str],
 ) -> None:
     """get_user_stats: streak < 7 ise next_milestone = 7 (satır 74-105)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.core.database import AsyncSessionLocal
 
     # Login
     login_response = await client.post(
@@ -366,8 +366,8 @@ async def test_get_streak_endpoint_30_day(
     test_user: dict[str, str],
 ) -> None:
     """get_streak: streak >= 30 ise next_milestone = streak + 30 (satır 134)."""
-    from backend.app.repositories.user_repository import UserRepository
-    from backend.app.core.database import AsyncSessionLocal
+    from app.repositories.user_repository import UserRepository
+    from app.core.database import AsyncSessionLocal
 
     login_response = await client.post(
         "/api/v1/auth/login",
@@ -398,7 +398,7 @@ async def test_health_redis_ping_awaitable() -> None:
     """health_check: redis.ping() awaitable ise await edilir (satır 43)."""
     from httpx import AsyncClient, ASGITransport
     from unittest.mock import AsyncMock, MagicMock
-    from backend.app.main import app
+    from app.main import app
 
     mock_redis = MagicMock()
     # Make ping return an awaitable
@@ -418,7 +418,7 @@ async def test_health_redis_ping_awaitable() -> None:
 @pytest.mark.asyncio
 async def test_get_user_stats_no_ongoing_module(db_session) -> None:
     """get_user_stats: devam eden modül yoksa ongoing_module None döner (satır 121)."""
-    from backend.app.repositories.progress_repository import ProgressRepository
+    from app.repositories.progress_repository import ProgressRepository
 
     progress_repo = ProgressRepository(db_session)
     # New user with no progress
@@ -437,7 +437,7 @@ async def test_get_user_stats_no_ongoing_module(db_session) -> None:
 async def test_update_streak_not_found_raises() -> None:
     """update_streak: kullanıcı bulunamazsa ValueError fırlatır (satır 102)."""
     from datetime import date
-    from backend.app.repositories.user_repository import UserRepository
+    from app.repositories.user_repository import UserRepository
 
     mock_session = AsyncMock()
     user_repo = UserRepository(mock_session)
@@ -454,7 +454,7 @@ async def test_update_streak_not_found_raises() -> None:
 def test_user_create_password_no_uppercase() -> None:
     """UserCreate: büyük harf içermeyen şifre reddedilir (satır 23)."""
     from pydantic import ValidationError
-    from backend.app.schemas.auth import UserCreate
+    from app.schemas.auth import UserCreate
 
     with pytest.raises(ValidationError) as exc_info:
         UserCreate(
@@ -473,7 +473,7 @@ def test_badge_response_from_badge_known_type() -> None:
     """BadgeResponse.from_badge: bilinen badge_type için meta kullanılır (satır 169-170)."""
     from datetime import datetime, timezone
     from unittest.mock import MagicMock
-    from backend.app.schemas.gamification import BadgeResponse
+    from app.schemas.gamification import BadgeResponse
 
     mock_badge = MagicMock()
     mock_badge.id = uuid.uuid4()
@@ -494,7 +494,7 @@ def test_badge_response_from_badge_known_type() -> None:
 async def test_get_module_detail_with_lessons_none() -> None:
     """get_module_detail: get_with_lessons None dönerse 404 fırlatır (satır 54)."""
     from fastapi import HTTPException
-    from backend.app.services.module_service import get_module_detail
+    from app.services.module_service import get_module_detail
 
     mock_module_repo = AsyncMock()
     mock_module = MagicMock()

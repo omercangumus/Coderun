@@ -20,9 +20,9 @@ os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only-32ch")
 os.environ.setdefault("ENVIRONMENT", "development")
 
-from backend.app.api.v1.dependencies import get_db
-from backend.app.core.database import Base
-from backend.app.main import app
+from app.api.v1.dependencies import get_db
+from app.core.database import Base
+from app.main import app
 from backend.app import models as _models
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./tests/test_auth.db"
@@ -83,8 +83,8 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 @pytest_asyncio.fixture(autouse=True)
 async def seed_test_data(db_session: AsyncSession) -> None:
     """Test veritabanına seed data ekler (her testten önce otomatik çalışır)."""
-    from backend.app.core.seed import seed_database
-    from backend.app.models.module import Module
+    from app.core.seed import seed_database
+    from app.models.module import Module
     from sqlalchemy import select
 
     # Seed data zaten varsa tekrar ekleme

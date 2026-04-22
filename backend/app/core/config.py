@@ -22,8 +22,9 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     AUTH_INVALID_CREDENTIALS_MESSAGE: str = "Geçersiz kimlik bilgileri"
 
-    # --- Harici Servisler ---
-    OLLAMA_URL: str = "http://localhost:11434"
+    # --- Harici Servisler — Groq AI ---
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.1-70b-versatile"  # llama-3.1-70b-versatile, mixtral-8x7b-32768
 
     # --- Uygulama ---
     ENVIRONMENT: str = "development"

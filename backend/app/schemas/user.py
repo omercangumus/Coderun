@@ -15,16 +15,6 @@ class UserBase(BaseModel):
     username: str
 
 
-class UserCreate(UserBase):
-    """Yeni kullanıcı oluşturma isteği için şema.
-
-    Attributes:
-        password: Düz metin parola; yalnızca giriş sırasında kullanılır, saklanmaz.
-    """
-
-    password: str
-
-
 class UserUpdate(BaseModel):
     """Kullanıcı bilgilerini güncelleme isteği için şema.
 

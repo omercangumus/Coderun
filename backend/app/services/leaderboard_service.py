@@ -6,8 +6,8 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
-from backend.app.core.config import settings
-from backend.app.schemas.gamification import LeaderboardEntry, LeaderboardResponse
+from app.core.config import settings
+from app.schemas.gamification import LeaderboardEntry, LeaderboardResponse
 
 logger = logging.getLogger(__name__)
 

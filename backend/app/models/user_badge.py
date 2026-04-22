@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
-from backend.app.models.base import BaseModel
+from app.models.base import BaseModel
 
 # Geçerli rozet türleri
 BADGE_TYPES = (

@@ -8,7 +8,7 @@ from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.models.base import BaseModel
+from app.models.base import BaseModel
 
 
 class UserProgress(BaseModel):

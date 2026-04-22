@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from backend.app.schemas.lesson import LessonResponse
+from app.schemas.lesson import LessonResponse
 
 
 class ModuleBase(BaseModel):

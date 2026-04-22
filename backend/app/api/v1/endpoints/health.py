@@ -7,8 +7,8 @@ from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.api.v1.dependencies import get_db, get_redis
-from backend.app.core.config import settings
+from app.api.v1.dependencies import get_db, get_redis
+from app.core.config import settings
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
