@@ -11,13 +11,13 @@ const COOKIE_OPTIONS = {
 
 export const authApi = {
   async login(data: LoginRequest): Promise<TokenResponse> {
-    // Backend OAuth2 beklediği için FormData gönder
-    const formData = new FormData();
+    // Backend OAuth2 beklediği için URLSearchParams (application/x-www-form-urlencoded) gönder
+    const formData = new URLSearchParams();
     formData.append('username', data.email);
     formData.append('password', data.password);
 
     const response = await axiosClient.post(AUTH_ENDPOINTS.login, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
     // Backend snake_case döndürüyor, camelCase'e çevir
