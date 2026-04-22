@@ -20,7 +20,8 @@ def _get_week_key() -> str:
     Returns:
         Haftalık liderboard Redis key'i.
     """
-    today = date.today()
+    from datetime import datetime, timezone
+    today = datetime.now(timezone.utc).date()
     year, week, _ = today.isocalendar()
     return f"leaderboard:weekly:{year}-{week:02d}"
 
@@ -31,7 +32,8 @@ def _get_week_bounds() -> tuple[date, date]:
     Returns:
         (week_start, week_end) tuple'ı (Pazartesi–Pazar).
     """
-    today = date.today()
+    from datetime import datetime, timezone
+    today = datetime.now(timezone.utc).date()
     week_start = today - timedelta(days=today.weekday())
     week_end = week_start + timedelta(days=6)
     return week_start, week_end

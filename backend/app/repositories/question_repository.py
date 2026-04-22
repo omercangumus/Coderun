@@ -42,6 +42,24 @@ class QuestionRepository(BaseRepository[Question]):
         )
         return list(result.scalars().all())
 
+    async def get_by_ids(self, question_ids: list[UUID]) -> list[Question]:
+        """Birden fazla UUID'ye göre soruları tek sorguda döner.
+
+        N+1 sorgu problemini önlemek için kullanılır.
+
+        Args:
+            question_ids: Aranacak soru UUID'lerinin listesi.
+
+        Returns:
+            Bulunan Question nesnelerinin listesi.
+        """
+        if not question_ids:
+            return []
+        result = await self._session.execute(
+            select(Question).where(Question.id.in_(question_ids))
+        )
+        return list(result.scalars().all())
+
     async def get_random_by_module(
         self,
         module_id: UUID,

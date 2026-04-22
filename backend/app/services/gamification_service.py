@@ -105,7 +105,7 @@ def is_streak_alive(last_active_date: date | None) -> bool:
         return False
     now_utc = datetime.now(timezone.utc).date()
     delta = now_utc - last_active_date
-    freeze_days = settings.STREAK_FREEZE_HOURS / 24
+    freeze_days = int(settings.STREAK_FREEZE_HOURS / 24)
     return delta.days <= freeze_days
 
 

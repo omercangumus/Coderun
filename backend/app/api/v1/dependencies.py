@@ -24,7 +24,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """API istekleri için async veritabanı oturumu sağlar."""
+    """API istekleri için async veritabanı oturumu sağlar.
+
+    Her istek için yeni bir AsyncSession açar; istek tamamlandığında
+    oturumu kapatır. Herhangi bir istisna durumunda rollback uygular.
+
+    Yields:
+        AsyncSession: Aktif veritabanı oturumu.
+    """
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -82,9 +89,14 @@ async def get_redis() -> Redis | None:
     çağıran kod None kontrolü yapmalıdır.
     """
     from backend.app.core.redis import get_redis as _get_redis  # noqa: PLC0415
-    async for client in _get_redis():
+    gen = _get_redis()
+    try:
+        client = await gen.__anext__()
         return client
-    return None
+    except StopAsyncIteration:
+        return None
+    finally:
+        await gen.aclose()
 
 
 async def get_current_user(

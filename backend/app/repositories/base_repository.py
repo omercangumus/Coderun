@@ -122,9 +122,6 @@ class BaseRepository(Generic[T], ABC):
             Exception: Veritabanı hatası durumunda rollback yapılır ve hata yeniden fırlatılır.
         """
         try:
-            obj = await self.get_by_id(id)
-            if obj is None:
-                return False
             result = await self._session.execute(
                 delete(self._model).where(self._model.id == id)  # type: ignore[attr-defined]
             )

@@ -66,28 +66,36 @@ app = FastAPI(
 # Middleware
 # ---------------------------------------------------------------------------
 
-# Güvenlik: allow_origins=["*"] ile allow_credentials=True birlikte kullanılamaz.
-# Production'da ALLOWED_ORIGINS'e gerçek domain'ler girilmeli.
-_allow_origins = settings.ALLOWED_ORIGINS
-# allow_credentials=True is incompatible with allow_origins=["*"]
-_has_wildcard = "*" in _allow_origins
 
-if _has_wildcard:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex=r"http://localhost:\d+",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=_allow_origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+def _configure_cors(application: FastAPI, allow_origins: list[str]) -> None:
+    """CORS middleware'i yapılandırır.
+
+    Güvenlik: allow_origins=["*"] ile allow_credentials=True birlikte kullanılamaz.
+    Production'da ALLOWED_ORIGINS'e gerçek domain'ler girilmeli.
+
+    Args:
+        application: FastAPI uygulama örneği.
+        allow_origins: İzin verilen origin listesi.
+    """
+    if "*" in allow_origins:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origin_regex=r"http://localhost:\d+",
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+    else:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=allow_origins,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+
+_configure_cors(app, settings.ALLOWED_ORIGINS)
 
 # ---------------------------------------------------------------------------
 # Router'lar

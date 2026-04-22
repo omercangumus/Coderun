@@ -135,10 +135,15 @@ async def submit_placement_test(
 
     # Cevaplanan soruları doğrula
     answer_map = {a.question_id: a.answer for a in answers}
+    question_ids = list(answer_map.keys())
+
+    # N+1 sorguyu önlemek için tüm soruları tek sorguda çek
+    questions = await question_repo.get_by_ids(question_ids)
+    question_map = {q.id: q for q in questions}
 
     correct_count = 0
     for question_id, user_answer in answer_map.items():
-        question = await question_repo.get_by_id(question_id)
+        question = question_map.get(question_id)
         if question is not None:
             if user_answer.strip().lower() == question.correct_answer.strip().lower():
                 correct_count += 1

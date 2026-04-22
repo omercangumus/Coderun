@@ -9,9 +9,11 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 async def test_register_success(client: AsyncClient) -> None:
     """Geçerli bilgilerle kayıt başarılı olmalıdır."""
+    import uuid
+    unique = uuid.uuid4().hex[:8]
     payload = {
-        "email": "newuser@example.com",
-        "username": "new_user_1",
+        "email": f"newuser_{unique}@example.com",
+        "username": f"new_user_{unique}",
         "password": "StrongPass1",
     }
     response = await client.post("/api/v1/auth/register", json=payload)

@@ -1,7 +1,7 @@
 # Coderun backend — ders servis katmanı; ders iş mantığını, cevap değerlendirmesini ve gamification'ı yönetir.
 
 from datetime import datetime, timezone
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import HTTPException, status
 from redis.asyncio import Redis
@@ -255,18 +255,22 @@ async def submit_lesson_answer(
         new_level = xp_result.new_level
         new_streak = xp_result.new_streak
 
-        # Rozet yanıtlarını oluştur
-        for badge_type in xp_result.badges_earned:
-            meta = BADGE_META.get(badge_type, {"title": badge_type, "description": ""})
-            badges_earned.append(
-                BadgeResponse(
-                    id=uuid4(),
-                    badge_type=badge_type,
-                    earned_at=now,
-                    title=meta["title"],
-                    description=meta["description"],
-                )
-            )
+        # Rozet yanıtlarını oluştur — gamification_service zaten kaydetmiş, gerçek ID'leri çek
+        if xp_result.badges_earned:
+            all_badges = await badge_repo.get_user_badges(user_id)
+            earned_types = set(xp_result.badges_earned)
+            for badge in all_badges:
+                if badge.badge_type in earned_types:
+                    meta = BADGE_META.get(badge.badge_type, {"title": badge.badge_type, "description": ""})
+                    badges_earned.append(
+                        BadgeResponse(
+                            id=badge.id,
+                            badge_type=badge.badge_type,
+                            earned_at=badge.earned_at,
+                            title=meta["title"],
+                            description=meta["description"],
+                        )
+                    )
 
         # Liderboard güncelle
         user = await user_repo.get_by_id(user_id)
