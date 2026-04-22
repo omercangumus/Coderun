@@ -38,10 +38,7 @@ async def health_check(
     redis_status = "ok"
     if redis:
         try:
-            result = redis.ping()
-            # Coroutine ise await et (gerçek async redis client), değilse direkt kullan
-            if hasattr(result, "__await__"):
-                await result
+            await redis.ping()
         except Exception as exc:
             logger.error("Redis health check failed: %s", exc)
             redis_status = "error"

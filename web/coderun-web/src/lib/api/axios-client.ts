@@ -81,6 +81,7 @@ axiosClient.interceptors.response.use(
         Cookies.set(COOKIE_ACCESS_TOKEN, accessToken, {
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
+          expires: 1, // 1 gün (access token 30 dakika geçerli ama cookie biraz daha uzun)
         });
 
         processQueue(null, accessToken);

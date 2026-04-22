@@ -4,11 +4,16 @@ services:
     ports:
       - "8000:8000"
     env_file: .env
+    environment:
+      # Docker network içinde servis adları kullanılmalı (localhost değil)
+      DATABASE_URL: postgresql+asyncpg://coderun:coderun@db:5432/coderun
+      REDIS_URL: redis://redis:6379/0
+      OLLAMA_URL: http://ollama:11434
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./backend:/app
     command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -25,6 +30,9 @@ services:
     build: ./web
     ports:
       - "3000:3000"
+    environment:
+      # Browser'dan erişim: host makinenin 8000 portuna gider
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
     depends_on:
       backend:
         condition: service_healthy

@@ -89,14 +89,9 @@ async def get_redis() -> Redis | None:
     çağıran kod None kontrolü yapmalıdır.
     """
     from backend.app.core.redis import get_redis as _get_redis  # noqa: PLC0415
-    gen = _get_redis()
-    try:
-        client = await gen.__anext__()
+    async for client in _get_redis():
         return client
-    except StopAsyncIteration:
-        return None
-    finally:
-        await gen.aclose()
+    return None
 
 
 async def get_current_user(

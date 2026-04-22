@@ -5,11 +5,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { useModules, useModuleProgress } from '@/lib/hooks/use-modules';
 
-function ModuleCardWithProgress({ slug, ...props }: { slug: string; [key: string]: unknown }) {
+function ModuleCardWithProgress({ slug, module }: { slug: string; module: Parameters<typeof ModuleCard>[0]['module'] }) {
   const { data: progress } = useModuleProgress(slug);
   return (
     <ModuleCard
-      {...(props as Parameters<typeof ModuleCard>[0])}
+      module={module}
       completionRate={progress?.completionRate ?? 0}
     />
   );
