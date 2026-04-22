@@ -28,6 +28,8 @@ export function useAuth() {
             ?.detail ?? 'Giriş başarısız';
         setError(message);
         toast.error(message);
+      } finally {
+        setLoading(false);
       }
     },
     [router, setLoading, setUser, setError]
@@ -46,9 +48,11 @@ export function useAuth() {
             ?.detail ?? 'Kayıt başarısız';
         setError(message);
         toast.error(message);
+      } finally {
+        setLoading(false);
       }
     },
-    [login, setError]
+    [login, setError, setLoading]
   );
 
   const logout = useCallback(async () => {
@@ -73,6 +77,8 @@ export function useAuth() {
     } catch {
       authApi.clearTokens();
       reset();
+    } finally {
+      setLoading(false);
     }
   }, [reset, setLoading, setUser]);
 
