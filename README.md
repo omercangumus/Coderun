@@ -297,3 +297,47 @@ Ana Uygulama: HomeTab, LearnTab, LeaderboardTab, ProfileTab
 Öğrenme Akışı: PlacementScreen, LearningPathScreen, LessonScreen, LessonResultScreen
 Diğer: BadgesScreen
 Overlay'ler: BadgeEarnedOverlay, LevelUpOverlay, StreakMilestoneOverlay
+
+## Hafta 9 — Next.js Kurulum ve Dashboard
+
+### Bu Haftada Yapılanlar
+
+- Next.js 14 App Router kurulumu (TypeScript + Tailwind CSS)
+- TypeScript tip tanımları (auth, modül, gamification)
+- Axios client + token interceptor + auto-refresh (401 → refresh)
+- Cookie tabanlı JWT auth (middleware ile route koruması)
+- Zustand auth store (persist middleware ile localStorage sync)
+- TanStack Query ile server state yönetimi
+- Giriş ve kayıt sayfaları (react-hook-form + zod validasyon)
+- Dashboard: hoş geldin, XP bar, streak, istatistikler, modüller, liderboard özeti
+- Öğren sayfası: modül kartları + coming soon bölümü
+- Liderboard sayfası: podium + tam liste + kullanıcı sırası
+- Profil sayfası: istatistikler, streak, rozetler, çıkış
+- Ders sayfası: çoktan seçmeli sorular + cevap gönderme
+- Yeniden kullanılabilir UI bileşenleri (button, input, card, progress, skeleton, avatar, badge)
+
+### Web Kurulumu
+
+```bash
+cd web/coderun-web
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Uygulama: http://localhost:3000
+Backend (gerekli): http://localhost:8000
+
+### Mimari Kararlar
+
+**Neden cookie tabanlı auth?**
+localStorage XSS saldırılarına açık. Middleware'de `NextRequest.cookies` ile token okunabilmesi için js-cookie ile normal cookie tercih edildi.
+
+**Neden TanStack Query?**
+Otomatik cache, stale time, refetch yönetimi. Loading/error state'leri otomatik. Zustand ile birlikte kullanım: auth state Zustand, server state TanStack Query.
+
+**Neden Zustand?**
+Redux'tan çok daha az boilerplate. persist middleware ile localStorage sync. TypeScript desteği mükemmel.
+
+**snake_case → camelCase dönüşümü**
+Backend Python snake_case döndürüyor, frontend TypeScript camelCase kullanıyor. API katmanında mapper fonksiyonlarla dönüşüm yapılıyor.
