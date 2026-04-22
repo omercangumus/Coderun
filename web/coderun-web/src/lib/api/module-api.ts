@@ -83,6 +83,7 @@ function mapModule(raw: any): ModuleResponse {
     description: raw.description,
     order: raw.order,
     isActive: raw.is_active,
+    createdAt: raw.created_at,
   };
 }
 

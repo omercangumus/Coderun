@@ -7,6 +7,7 @@ export interface ModuleResponse {
   description: string;
   order: number;
   isActive: boolean;
+  createdAt: string;
 }
 
 export interface LessonResponse {
