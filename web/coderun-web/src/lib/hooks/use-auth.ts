@@ -34,7 +34,7 @@ export function useAuth() {
         setLoading(false);
       }
     },
-    [router, setLoading, setUser, setError]
+    [setLoading, setUser, setError]
   );
 
   const register = useCallback(

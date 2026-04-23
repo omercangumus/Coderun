@@ -1,16 +1,21 @@
+'use client';
+
+import { use } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LabPage({
   params,
 }: {
-  params: { moduleSlug: string; lessonId: string };
+  params: Promise<{ moduleSlug: string; lessonId: string }>;
 }) {
+  const { moduleSlug, lessonId } = use(params);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
         <Link
-          href={`/learn/${params.moduleSlug}/lesson/${params.lessonId}`}
+          href={`/learn/${moduleSlug}/lesson/${lessonId}`}
           className="text-slate-400 hover:text-white"
         >
           <ArrowLeft className="h-5 w-5" />

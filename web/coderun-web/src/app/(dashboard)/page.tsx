@@ -32,7 +32,7 @@ export default function DashboardPage() {
         {stats ? (
           <StreakWidget streak={stats.streakInfo} />
         ) : (
-          <Skeleton className="h-20 w-20" rounded />
+          <Skeleton className="h-20 w-20" rounded={true} />
         )}
       </div>
 
@@ -108,7 +108,7 @@ export default function DashboardPage() {
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 mb-2" />
               ))
-            : leaderboard?.entries.map((entry) => (
+            : (leaderboard?.entries ?? []).map((entry) => (
                 <LeaderboardEntry
                   key={entry.userId}
                   entry={entry}
