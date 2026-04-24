@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useLessonDetail } from '@/lib/hooks/use-modules';
 import { moduleApi } from '@/lib/api/module-api';
@@ -34,6 +34,8 @@ export default function LessonPage({
       setResult(res);
       if (res.isCompleted) {
         toast.success(`Tebrikler! ${res.xpEarned} XP kazandın!`);
+      } else {
+        toast.error(`Skor: ${res.score}/100. Geçmek için en az 70 puan gerekiyor.`);
       }
     } catch {
       toast.error('Cevaplar gönderilemedi');
@@ -64,12 +66,22 @@ export default function LessonPage({
 
       {result ? (
         <Card className="text-center py-8">
-          <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
+          {result.isCompleted
+            ? <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
+            : <XCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
+          }
           <p className="text-2xl font-bold text-white mb-2">Skor: {result.score}/100</p>
           <p className="text-slate-400 mb-4">{result.message}</p>
-          <Link href={`/learn/${moduleSlug}`}>
-            <Button>Modüle Dön</Button>
-          </Link>
+          <div className="flex gap-3 justify-center">
+            {!result.isCompleted && (
+              <Button variant="outline" onClick={() => { setResult(null); setAnswers({}); }}>
+                Tekrar Dene
+              </Button>
+            )}
+            <Link href={`/learn/${moduleSlug}`}>
+              <Button>Modüle Dön</Button>
+            </Link>
+          </div>
         </Card>
       ) : (
         <>
@@ -77,7 +89,7 @@ export default function LessonPage({
             <Card key={q.id}>
               <p className="text-sm text-slate-400 mb-2">Soru {idx + 1}</p>
               <p className="text-white font-medium mb-4">{q.questionText}</p>
-              {q.options && (
+              {q.options && Array.isArray(q.options.choices) && (
                 <div className="flex flex-col gap-2">
                   {(q.options.choices as string[]).map((opt) => (
                     <button

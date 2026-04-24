@@ -29,7 +29,7 @@ export default function LeaderboardPage() {
       {/* Podium */}
       {isLoading ? (
         <Skeleton className="h-40" />
-      ) : top3.length >= 3 ? (
+      ) : top3.length >= 3 && top3[0] && top3[1] && top3[2] ? (
         <div className="flex items-end justify-center gap-3 py-4">
           {/* 2. sıra */}
           <div className="flex flex-col items-center gap-2">
