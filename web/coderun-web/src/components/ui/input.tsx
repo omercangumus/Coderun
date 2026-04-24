@@ -16,7 +16,6 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       )}
       <input
         id={id}
-        noValidate
         className={cn(
           'w-full rounded-lg border bg-slate-800/50 px-3 py-2.5 text-sm text-slate-200',
           'placeholder:text-slate-500',
