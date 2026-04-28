@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from redis.asyncio import Redis
 
 from app.api.v1.dependencies import (
     get_current_active_user,
+    get_redis,
     get_user_repository,
 )
+from app.core.config import settings
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import RefreshTokenRequest, TokenResponse, UserCreate
@@ -106,18 +109,59 @@ async def me(
 @router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout(
     current_user: User = Depends(get_current_active_user),
+    redis: Redis | None = Depends(get_redis),
 ) -> dict[str, str]:
     """Kullanıcı oturumunu kapatır.
 
     Auth gerekir. Token client tarafında silinmeli.
-    Sunucu tarafı blacklist ilerleyen sürümde Redis ile eklenecek.
+    Redis varsa token blacklist'e eklenir.
 
     Args:
         current_user: Kimliği doğrulanmış aktif kullanıcı.
+        redis: Redis client bağımlılığı.
 
     Returns:
         Başarı mesajı.
     """
-    # TODO: Redis blacklist ile token invalidation eklenecek.
+    # Token'ı blacklist'e ekle (Redis varsa)
+    if redis is not None:
+        try:
+            remaining_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+            blacklist_key = f"blacklist:user:{current_user.id}"
+            await redis.setex(blacklist_key, remaining_seconds, "1")
+            logger.info("Token blacklisted for user: %s", current_user.username)
+        except Exception as exc:
+            logger.warning("Token blacklist eklenemedi: %s", exc)
+    
     logger.info("User logged out: %s", current_user.username)
     return {"message": "Çıkış başarılı"}
+
+
+@router.post("/fcm-token", status_code=status.HTTP_200_OK)
+async def register_fcm_token(
+    payload: dict[str, str],
+    current_user: User = Depends(get_current_active_user),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> dict[str, str]:
+    """Kullanıcının FCM push notification token'ını kaydeder.
+
+    Auth gerekir. Mobile uygulama login sonrası bu endpoint'i çağırmalıdır.
+
+    Args:
+        payload: {"fcm_token": "<token>"} içeren istek gövdesi.
+        current_user: Kimliği doğrulanmış aktif kullanıcı.
+        user_repo: Kullanıcı repository bağımlılığı.
+
+    Returns:
+        Başarı mesajı.
+    """
+    fcm_token = payload.get("fcm_token", "").strip()
+    if not fcm_token:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="fcm_token boş olamaz",
+        )
+    
+    await user_repo.update_fcm_token(current_user.id, fcm_token)
+    logger.info("FCM token güncellendi: %s", current_user.username)
+    return {"message": "FCM token kaydedildi"}

@@ -97,9 +97,10 @@ async def get_redis() -> Redis | None:
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     user_repo: UserRepository = Depends(get_user_repository),
+    redis: Redis | None = Depends(get_redis),
 ) -> User:
     """Bearer token'dan aktif kullanıcıyı çözümler."""
-    return await resolve_current_user(token, user_repo)
+    return await resolve_current_user(token, user_repo, redis)
 
 
 async def get_current_active_user(

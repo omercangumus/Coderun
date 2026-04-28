@@ -46,6 +46,7 @@ class UserResponse(UserBase):
     streak: int
     last_active_date: date | None = None
     is_active: bool
+    is_verified: bool = False
     created_at: datetime
 
     @field_validator("last_active_date", mode="before")

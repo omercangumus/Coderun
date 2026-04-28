@@ -13,6 +13,7 @@ abstract class ApiConstants {
   static const String refresh = '/auth/refresh';
   static const String me = '/auth/me';
   static const String logout = '/auth/logout';
+  static const String registerFcmToken = '/auth/fcm-token';
 
   // Modül endpoint'leri
   static const String modules = '/modules';

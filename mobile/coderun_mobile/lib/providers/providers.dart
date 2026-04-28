@@ -15,7 +15,8 @@ import '../data/repositories/gamification_repository.dart';
 
 /// NotificationService provider — main.dart'ta override edilir.
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  throw UnimplementedError('main.dart\'ta override edilmeli');
+  final dio = ref.watch(dioProvider);
+  return NotificationService(dio: dio);
 });
 
 /// Şifreli depolama provider'ı.

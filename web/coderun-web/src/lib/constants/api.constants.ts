@@ -31,6 +31,10 @@ export const PLACEMENT_ENDPOINTS = {
   submit: (slug: string) => `/placement/${slug}/submit`,
 } as const;
 
+export const AI_ENDPOINTS = {
+  mentor: '/ai/mentor',
+} as const;
+
 export const QUERY_KEYS = {
   modules: ['modules'] as const,
   moduleProgress: (slug: string) => ['module-progress', slug] as const,

@@ -7,6 +7,7 @@ export interface UserResponse {
   streak: number;
   lastActiveDate: string | null;
   isActive: boolean;
+  isVerified: boolean;
   createdAt: string;
 }
 

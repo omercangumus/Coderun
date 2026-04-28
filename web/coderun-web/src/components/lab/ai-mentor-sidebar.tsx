@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Bot } from 'lucide-react';
+import axiosClient from '@/lib/api/axios-client';
+import { AI_ENDPOINTS } from '@/lib/constants/api.constants';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,15 +16,7 @@ interface Props {
   lessonContext?: string;
 }
 
-const MOCK_HINTS = [
-  'Doğru yoldasın! Bir adım daha ilerle.',
-  'Komutun söz dizimini kontrol et. Dokümanı inceledin mi?',
-  'Hata mesajını dikkatlice oku, hangi satırda sorun var?',
-  'Bu görev için önce küçük adımlarla dene.',
-  "İpucu: Python'da indentation (girinti) çok önemli!",
-];
-
-export function AiMentorSidebar({ isOpen, onClose }: Props) {
+export function AiMentorSidebar({ isOpen, onClose, lessonContext }: Props) {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: 'Merhaba! Lab görevinde takıldığın bir yer var mı? Sana yardımcı olmaya hazırım. 👻' },
   ]);
@@ -36,10 +30,22 @@ export function AiMentorSidebar({ isOpen, onClose }: Props) {
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    const hint = MOCK_HINTS[Math.floor(Math.random() * MOCK_HINTS.length)] ?? MOCK_HINTS[0];
-    setMessages(prev => [...prev, { role: 'assistant', content: hint }]);
-    setIsLoading(false);
+
+    try {
+      const response = await axiosClient.post(AI_ENDPOINTS.mentor, {
+        message: userMsg,
+        lesson_context: lessonContext ?? null,
+      });
+      const reply = (response.data as { reply: string }).reply;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'Şu an yanıt veremiyorum. Lütfen biraz sonra tekrar dene.' },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -63,7 +69,7 @@ export function AiMentorSidebar({ isOpen, onClose }: Props) {
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+            <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
               msg.role === 'user'
                 ? 'bg-purple-600 text-white rounded-br-sm'
                 : 'bg-gray-100 text-gray-800 rounded-bl-sm'
@@ -86,7 +92,7 @@ export function AiMentorSidebar({ isOpen, onClose }: Props) {
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && sendMessage()}
+            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
             placeholder="Soru sor..."
             className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
           />

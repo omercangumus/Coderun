@@ -181,12 +181,12 @@ async def get_user_weekly_xp(
 async def reset_weekly_leaderboard(redis: Redis | None) -> None:
     """Haftalık liderboard'u sıfırlar.
 
-    TODO: Her pazartesi çalışacak cron job ile entegre edilecek.
+    Her pazartesi 00:00 UTC'de çağrılmalıdır.
+    APScheduler veya Celery Beat ile entegre edilebilir.
 
     Args:
         redis: Redis client.
     """
-    # TODO: Celery Beat veya APScheduler ile her pazartesi 00:00 UTC'de çalıştır
     if redis is None:
         return
 

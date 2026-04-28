@@ -10,12 +10,12 @@ import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const ALL_BADGES = [
-  { type: 'FIRST_LESSON', emoji: '🎯', title: 'İlk Adım', description: 'İlk dersini tamamla', condition: 'İlk dersi tamamla' },
-  { type: 'STREAK_7', emoji: '🔥', title: 'Haftalık Kahraman', description: '7 günlük seri yap', condition: '7 gün üst üste giriş yap' },
-  { type: 'STREAK_30', emoji: '⚡', title: 'Aylık Şampiyon', description: '30 günlük seri yap', condition: '30 gün üst üste giriş yap' },
-  { type: 'MODULE_COMPLETE', emoji: '🏆', title: 'Modül Ustası', description: 'Bir modülü tamamla', condition: 'Tüm dersleri tamamla' },
-  { type: 'LEVEL_5', emoji: '⭐', title: 'Yükselen Yıldız', description: '5. seviyeye ulaş', condition: '5. seviyeye ulaş' },
-  { type: 'LEVEL_10', emoji: '💎', title: 'Usta Geliştirici', description: '10. seviyeye ulaş', condition: '10. seviyeye ulaş' },
+  { type: 'first_lesson', emoji: '🎯', title: 'İlk Adım', description: 'İlk dersini tamamla', condition: 'İlk dersi tamamla' },
+  { type: 'streak_7', emoji: '🔥', title: 'Haftalık Kahraman', description: '7 günlük seri yap', condition: '7 gün üst üste giriş yap' },
+  { type: 'streak_30', emoji: '⚡', title: 'Aylık Şampiyon', description: '30 günlük seri yap', condition: '30 gün üst üste giriş yap' },
+  { type: 'module_complete', emoji: '🏆', title: 'Modül Ustası', description: 'Bir modülü tamamla', condition: 'Tüm dersleri tamamla' },
+  { type: 'level_5', emoji: '⭐', title: 'Yükselen Yıldız', description: '5. seviyeye ulaş', condition: '5. seviyeye ulaş' },
+  { type: 'level_10', emoji: '💎', title: 'Usta Geliştirici', description: '10. seviyeye ulaş', condition: '10. seviyeye ulaş' },
 ];
 
 export default function BadgesPage() {

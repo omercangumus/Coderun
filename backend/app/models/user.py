@@ -71,3 +71,7 @@ class User(BaseModel):
         default=False,
         nullable=False,
     )
+    fcm_token: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )

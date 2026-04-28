@@ -7,6 +7,7 @@ from typing import Protocol
 from uuid import UUID
 
 from fastapi import HTTPException, status
+from redis.asyncio import Redis
 
 from app.core.config import settings
 from app.core.security import (
@@ -143,8 +144,12 @@ async def refresh_access_token(
 async def get_current_user(
     token: str,
     user_repo: UserRepositoryProtocol,
+    redis: Redis | None = None,
 ) -> User:
-    """Bearer token'dan kullanıcıyı çözümler ve döndürür."""
+    """Bearer token'dan kullanıcıyı çözümler ve döndürür.
+    
+    Token blacklist kontrolü yapar (Redis varsa).
+    """
     payload = decode_token(token)
     if payload is None:
         raise HTTPException(
@@ -166,6 +171,22 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=settings.AUTH_INVALID_CREDENTIALS_MESSAGE,
         ) from exc
+
+    # Blacklist kontrolü (Redis varsa)
+    if redis is not None:
+        try:
+            blacklist_key = f"blacklist:user:{user_id}"
+            is_blacklisted = await redis.exists(blacklist_key)
+            if is_blacklisted:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=settings.AUTH_INVALID_CREDENTIALS_MESSAGE,
+                )
+        except HTTPException:
+            raise
+        except Exception:
+            # Redis hatası token doğrulamasını engellemez
+            pass
 
     user = await user_repo.get_by_id(parsed_user_id)
     if user is None:

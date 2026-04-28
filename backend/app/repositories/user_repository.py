@@ -100,3 +100,21 @@ class UserRepository(BaseRepository[User]):
         if user is None:
             raise ValueError(f"User not found: {user_id}")
         return user
+
+    async def update_fcm_token(self, user_id: UUID, fcm_token: str | None) -> User:
+        """Kullanıcının FCM push notification token'ını günceller.
+
+        Args:
+            user_id: Token'ı güncellenecek kullanıcının UUID'si.
+            fcm_token: Yeni FCM token değeri (None ile silinebilir).
+
+        Returns:
+            Güncellenmiş User nesnesi.
+
+        Raises:
+            ValueError: Kullanıcı bulunamazsa fırlatılır.
+        """
+        user = await self.update(user_id, {"fcm_token": fcm_token})
+        if user is None:
+            raise ValueError(f"User not found: {user_id}")
+        return user

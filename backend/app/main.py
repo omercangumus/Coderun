@@ -13,6 +13,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.redis import close_redis, init_redis
+from app.core.scheduler import start_scheduler, stop_scheduler
 from app.core.seed import seed_database
 
 logger = logging.getLogger(__name__)
@@ -39,9 +40,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     await init_redis()
 
+    # Scheduler başlat (haftalık liderboard reset)
+    start_scheduler()
+
     yield
 
     # Shutdown
+    stop_scheduler()
     await close_redis()
 
 
