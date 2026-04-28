@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Trophy, User, LogOut } from 'lucide-react';
+import { Home, BookOpen, Trophy, User, LogOut, Medal } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/', icon: Home, label: 'Ana Sayfa' },
   { href: '/learn', icon: BookOpen, label: 'Öğren' },
   { href: '/leaderboard', icon: Trophy, label: 'Liderboard' },
+  { href: '/badges', icon: Medal, label: 'Rozetlerim' },
   { href: '/profile', icon: User, label: 'Profil' },
 ];
 

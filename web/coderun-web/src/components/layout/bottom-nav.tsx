@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Trophy, User } from 'lucide-react';
+import { Home, BookOpen, Trophy, User, Medal } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Ana Sayfa' },
   { href: '/learn', icon: BookOpen, label: 'Öğren' },
   { href: '/leaderboard', icon: Trophy, label: 'Liderboard' },
+  { href: '/badges', icon: Medal, label: 'Rozetler' },
   { href: '/profile', icon: User, label: 'Profil' },
 ];
 

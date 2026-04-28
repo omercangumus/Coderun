@@ -341,3 +341,74 @@ Redux'tan çok daha az boilerplate. persist middleware ile localStorage sync. Ty
 
 **snake_case → camelCase dönüşümü**
 Backend Python snake_case döndürüyor, frontend TypeScript camelCase kullanıyor. API katmanında mapper fonksiyonlarla dönüşüm yapılıyor.
+
+
+## Hafta 10 — Web Ders Ekranları ve Lab Ortamı
+
+### Bu Haftada Yapılanlar
+- Öğrenme yolu sayfası: ders listesi, kilit/tamamlanma durumları, ilerleme bar'ı
+- Ders ekranı: çoktan seçmeli, kod tamamlama, mini proje soruları
+- Ders sonuç sayfası: XP animasyonu, rozet bildirimi, seviye atlama
+- Lab ortamı: simüle terminal + Monaco Editor
+- AI Mentor sidebar (mock, Hafta 11'de Groq bağlanacak)
+- Seviye testi sayfası (placement test) — 3 adımlı akış
+- Rozet sayfası: kazanılan/kilitli rozetler
+
+### Web Sayfa Yapısı (Toplam)
+
+**Auth:**
+- `/login` — Giriş
+- `/register` — Kayıt
+
+**Dashboard:**
+- `/` — Ana sayfa (özet istatistikler)
+- `/learn` — Modül listesi
+- `/learn/[moduleSlug]` — Öğrenme yolu (ders listesi)
+- `/learn/[moduleSlug]/placement` — Seviye testi
+- `/learn/[moduleSlug]/lesson/[lessonId]` — Ders ekranı
+- `/learn/[moduleSlug]/lesson/[lessonId]/result` — Ders sonuç
+- `/learn/[moduleSlug]/lesson/[lessonId]/lab` — Lab ortamı
+- `/leaderboard` — Liderboard
+- `/badges` — Rozetlerim
+- `/profile` — Profil
+
+### Lab Ortamı Hakkında
+
+**Terminal:** Simüle edilmiş bash terminal (gerçek Docker container bağlantısı ilerleyen sürümde).
+
+**Desteklenen komutlar:**
+- `ls` — Dosya listesi
+- `cat [dosya]` — Dosya içeriği
+- `python [dosya]` — Python çalıştır
+- `docker build`, `docker run` — Docker komutları
+- `git init`, `git status`, `git add`, `git commit` — Git komutları
+- `clear` — Ekranı temizle
+- `help` — Komut listesi
+
+**Editör:** Monaco Editor (VS Code motoru).
+
+**Mock dosya sistemi:** `app.py`, `Dockerfile`, `requirements.txt`
+
+### Teknolojiler
+
+**Frontend:**
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- TanStack Query (React Query)
+- Zustand (state management)
+- Monaco Editor (kod editörü)
+- react-hot-toast (bildirimler)
+
+**Backend:**
+- FastAPI
+- PostgreSQL + asyncpg
+- Redis (liderboard)
+- SQLAlchemy 2.0 (async)
+- Alembic (migrations)
+- Groq AI (mentor)
+
+**Mobile:**
+- Flutter 3.x
+- Riverpod (state management)
+- Dio (HTTP client)

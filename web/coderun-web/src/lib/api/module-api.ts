@@ -1,5 +1,5 @@
 import axiosClient from './axios-client';
-import { MODULE_ENDPOINTS } from '@/lib/constants/api.constants';
+import { MODULE_ENDPOINTS, PLACEMENT_ENDPOINTS } from '@/lib/constants/api.constants';
 import type {
   ModuleResponse,
   ModuleProgressResponse,
@@ -7,6 +7,8 @@ import type {
   LessonDetailResponse,
   AnswerSubmit,
   LessonResultResponse,
+  PlacementTestResponse,
+  PlacementResultResponse,
 } from '@/lib/types/module.types';
 
 export const moduleApi = {
@@ -70,6 +72,37 @@ export const moduleApi = {
       newLevel: raw.new_level,
       newStreak: raw.new_streak,
       badgesEarned: (raw.badges_earned ?? []).map(mapBadge),
+    };
+  },
+
+  async getPlacementQuestions(slug: string): Promise<PlacementTestResponse> {
+    const response = await axiosClient.get(PLACEMENT_ENDPOINTS.questions(slug));
+    const raw = response.data;
+    return {
+      moduleId: raw.module_id,
+      moduleTitle: raw.module_title,
+      questions: (raw.questions ?? []).map(mapQuestion),
+      totalQuestions: raw.total_questions,
+    };
+  },
+
+  async submitPlacementTest(
+    slug: string,
+    answers: AnswerSubmit[]
+  ): Promise<PlacementResultResponse> {
+    const payload = answers.map((a) => ({
+      question_id: a.questionId,
+      answer: a.answer,
+    }));
+    const response = await axiosClient.post(PLACEMENT_ENDPOINTS.submit(slug), payload);
+    const raw = response.data;
+    return {
+      correctCount: raw.correct_count,
+      totalCount: raw.total_count,
+      percentage: raw.percentage,
+      startingLessonOrder: raw.starting_lesson_order,
+      skippedLessons: raw.skipped_lessons,
+      message: raw.message,
     };
   },
 };

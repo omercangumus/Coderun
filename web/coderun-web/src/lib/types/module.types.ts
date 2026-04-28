@@ -62,3 +62,27 @@ export interface LessonResultResponse {
   newStreak: number;
   badgesEarned: BadgeResponse[];
 }
+
+export interface PlacementTestResponse {
+  moduleId: string;
+  moduleTitle: string;
+  questions: QuestionResponse[];
+  totalQuestions: number;
+}
+
+export interface PlacementResultResponse {
+  correctCount: number;
+  totalCount: number;
+  percentage: number;
+  startingLessonOrder: number;
+  skippedLessons: number;
+  message: string;
+}
+
+export interface LessonState {
+  currentQuestionIndex: number;
+  answers: Record<string, string>;
+  isSubmitting: boolean;
+  result: LessonResultResponse | null;
+  error: string | null;
+}
