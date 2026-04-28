@@ -3,10 +3,16 @@ import Cookies from 'js-cookie';
 import { AUTH_ENDPOINTS } from '@/lib/constants/api.constants';
 import type { LoginRequest, RegisterRequest, TokenResponse, UserResponse } from '@/lib/types/auth.types';
 
-const COOKIE_OPTIONS = {
+const COOKIE_OPTIONS_ACCESS = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict' as const,
-  expires: 7,
+  expires: 1 / 48, // 30 dakika — backend access token süresiyle uyumlu
+};
+
+const COOKIE_OPTIONS_REFRESH = {
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  expires: 7, // 7 gün — backend refresh token süresiyle uyumlu
 };
 
 export const authApi = {
@@ -58,8 +64,8 @@ export const authApi = {
   },
 
   saveTokens(tokens: TokenResponse): void {
-    Cookies.set(COOKIE_ACCESS_TOKEN, tokens.accessToken, COOKIE_OPTIONS);
-    Cookies.set(COOKIE_REFRESH_TOKEN, tokens.refreshToken, COOKIE_OPTIONS);
+    Cookies.set(COOKIE_ACCESS_TOKEN, tokens.accessToken, COOKIE_OPTIONS_ACCESS);
+    Cookies.set(COOKIE_REFRESH_TOKEN, tokens.refreshToken, COOKIE_OPTIONS_REFRESH);
   },
 
   clearTokens(): void {

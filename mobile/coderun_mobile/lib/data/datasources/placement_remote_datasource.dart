@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../models/answer_model.dart';
 import '../models/placement_model.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/constants/api_constants.dart';
 
 abstract class PlacementRemoteDataSource {
   Future<PlacementTestModel> getPlacementQuestions(String moduleSlug);
@@ -19,7 +20,9 @@ class PlacementRemoteDataSourceImpl implements PlacementRemoteDataSource {
   @override
   Future<PlacementTestModel> getPlacementQuestions(String moduleSlug) async {
     try {
-      final response = await _dio.get('/placement/$moduleSlug');
+      final response = await _dio.get(
+        ApiConstants.getPlacementQuestions(moduleSlug),
+      );
       return PlacementTestModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -33,7 +36,7 @@ class PlacementRemoteDataSourceImpl implements PlacementRemoteDataSource {
   ) async {
     try {
       final response = await _dio.post(
-        '/placement/$moduleSlug/submit',
+        ApiConstants.submitPlacement(moduleSlug),
         data: answers.map((a) => a.toJson()).toList(),
       );
       return PlacementResultModel.fromJson(
