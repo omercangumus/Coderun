@@ -222,9 +222,10 @@ class _TestPhase extends ConsumerWidget {
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: selectedAnswer != null
-                          ? () {
+                          ? () async {
                               if (isLast) {
-                                notifier.nextQuestion();
+                                await notifier.submitTest(moduleSlug, questions);
+                                onComplete();
                               } else {
                                 notifier.nextQuestion();
                               }

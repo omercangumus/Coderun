@@ -17,6 +17,13 @@ class LessonDetailModel {
   final int xpReward;
   @JsonKey(name: 'is_active')
   final bool isActive;
+  @JsonKey(name: 'is_completed', defaultValue: false)
+  final bool isCompleted;
+  @JsonKey(name: 'is_locked', defaultValue: false)
+  final bool isLocked;
+  final int? score;
+  @JsonKey(name: 'attempt_count', defaultValue: 0)
+  final int attemptCount;
   @JsonKey(defaultValue: [])
   final List<QuestionModel> questions;
 
@@ -28,6 +35,10 @@ class LessonDetailModel {
     required this.order,
     required this.xpReward,
     required this.isActive,
+    this.isCompleted = false,
+    this.isLocked = false,
+    this.score,
+    this.attemptCount = 0,
     this.questions = const [],
   });
 

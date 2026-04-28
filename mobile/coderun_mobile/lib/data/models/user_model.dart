@@ -16,6 +16,8 @@ class UserModel with _$UserModel {
     required int level,
     required int streak,
     @JsonKey(name: 'last_active_date') String? lastActiveDate,
+    @JsonKey(name: 'is_active') @Default(true) bool isActive,
+    @JsonKey(name: 'is_verified') @Default(false) bool isVerified,
     @JsonKey(name: 'created_at') required DateTime createdAt,
   }) = _UserModel;
 

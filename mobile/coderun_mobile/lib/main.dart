@@ -13,13 +13,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  // NotificationService başlangıçta Dio olmadan başlatılır (sadece izin ve local notifications için)
+  // Dio ile FCM token kaydı ProviderScope içinde yapılır
   final notificationService = NotificationService();
   await notificationService.initialize();
 
   runApp(
     ProviderScope(
       overrides: [
-        notificationServiceProvider.overrideWithValue(notificationService),
+        notificationServiceProvider.overrideWith((ref) {
+          final dio = ref.watch(dioProvider);
+          return NotificationService(dio: dio);
+        }),
       ],
       child: const CoderunApp(),
     ),

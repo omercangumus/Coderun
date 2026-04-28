@@ -22,7 +22,7 @@ class LearningPathScreen extends ConsumerWidget {
         final progressValue =
             (progress.completionRate / 100).clamp(0.0, 1.0);
         final allCompleted = progress.completionRate >= 100;
-        final lessonsAsync = ref.watch(lessonsProvider(progress.module.id));
+        final lessonsAsync = ref.watch(lessonsProvider(moduleSlug));
 
         return Scaffold(
           appBar: AppBar(
@@ -132,7 +132,7 @@ class LearningPathScreen extends ConsumerWidget {
                     child: AppErrorWidget(
                       message: e.toString(),
                       onRetry: () =>
-                          ref.invalidate(lessonsProvider(progress.module.id)),
+                          ref.invalidate(lessonsProvider(moduleSlug)),
                     ),
                   ),
                 ),

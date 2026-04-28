@@ -31,11 +31,11 @@ final moduleProgressProvider =
   );
 });
 
-/// Modüle ait dersler (moduleId ile).
+/// Modüle ait dersler (moduleSlug ile).
 final lessonsProvider =
-    FutureProvider.family<List<LessonModel>, String>((ref, moduleId) async {
+    FutureProvider.family<List<LessonModel>, String>((ref, moduleSlug) async {
   final repository = ref.watch(moduleRepositoryProvider);
-  final response = await repository.getLessonsByModule(moduleId);
+  final response = await repository.getLessonsByModule(moduleSlug);
   return response.when(
     success: (data) => data,
     error: (message, _) => throw ApiException(message: message),

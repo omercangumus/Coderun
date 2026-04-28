@@ -190,6 +190,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           onAnswerChanged: (answer) =>
               notifier.answerQuestion(question.id, answer),
         );
+      case 'code_editor':
       case 'mini_project':
         return MiniProjectWidget(
           question: question,

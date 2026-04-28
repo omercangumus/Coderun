@@ -24,10 +24,10 @@ abstract class ApiConstants {
   static String getModuleProgress(String slug) => '/modules/$slug/progress';
 
   // Ders endpoint'leri
-  static const String lessonsByModule = '/lessons/module/{moduleId}';
+  static const String lessonsByModule = '/lessons/module/{moduleSlug}';
   static const String lessonDetail = '/lessons/{lessonId}';
 
-  static String getLessonsByModule(String moduleId) => '/lessons/module/$moduleId';
+  static String getLessonsByModule(String moduleSlug) => '/lessons/module/$moduleSlug';
   static String getLessonDetail(String lessonId) => '/lessons/$lessonId';
   static String submitLesson(String lessonId) => '/lessons/$lessonId/submit';
 

@@ -12,6 +12,7 @@ class ModuleModel with _$ModuleModel {
     required String description,
     required int order,
     @JsonKey(name: 'is_active') required bool isActive,
+    @JsonKey(name: 'created_at') required String createdAt,
   }) = _ModuleModel;
 
   factory ModuleModel.fromJson(Map<String, dynamic> json) =>

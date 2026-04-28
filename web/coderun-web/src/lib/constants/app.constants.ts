@@ -22,6 +22,7 @@ export const ROUTES = {
   register: '/register',
   learn: '/learn',
   leaderboard: '/leaderboard',
+  badges: '/badges',
   profile: '/profile',
   module: (slug: string) => `/learn/${slug}`,
   lesson: (moduleSlug: string, lessonId: string) =>
