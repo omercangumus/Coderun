@@ -37,7 +37,7 @@ export default function ResultPage({
     } else {
       router.push(`/learn/${moduleSlug}`);
     }
-  }, [moduleSlug, lessonId, router, queryClient]);
+  }, [moduleSlug, router, queryClient]);
 
   if (!result) return null;
 
@@ -115,7 +115,7 @@ export default function ResultPage({
           </Link>
         )}
         <Link href={`/learn/${moduleSlug}`}>
-          <Button variant={success ? 'primary' : 'outline'} className="w-full" size="lg">
+          <Button variant={success ? 'default' : 'outline'} className="w-full" size="lg">
             Öğrenme Yoluna Dön
           </Button>
         </Link>

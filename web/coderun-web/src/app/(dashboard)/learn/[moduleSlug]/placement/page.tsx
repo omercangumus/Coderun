@@ -46,7 +46,7 @@ export default function PlacementPage({
   const currentQuestion = questions[currentIndex];
   const isLastQuestion = currentIndex === total - 1;
   const answeredIndices = questions
-    .map((q, i) => (answers[q.id] !== undefined ? i : -1))
+    .map((q, i) => (answers[q.id] !== undefined && answers[q.id] !== '' ? i : -1))
     .filter(i => i >= 0);
 
   const handleSubmit = async () => {
