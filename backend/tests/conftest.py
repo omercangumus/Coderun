@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
+# CRITICAL: sys.path'i import'lardan ÖNCE düzelt
+import sys
 import os
+
+# /app'i sys.path'in en başına ekle
+_app_path = "/app"
+if _app_path not in sys.path:
+    sys.path.insert(0, _app_path)
+
 from collections.abc import AsyncGenerator
 from pathlib import Path
 from uuid import uuid4
@@ -24,7 +32,7 @@ os.environ.setdefault("OPENROUTER_API_KEY", "test-openrouter-key-for-testing-onl
 from app.api.v1.dependencies import get_db
 from app.core.database import Base
 from app.main import app
-from backend.app import models as _models
+from app import models as _models
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./tests/test_auth.db"
 _ = _models

@@ -6,6 +6,9 @@ RUN groupadd --gid 1001 appgroup && \
 
 WORKDIR /app
 
+# Python path ayarı
+ENV PYTHONPATH=/app
+
 # Layer cache optimizasyonu: önce requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
