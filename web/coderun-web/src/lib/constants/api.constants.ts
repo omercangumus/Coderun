@@ -35,6 +35,12 @@ export const AI_ENDPOINTS = {
   mentor: '/ai/mentor',
 } as const;
 
+export const MENTOR_ENDPOINTS = {
+  chat: '/mentor/chat',
+  stream: '/mentor/chat/stream',
+  status: '/mentor/status',
+} as const;
+
 export const QUERY_KEYS = {
   modules: ['modules'] as const,
   moduleProgress: (slug: string) => ['module-progress', slug] as const,

@@ -26,6 +26,19 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.1-70b-versatile"  # llama-3.1-70b-versatile, mixtral-8x7b-32768
 
+    # --- Harici Servisler — OpenRouter AI ---
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_MODEL: str = "meta-llama/llama-3.1-8b-instruct:free"
+    OPENROUTER_MAX_TOKENS: int = 512
+    OPENROUTER_TEMPERATURE: float = 0.3
+    OPENROUTER_SITE_URL: str = "https://coderun.com"
+    OPENROUTER_SITE_NAME: str = "Coderun"
+
+    # --- Mentor Ayarları ---
+    MENTOR_RATE_LIMIT_PER_MINUTE: int = 20
+    MENTOR_MAX_HISTORY: int = 10
+
     # --- Uygulama ---
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]

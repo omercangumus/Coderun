@@ -14,6 +14,7 @@ import '../../presentation/screens/learn/learning_path_screen.dart';
 import '../../presentation/screens/lesson/lesson_screen.dart';
 import '../../presentation/screens/lesson/lesson_result_screen.dart';
 import '../../presentation/screens/badges/badges_screen.dart';
+import '../../presentation/screens/mentor/mentor_chat_screen.dart';
 import '../../presentation/screens/placement/placement_screen.dart';
 import '../../data/models/lesson_result_model.dart';
 
@@ -61,6 +62,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (_, __) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/mentor',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return MentorChatScreen(
+            moduleSlug: extra?['moduleSlug'] as String?,
+            lessonTitle: extra?['lessonTitle'] as String?,
+            questionText: extra?['questionText'] as String?,
+            context: (extra?['context'] as String?) ?? 'general',
+          );
+        },
       ),
       GoRoute(
         path: '/home',

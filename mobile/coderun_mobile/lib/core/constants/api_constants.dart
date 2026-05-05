@@ -42,6 +42,11 @@ abstract class ApiConstants {
   static const String levelProgress = '/gamification/level-progress';
   static const String streak = '/gamification/streak';
 
+  // Mentor endpoint'leri
+  static const String mentorChat = '/mentor/chat';
+  static const String mentorChatStream = '/mentor/chat/stream';
+  static const String mentorStatus = '/mentor/status';
+
   // Timeout değerleri (milisaniye)
   static const int connectTimeout = 30000;
   static const int receiveTimeout = 30000;

@@ -6,11 +6,13 @@ from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from openai import AsyncOpenAI
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
+from app.core.openrouter_client import get_openrouter_client
 from app.models.user import User
 from app.repositories.badge_repository import BadgeRepository
 from app.repositories.lesson_repository import LessonRepository
@@ -113,3 +115,10 @@ async def get_current_active_user(
             detail=settings.AUTH_INVALID_CREDENTIALS_MESSAGE,
         )
     return current_user
+
+
+def get_openrouter(
+    client: AsyncOpenAI = Depends(get_openrouter_client),
+) -> AsyncOpenAI:
+    """OpenRouter AsyncOpenAI istemcisi bağımlılığını sağlar."""
+    return client

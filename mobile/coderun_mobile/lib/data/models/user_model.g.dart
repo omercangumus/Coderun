@@ -15,6 +15,8 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       level: (json['level'] as num).toInt(),
       streak: (json['streak'] as num).toInt(),
       lastActiveDate: json['last_active_date'] as String?,
+      isActive: json['is_active'] as bool? ?? true,
+      isVerified: json['is_verified'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
 
@@ -27,5 +29,7 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'level': instance.level,
       'streak': instance.streak,
       'last_active_date': instance.lastActiveDate,
+      'is_active': instance.isActive,
+      'is_verified': instance.isVerified,
       'created_at': instance.createdAt.toIso8601String(),
     };

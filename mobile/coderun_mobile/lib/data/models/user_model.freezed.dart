@@ -28,6 +28,10 @@ mixin _$UserModel {
   int get streak => throw _privateConstructorUsedError;
   @JsonKey(name: 'last_active_date')
   String? get lastActiveDate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_active')
+  bool get isActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_verified')
+  bool get isVerified => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
 
@@ -54,6 +58,8 @@ abstract class $UserModelCopyWith<$Res> {
       int level,
       int streak,
       @JsonKey(name: 'last_active_date') String? lastActiveDate,
+      @JsonKey(name: 'is_active') bool isActive,
+      @JsonKey(name: 'is_verified') bool isVerified,
       @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
@@ -79,6 +85,8 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? level = null,
     Object? streak = null,
     Object? lastActiveDate = freezed,
+    Object? isActive = null,
+    Object? isVerified = null,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -110,6 +118,14 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.lastActiveDate
           : lastActiveDate // ignore: cast_nullable_to_non_nullable
               as String?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isVerified: null == isVerified
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -134,6 +150,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       int level,
       int streak,
       @JsonKey(name: 'last_active_date') String? lastActiveDate,
+      @JsonKey(name: 'is_active') bool isActive,
+      @JsonKey(name: 'is_verified') bool isVerified,
       @JsonKey(name: 'created_at') DateTime createdAt});
 }
 
@@ -157,6 +175,8 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? level = null,
     Object? streak = null,
     Object? lastActiveDate = freezed,
+    Object? isActive = null,
+    Object? isVerified = null,
     Object? createdAt = null,
   }) {
     return _then(_$UserModelImpl(
@@ -188,6 +208,14 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.lastActiveDate
           : lastActiveDate // ignore: cast_nullable_to_non_nullable
               as String?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isVerified: null == isVerified
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -207,6 +235,8 @@ class _$UserModelImpl implements _UserModel {
       required this.level,
       required this.streak,
       @JsonKey(name: 'last_active_date') this.lastActiveDate,
+      @JsonKey(name: 'is_active') this.isActive = true,
+      @JsonKey(name: 'is_verified') this.isVerified = false,
       @JsonKey(name: 'created_at') required this.createdAt});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -228,12 +258,18 @@ class _$UserModelImpl implements _UserModel {
   @JsonKey(name: 'last_active_date')
   final String? lastActiveDate;
   @override
+  @JsonKey(name: 'is_active')
+  final bool isActive;
+  @override
+  @JsonKey(name: 'is_verified')
+  final bool isVerified;
+  @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, username: $username, xp: $xp, level: $level, streak: $streak, lastActiveDate: $lastActiveDate, createdAt: $createdAt)';
+    return 'UserModel(id: $id, email: $email, username: $username, xp: $xp, level: $level, streak: $streak, lastActiveDate: $lastActiveDate, isActive: $isActive, isVerified: $isVerified, createdAt: $createdAt)';
   }
 
   @override
@@ -250,6 +286,10 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.streak, streak) || other.streak == streak) &&
             (identical(other.lastActiveDate, lastActiveDate) ||
                 other.lastActiveDate == lastActiveDate) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.isVerified, isVerified) ||
+                other.isVerified == isVerified) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -257,7 +297,7 @@ class _$UserModelImpl implements _UserModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, username, xp, level,
-      streak, lastActiveDate, createdAt);
+      streak, lastActiveDate, isActive, isVerified, createdAt);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -284,6 +324,8 @@ abstract class _UserModel implements UserModel {
           required final int level,
           required final int streak,
           @JsonKey(name: 'last_active_date') final String? lastActiveDate,
+          @JsonKey(name: 'is_active') final bool isActive,
+          @JsonKey(name: 'is_verified') final bool isVerified,
           @JsonKey(name: 'created_at') required final DateTime createdAt}) =
       _$UserModelImpl;
 
@@ -305,6 +347,12 @@ abstract class _UserModel implements UserModel {
   @override
   @JsonKey(name: 'last_active_date')
   String? get lastActiveDate;
+  @override
+  @JsonKey(name: 'is_active')
+  bool get isActive;
+  @override
+  @JsonKey(name: 'is_verified')
+  bool get isVerified;
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;

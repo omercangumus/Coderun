@@ -74,6 +74,19 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               'Soru ${currentIndex + 1} / ${questions.length}',
               style: const TextStyle(fontSize: 16),
             ),
+            actions: [
+              IconButton(
+                icon: const Text('👻', style: TextStyle(fontSize: 20)),
+                tooltip: 'AI Mentor',
+                onPressed: () => context.push('/mentor', extra: {
+                  'moduleSlug': widget.moduleSlug,
+                  'lessonTitle': lesson.title,
+                  if (currentQuestion != null)
+                    'questionText': currentQuestion.questionText,
+                  'context': 'lesson',
+                }),
+              ),
+            ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(28),
               child: Padding(

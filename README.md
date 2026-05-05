@@ -412,3 +412,62 @@ Backend Python snake_case döndürüyor, frontend TypeScript camelCase kullanıy
 - Flutter 3.x
 - Riverpod (state management)
 - Dio (HTTP client)
+
+## Hafta 11 — AI Mentor Entegrasyonu (OpenRouter)
+
+### Bu Haftada Yapılanlar
+
+- OpenRouter API entegrasyonu (Llama 3.1 8B Instruct — ücretsiz)
+- System prompt mühendisliği: Python/DevOps/Cloud/Lab bağlamları
+- Rate limiting: dakikada 20 istek/kullanıcı (in-memory, sliding window)
+- Konuşma geçmişi: max 10 mesaj
+- Prompt injection koruması (sanitize fonksiyonu)
+- Flutter MentorNotifier + MentorChatScreen (family provider pattern)
+- Next.js useMentor hook + AiMentorSidebar güncelleme (gerçek API)
+- 14 unit test (servis, rate limiter, endpoint)
+
+### OpenRouter Kurulumu
+
+1. https://openrouter.ai/keys adresine git
+2. Ücretsiz hesap oluştur (kredi kartı gerekmez)
+3. API key oluştur
+4. `.env` dosyasına ekle:
+
+```env
+OPENROUTER_API_KEY=your_key_here
+OPENROUTER_MODEL=meta-llama/llama-3.1-8b-instruct:free
+```
+
+### Kullanılan Model
+
+`meta-llama/llama-3.1-8b-instruct:free`
+
+Tamamen ücretsiz, hızlı, Türkçe destekli.
+İleride modeli config'den değiştirerek GPT-4o, Claude vb. kullanılabilir.
+
+### Mentor API
+
+| Method | Endpoint | Açıklama |
+|--------|----------|----------|
+| POST | /api/v1/mentor/chat | Mentor ile sohbet |
+| POST | /api/v1/mentor/chat/stream | Streaming yanıt (SSE) |
+| GET | /api/v1/mentor/status | Servis durumu + rate limit |
+
+### Mentor Bağlamları
+
+| Bağlam | Açıklama |
+|--------|----------|
+| `general` | Genel soru |
+| `lesson` | Ders sırasında yardım |
+| `lab` | Lab ortamında terminal/kod yardımı |
+
+### Mimari Kararlar
+
+**Neden OpenRouter?**
+OpenAI uyumlu API formatı kullandığı için `openai` paketi direkt çalışır, ekstra bağımlılık gerekmez. Ücretsiz tier ile başlanabilir, ileride model değiştirilebilir.
+
+**Rate Limiter:**
+In-memory sliding window (60 sn). Production'da Redis tabanlı dağıtık rate limiter kullanılmalı.
+
+**Prompt Injection Koruması:**
+Kullanıcı girdileri `_sanitize()` fonksiyonundan geçirilir; tehlikeli kalıplar maskelenir.

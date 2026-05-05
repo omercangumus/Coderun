@@ -6,10 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/network/dio_client.dart';
 import '../core/notifications/notification_service.dart';
 import '../data/datasources/auth_remote_datasource.dart';
+import '../data/datasources/mentor_remote_datasource.dart';
 import '../data/datasources/module_remote_datasource.dart';
 import '../data/datasources/gamification_remote_datasource.dart';
 import '../data/datasources/placement_remote_datasource.dart';
 import '../data/repositories/auth_repository.dart';
+import '../data/repositories/mentor_repository.dart';
 import '../data/repositories/module_repository.dart';
 import '../data/repositories/gamification_repository.dart';
 
@@ -76,4 +78,16 @@ final gamificationRepositoryProvider = Provider<GamificationRepository>((ref) {
 /// Placement uzak veri kaynağı provider'ı.
 final placementDataSourceProvider = Provider<PlacementRemoteDataSource>((ref) {
   return PlacementRemoteDataSourceImpl(dio: ref.watch(dioProvider));
+});
+
+/// Mentor uzak veri kaynağı provider'ı.
+final mentorRemoteDataSourceProvider = Provider<MentorRemoteDataSource>((ref) {
+  return MentorRemoteDataSourceImpl(dio: ref.watch(dioProvider));
+});
+
+/// Mentor repository provider'ı.
+final mentorRepositoryProvider = Provider<MentorRepository>((ref) {
+  return MentorRepositoryImpl(
+    remoteDataSource: ref.watch(mentorRemoteDataSourceProvider),
+  );
 });

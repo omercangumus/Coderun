@@ -27,6 +27,8 @@ mixin _$ModuleModel {
   int get order => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  String get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this ModuleModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,7 +52,8 @@ abstract class $ModuleModelCopyWith<$Res> {
       String slug,
       String description,
       int order,
-      @JsonKey(name: 'is_active') bool isActive});
+      @JsonKey(name: 'is_active') bool isActive,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc
@@ -74,6 +77,7 @@ class _$ModuleModelCopyWithImpl<$Res, $Val extends ModuleModel>
     Object? description = null,
     Object? order = null,
     Object? isActive = null,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -100,6 +104,10 @@ class _$ModuleModelCopyWithImpl<$Res, $Val extends ModuleModel>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -118,7 +126,8 @@ abstract class _$$ModuleModelImplCopyWith<$Res>
       String slug,
       String description,
       int order,
-      @JsonKey(name: 'is_active') bool isActive});
+      @JsonKey(name: 'is_active') bool isActive,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc
@@ -140,6 +149,7 @@ class __$$ModuleModelImplCopyWithImpl<$Res>
     Object? description = null,
     Object? order = null,
     Object? isActive = null,
+    Object? createdAt = null,
   }) {
     return _then(_$ModuleModelImpl(
       id: null == id
@@ -166,6 +176,10 @@ class __$$ModuleModelImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -179,7 +193,8 @@ class _$ModuleModelImpl implements _ModuleModel {
       required this.slug,
       required this.description,
       required this.order,
-      @JsonKey(name: 'is_active') required this.isActive});
+      @JsonKey(name: 'is_active') required this.isActive,
+      @JsonKey(name: 'created_at') required this.createdAt});
 
   factory _$ModuleModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ModuleModelImplFromJson(json);
@@ -197,10 +212,13 @@ class _$ModuleModelImpl implements _ModuleModel {
   @override
   @JsonKey(name: 'is_active')
   final bool isActive;
+  @override
+  @JsonKey(name: 'created_at')
+  final String createdAt;
 
   @override
   String toString() {
-    return 'ModuleModel(id: $id, title: $title, slug: $slug, description: $description, order: $order, isActive: $isActive)';
+    return 'ModuleModel(id: $id, title: $title, slug: $slug, description: $description, order: $order, isActive: $isActive, createdAt: $createdAt)';
   }
 
   @override
@@ -215,13 +233,15 @@ class _$ModuleModelImpl implements _ModuleModel {
                 other.description == description) &&
             (identical(other.order, order) || other.order == order) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, title, slug, description, order, isActive);
+  int get hashCode => Object.hash(
+      runtimeType, id, title, slug, description, order, isActive, createdAt);
 
   /// Create a copy of ModuleModel
   /// with the given fields replaced by the non-null parameter values.
@@ -246,7 +266,8 @@ abstract class _ModuleModel implements ModuleModel {
           required final String slug,
           required final String description,
           required final int order,
-          @JsonKey(name: 'is_active') required final bool isActive}) =
+          @JsonKey(name: 'is_active') required final bool isActive,
+          @JsonKey(name: 'created_at') required final String createdAt}) =
       _$ModuleModelImpl;
 
   factory _ModuleModel.fromJson(Map<String, dynamic> json) =
@@ -265,6 +286,9 @@ abstract class _ModuleModel implements ModuleModel {
   @override
   @JsonKey(name: 'is_active')
   bool get isActive;
+  @override
+  @JsonKey(name: 'created_at')
+  String get createdAt;
 
   /// Create a copy of ModuleModel
   /// with the given fields replaced by the non-null parameter values.

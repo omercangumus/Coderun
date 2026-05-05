@@ -14,6 +14,7 @@ _$ModuleModelImpl _$$ModuleModelImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       order: (json['order'] as num).toInt(),
       isActive: json['is_active'] as bool,
+      createdAt: json['created_at'] as String,
     );
 
 Map<String, dynamic> _$$ModuleModelImplToJson(_$ModuleModelImpl instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$ModuleModelImplToJson(_$ModuleModelImpl instance) =>
       'description': instance.description,
       'order': instance.order,
       'is_active': instance.isActive,
+      'created_at': instance.createdAt,
     };

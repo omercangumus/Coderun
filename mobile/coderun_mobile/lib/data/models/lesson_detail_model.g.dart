@@ -15,6 +15,10 @@ LessonDetailModel _$LessonDetailModelFromJson(Map<String, dynamic> json) =>
       order: (json['order'] as num).toInt(),
       xpReward: (json['xp_reward'] as num).toInt(),
       isActive: json['is_active'] as bool,
+      isCompleted: json['is_completed'] as bool? ?? false,
+      isLocked: json['is_locked'] as bool? ?? false,
+      score: (json['score'] as num?)?.toInt(),
+      attemptCount: (json['attempt_count'] as num?)?.toInt() ?? 0,
       questions: (json['questions'] as List<dynamic>?)
               ?.map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -30,5 +34,9 @@ Map<String, dynamic> _$LessonDetailModelToJson(LessonDetailModel instance) =>
       'order': instance.order,
       'xp_reward': instance.xpReward,
       'is_active': instance.isActive,
+      'is_completed': instance.isCompleted,
+      'is_locked': instance.isLocked,
+      'score': instance.score,
+      'attempt_count': instance.attemptCount,
       'questions': instance.questions,
     };
