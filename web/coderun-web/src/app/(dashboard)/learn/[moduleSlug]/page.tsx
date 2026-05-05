@@ -1,6 +1,5 @@
 'use client';
 
-import { use } from 'react';
 import { ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { useLessons, useModuleProgress } from '@/lib/hooks/use-modules';
@@ -13,9 +12,9 @@ import { MODULE_EMOJIS } from '@/lib/constants/app.constants';
 export default function ModulePage({
   params,
 }: {
-  params: Promise<{ moduleSlug: string }>;
+  params: { moduleSlug: string };
 }) {
-  const { moduleSlug } = use(params);
+  const { moduleSlug } = params;
   const { data: lessons, isLoading } = useLessons(moduleSlug);
   const { data: progress } = useModuleProgress(moduleSlug);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -13,9 +13,9 @@ import type { LessonResultResponse } from '@/lib/types/module.types';
 export default function ResultPage({
   params,
 }: {
-  params: Promise<{ moduleSlug: string; lessonId: string }>;
+  params: { moduleSlug: string; lessonId: string };
 }) {
-  const { moduleSlug, lessonId } = use(params);
+  const { moduleSlug, lessonId } = params;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [result, setResult] = useState<LessonResultResponse | null>(null);

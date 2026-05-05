@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Bot, ChevronDown, ChevronUp, Terminal, Code2 } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -28,9 +28,9 @@ const CRITERIA = [
 export default function LabPage({
   params,
 }: {
-  params: Promise<{ moduleSlug: string; lessonId: string }>;
+  params: { moduleSlug: string; lessonId: string };
 }) {
-  const { moduleSlug, lessonId } = use(params);
+  const { moduleSlug, lessonId } = params;
   const [activeTab, setActiveTab] = useState<'terminal' | 'editor'>('terminal');
   const [mentorOpen, setMentorOpen] = useState(false);
   const [completedCriteria, setCompletedCriteria] = useState<number[]>([]);

@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,9 +18,9 @@ type Step = 'intro' | 'test' | 'result';
 export default function PlacementPage({
   params,
 }: {
-  params: Promise<{ moduleSlug: string }>;
+  params: { moduleSlug: string };
 }) {
-  const { moduleSlug } = use(params);
+  const { moduleSlug } = params;
   const router = useRouter();
   const [step, setStep] = useState<Step>('intro');
 

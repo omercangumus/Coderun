@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Bot, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,9 +18,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function LessonPage({
   params,
 }: {
-  params: Promise<{ moduleSlug: string; lessonId: string }>;
+  params: { moduleSlug: string; lessonId: string };
 }) {
-  const { moduleSlug, lessonId } = use(params);
+  const { moduleSlug, lessonId } = params;
   const router = useRouter();
   const { data: lesson, isLoading } = useLessonDetail(lessonId);
   const [showExitDialog, setShowExitDialog] = useState(false);
