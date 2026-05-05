@@ -285,7 +285,6 @@ async def test_ask_mentor_success(client: AsyncClient, test_user: dict):
     assert response.status_code == 200
     data = response.json()
     assert "answer" in data
-    assert "model" in data
     assert data["answer"] == "Bir ipucu: for döngüsünü incele."
 
 

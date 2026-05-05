@@ -83,7 +83,7 @@ class ChoosePathScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.onSurface),
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go('/welcome'),
         ),
         title: const Text(
           'Yolunu Seç',

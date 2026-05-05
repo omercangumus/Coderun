@@ -37,7 +37,6 @@ export interface MentorAskResponse {
 
 export interface MentorStatus {
   status: string;
-  model: string;
   provider: string;
   rate_limit_remaining: number;
 }

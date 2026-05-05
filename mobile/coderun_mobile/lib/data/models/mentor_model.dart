@@ -45,3 +45,29 @@ class MentorResponseModel with _$MentorResponseModel {
   factory MentorResponseModel.fromJson(Map<String, dynamic> json) =>
       _$MentorResponseModelFromJson(json);
 }
+
+/// /mentor/ask isteği — attempt_count destekli LLM endpoint.
+@freezed
+class MentorAskRequestModel with _$MentorAskRequestModel {
+  const factory MentorAskRequestModel({
+    required String message,
+    @Default('beginner') String userLevel,
+    String? learningPath,
+    @Default(1) int attemptCount,
+  }) = _MentorAskRequestModel;
+
+  factory MentorAskRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$MentorAskRequestModelFromJson(json);
+}
+
+/// /mentor/ask yanıtı.
+@freezed
+class MentorAskResponseModel with _$MentorAskResponseModel {
+  const factory MentorAskResponseModel({
+    required String answer,
+    required String model,
+  }) = _MentorAskResponseModel;
+
+  factory MentorAskResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$MentorAskResponseModelFromJson(json);
+}

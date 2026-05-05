@@ -25,9 +25,9 @@ abstract class AppConstants {
         return 'https://staging-api.coderun.com/api/v1';
       case 'development':
       default:
-        // Fiziksel cihaz için bilgisayarın IP adresi
-        // Emulator için 10.0.2.2 kullan
-        return 'http://10.22.165.123:8000/api/v1';
+        // Android emülatör için 10.0.2.2, iOS simulator için localhost kullanılır.
+        // Fiziksel cihaz için --dart-define=API_BASE_URL=http://<IP>:8000/api/v1 ile override edin.
+        return 'http://10.0.2.2:8000/api/v1';
     }
   }
 }

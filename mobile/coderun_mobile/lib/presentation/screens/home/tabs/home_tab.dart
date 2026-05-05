@@ -111,7 +111,7 @@ class HomeTab extends ConsumerWidget {
                     data: (stats) => _XpCard(
                       xp: stats.totalXp,
                       level: stats.level,
-                      xpProgress: stats.levelProgress,
+                      xpProgress: stats.levelProgress.progressPercentage / 100,
                       streak: stats.streak,
                     ),
                     loading: () => const _CardSkeleton(height: 80),

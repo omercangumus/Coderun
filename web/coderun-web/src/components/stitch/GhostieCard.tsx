@@ -1,5 +1,6 @@
 // Coderun Stitch Design System — Ghostie Components
 
+import React from 'react';
 import { cn } from '@/lib/utils/cn';
 import { ReactNode } from 'react';
 
@@ -206,20 +207,27 @@ export function GhostieMentorPanel({
 }
 
 function MentorInput({ onSend }: { onSend?: (msg: string) => void }) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleSend = () => {
+    const value = inputRef.current?.value.trim();
+    if (value) {
+      onSend?.(value);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      const value = (e.target as HTMLInputElement).value.trim();
-      if (value) {
-        onSend?.(value);
-        (e.target as HTMLInputElement).value = '';
-      }
+      handleSend();
     }
   };
 
   return (
     <div className="flex items-center gap-2 bg-surface-container rounded-full px-4 py-2">
       <input
+        ref={inputRef}
         type="text"
         placeholder="Ghostie'ye sor..."
         className="flex-1 bg-transparent font-sans text-body-sm text-on-surface placeholder:text-outline outline-none"
@@ -227,6 +235,7 @@ function MentorInput({ onSend }: { onSend?: (msg: string) => void }) {
       />
       <button
         type="button"
+        onClick={handleSend}
         className="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white hover:bg-primary-container transition-colors"
         aria-label="Send message"
       >

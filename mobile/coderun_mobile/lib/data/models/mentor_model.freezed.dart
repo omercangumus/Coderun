@@ -622,3 +622,401 @@ abstract class _MentorResponseModel implements MentorResponseModel {
   _$$MentorResponseModelImplCopyWith<_$MentorResponseModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+MentorAskRequestModel _$MentorAskRequestModelFromJson(
+    Map<String, dynamic> json) {
+  return _MentorAskRequestModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MentorAskRequestModel {
+  String get message => throw _privateConstructorUsedError;
+  String get userLevel => throw _privateConstructorUsedError;
+  String? get learningPath => throw _privateConstructorUsedError;
+  int get attemptCount => throw _privateConstructorUsedError;
+
+  /// Serializes this MentorAskRequestModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MentorAskRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MentorAskRequestModelCopyWith<MentorAskRequestModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MentorAskRequestModelCopyWith<$Res> {
+  factory $MentorAskRequestModelCopyWith(MentorAskRequestModel value,
+          $Res Function(MentorAskRequestModel) then) =
+      _$MentorAskRequestModelCopyWithImpl<$Res, MentorAskRequestModel>;
+  @useResult
+  $Res call(
+      {String message,
+      String userLevel,
+      String? learningPath,
+      int attemptCount});
+}
+
+/// @nodoc
+class _$MentorAskRequestModelCopyWithImpl<$Res,
+        $Val extends MentorAskRequestModel>
+    implements $MentorAskRequestModelCopyWith<$Res> {
+  _$MentorAskRequestModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MentorAskRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+    Object? userLevel = null,
+    Object? learningPath = freezed,
+    Object? attemptCount = null,
+  }) {
+    return _then(_value.copyWith(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      userLevel: null == userLevel
+          ? _value.userLevel
+          : userLevel // ignore: cast_nullable_to_non_nullable
+              as String,
+      learningPath: freezed == learningPath
+          ? _value.learningPath
+          : learningPath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      attemptCount: null == attemptCount
+          ? _value.attemptCount
+          : attemptCount // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$MentorAskRequestModelImplCopyWith<$Res>
+    implements $MentorAskRequestModelCopyWith<$Res> {
+  factory _$$MentorAskRequestModelImplCopyWith(
+          _$MentorAskRequestModelImpl value,
+          $Res Function(_$MentorAskRequestModelImpl) then) =
+      __$$MentorAskRequestModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String message,
+      String userLevel,
+      String? learningPath,
+      int attemptCount});
+}
+
+/// @nodoc
+class __$$MentorAskRequestModelImplCopyWithImpl<$Res>
+    extends _$MentorAskRequestModelCopyWithImpl<$Res,
+        _$MentorAskRequestModelImpl>
+    implements _$$MentorAskRequestModelImplCopyWith<$Res> {
+  __$$MentorAskRequestModelImplCopyWithImpl(_$MentorAskRequestModelImpl _value,
+      $Res Function(_$MentorAskRequestModelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of MentorAskRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+    Object? userLevel = null,
+    Object? learningPath = freezed,
+    Object? attemptCount = null,
+  }) {
+    return _then(_$MentorAskRequestModelImpl(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      userLevel: null == userLevel
+          ? _value.userLevel
+          : userLevel // ignore: cast_nullable_to_non_nullable
+              as String,
+      learningPath: freezed == learningPath
+          ? _value.learningPath
+          : learningPath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      attemptCount: null == attemptCount
+          ? _value.attemptCount
+          : attemptCount // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MentorAskRequestModelImpl implements _MentorAskRequestModel {
+  const _$MentorAskRequestModelImpl(
+      {required this.message,
+      this.userLevel = 'beginner',
+      this.learningPath,
+      this.attemptCount = 1});
+
+  factory _$MentorAskRequestModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MentorAskRequestModelImplFromJson(json);
+
+  @override
+  final String message;
+  @override
+  @JsonKey()
+  final String userLevel;
+  @override
+  final String? learningPath;
+  @override
+  @JsonKey()
+  final int attemptCount;
+
+  @override
+  String toString() {
+    return 'MentorAskRequestModel(message: $message, userLevel: $userLevel, learningPath: $learningPath, attemptCount: $attemptCount)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MentorAskRequestModelImpl &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.userLevel, userLevel) ||
+                other.userLevel == userLevel) &&
+            (identical(other.learningPath, learningPath) ||
+                other.learningPath == learningPath) &&
+            (identical(other.attemptCount, attemptCount) ||
+                other.attemptCount == attemptCount));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, message, userLevel, learningPath, attemptCount);
+
+  /// Create a copy of MentorAskRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MentorAskRequestModelImplCopyWith<_$MentorAskRequestModelImpl>
+      get copyWith => __$$MentorAskRequestModelImplCopyWithImpl<
+          _$MentorAskRequestModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MentorAskRequestModelImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _MentorAskRequestModel implements MentorAskRequestModel {
+  const factory _MentorAskRequestModel(
+      {required final String message,
+      final String userLevel,
+      final String? learningPath,
+      final int attemptCount}) = _$MentorAskRequestModelImpl;
+
+  factory _MentorAskRequestModel.fromJson(Map<String, dynamic> json) =
+      _$MentorAskRequestModelImpl.fromJson;
+
+  @override
+  String get message;
+  @override
+  String get userLevel;
+  @override
+  String? get learningPath;
+  @override
+  int get attemptCount;
+
+  /// Create a copy of MentorAskRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MentorAskRequestModelImplCopyWith<_$MentorAskRequestModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+MentorAskResponseModel _$MentorAskResponseModelFromJson(
+    Map<String, dynamic> json) {
+  return _MentorAskResponseModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MentorAskResponseModel {
+  String get answer => throw _privateConstructorUsedError;
+  String get model => throw _privateConstructorUsedError;
+
+  /// Serializes this MentorAskResponseModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MentorAskResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MentorAskResponseModelCopyWith<MentorAskResponseModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MentorAskResponseModelCopyWith<$Res> {
+  factory $MentorAskResponseModelCopyWith(MentorAskResponseModel value,
+          $Res Function(MentorAskResponseModel) then) =
+      _$MentorAskResponseModelCopyWithImpl<$Res, MentorAskResponseModel>;
+  @useResult
+  $Res call({String answer, String model});
+}
+
+/// @nodoc
+class _$MentorAskResponseModelCopyWithImpl<$Res,
+        $Val extends MentorAskResponseModel>
+    implements $MentorAskResponseModelCopyWith<$Res> {
+  _$MentorAskResponseModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MentorAskResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? answer = null,
+    Object? model = null,
+  }) {
+    return _then(_value.copyWith(
+      answer: null == answer
+          ? _value.answer
+          : answer // ignore: cast_nullable_to_non_nullable
+              as String,
+      model: null == model
+          ? _value.model
+          : model // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$MentorAskResponseModelImplCopyWith<$Res>
+    implements $MentorAskResponseModelCopyWith<$Res> {
+  factory _$$MentorAskResponseModelImplCopyWith(
+          _$MentorAskResponseModelImpl value,
+          $Res Function(_$MentorAskResponseModelImpl) then) =
+      __$$MentorAskResponseModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String answer, String model});
+}
+
+/// @nodoc
+class __$$MentorAskResponseModelImplCopyWithImpl<$Res>
+    extends _$MentorAskResponseModelCopyWithImpl<$Res,
+        _$MentorAskResponseModelImpl>
+    implements _$$MentorAskResponseModelImplCopyWith<$Res> {
+  __$$MentorAskResponseModelImplCopyWithImpl(
+      _$MentorAskResponseModelImpl _value,
+      $Res Function(_$MentorAskResponseModelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of MentorAskResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? answer = null,
+    Object? model = null,
+  }) {
+    return _then(_$MentorAskResponseModelImpl(
+      answer: null == answer
+          ? _value.answer
+          : answer // ignore: cast_nullable_to_non_nullable
+              as String,
+      model: null == model
+          ? _value.model
+          : model // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MentorAskResponseModelImpl implements _MentorAskResponseModel {
+  const _$MentorAskResponseModelImpl(
+      {required this.answer, required this.model});
+
+  factory _$MentorAskResponseModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MentorAskResponseModelImplFromJson(json);
+
+  @override
+  final String answer;
+  @override
+  final String model;
+
+  @override
+  String toString() {
+    return 'MentorAskResponseModel(answer: $answer, model: $model)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MentorAskResponseModelImpl &&
+            (identical(other.answer, answer) || other.answer == answer) &&
+            (identical(other.model, model) || other.model == model));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, answer, model);
+
+  /// Create a copy of MentorAskResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MentorAskResponseModelImplCopyWith<_$MentorAskResponseModelImpl>
+      get copyWith => __$$MentorAskResponseModelImplCopyWithImpl<
+          _$MentorAskResponseModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MentorAskResponseModelImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _MentorAskResponseModel implements MentorAskResponseModel {
+  const factory _MentorAskResponseModel(
+      {required final String answer,
+      required final String model}) = _$MentorAskResponseModelImpl;
+
+  factory _MentorAskResponseModel.fromJson(Map<String, dynamic> json) =
+      _$MentorAskResponseModelImpl.fromJson;
+
+  @override
+  String get answer;
+  @override
+  String get model;
+
+  /// Create a copy of MentorAskResponseModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MentorAskResponseModelImplCopyWith<_$MentorAskResponseModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

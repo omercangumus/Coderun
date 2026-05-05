@@ -9,9 +9,6 @@ import {
   User,
   LogOut,
   Medal,
-  FlaskConical,
-  RefreshCw,
-  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Avatar } from '@/components/ui/avatar';
@@ -20,8 +17,6 @@ import { useAuth } from '@/lib/hooks/use-auth';
 const navItems = [
   { href: '/', icon: Home, label: 'Dashboard' },
   { href: '/learn', icon: BookOpen, label: 'Öğrenme Yolları' },
-  { href: '/learn', icon: FlaskConical, label: 'Labs', match: '/lab' },
-  { href: '/learn', icon: RefreshCw, label: 'Tekrar', match: '/review' },
   { href: '/leaderboard', icon: Trophy, label: 'Liderboard' },
   { href: '/badges', icon: Medal, label: 'Başarılar' },
   { href: '/profile', icon: User, label: 'Profil' },
@@ -43,10 +38,8 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 flex flex-col gap-0.5 p-3 pt-4">
-        {navItems.map(({ href, icon: Icon, label, match }) => {
-          const isActive = match
-            ? pathname.includes(match)
-            : pathname === href;
+        {navItems.map(({ href, icon: Icon, label }) => {
+          const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
 
           return (
             <Link

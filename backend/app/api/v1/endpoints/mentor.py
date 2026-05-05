@@ -120,8 +120,7 @@ async def mentor_status(
     remaining = rate_limiter.get_remaining(str(current_user.id))
     return {
         "status": "active",
-        "model": settings.OPENROUTER_MODEL,
-        "provider": "OpenRouter",
+        "provider": "AI",
         "rate_limit_remaining": remaining,
     }
 
@@ -163,13 +162,13 @@ async def ask_mentor(
         )
 
     try:
-        answer, model_name = await call_llm(
+        answer, _model_name = await call_llm(
             message=request.message,
             user_level=request.user_level,
             learning_path=request.learning_path,
             attempt_count=request.attempt_count,
         )
-        return LlmMentorResponse(answer=answer, model=model_name)
+        return LlmMentorResponse(answer=answer)
 
     except ValueError as exc:
         # API key eksik — yapılandırma hatası

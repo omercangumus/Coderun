@@ -35,4 +35,3 @@ class LlmMentorResponse(BaseModel):
     """LLM Mentor sohbet yanıtı."""
 
     answer: str = Field(description="Mentor'un yanıtı.")
-    model: str = Field(description="Kullanılan LLM model adı.")

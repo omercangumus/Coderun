@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../presentation/screens/splash/splash_screen.dart';
+import '../../presentation/screens/onboarding/welcome_screen.dart';
+import '../../presentation/screens/onboarding/choose_path_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
@@ -38,22 +40,33 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: notifier,
     redirect: (BuildContext context, GoRouterState state) {
       final authState = notifier.authState;
-      final isOnSplash = state.matchedLocation == '/';
-      final isOnAuth = state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+      final loc = state.matchedLocation;
+      final isOnSplash = loc == '/';
+      final isOnAuth = loc == '/login' || loc == '/register';
+      final isOnOnboarding = loc == '/welcome' || loc == '/choose-path';
 
       return authState.when(
         initial: () => isOnSplash ? null : '/',
         loading: () => isOnSplash ? null : '/',
-        authenticated: (_) => isOnAuth || isOnSplash ? '/home' : null,
-        unauthenticated: () => isOnAuth ? null : '/login',
-        error: (_) => isOnAuth ? null : '/login',
+        authenticated: (_) =>
+            isOnAuth || isOnSplash || isOnOnboarding ? '/home' : null,
+        unauthenticated: () =>
+            isOnAuth || isOnOnboarding ? null : '/welcome',
+        error: (_) => isOnAuth || isOnOnboarding ? null : '/welcome',
       );
     },
     routes: [
       GoRoute(
         path: '/',
         builder: (_, __) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        builder: (_, __) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/choose-path',
+        builder: (_, __) => const ChoosePathScreen(),
       ),
       GoRoute(
         path: '/login',

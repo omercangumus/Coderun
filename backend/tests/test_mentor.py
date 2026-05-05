@@ -298,5 +298,4 @@ async def test_mentor_status_endpoint(client: AsyncClient, test_user: dict):
     data = response.json()
     assert data["status"] == "active"
     assert "rate_limit_remaining" in data
-    assert "model" in data
-    assert data["provider"] == "OpenRouter"
+    assert data["provider"] == "AI"

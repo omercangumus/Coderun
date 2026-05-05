@@ -8,6 +8,7 @@ import '../models/mentor_model.dart';
 
 abstract class MentorRemoteDataSource {
   Future<MentorResponseModel> sendMessage(MentorRequestModel request);
+  Future<MentorAskResponseModel> askMentor(MentorAskRequestModel request);
 }
 
 class MentorRemoteDataSourceImpl implements MentorRemoteDataSource {
@@ -37,6 +38,35 @@ class MentorRemoteDataSourceImpl implements MentorRemoteDataSource {
         throw const ApiException(message: 'Geçersiz yanıt formatı');
       }
       return MentorResponseModel.fromJson(data);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 429) {
+        throw const ApiException(
+          message: 'Çok fazla istek gönderdin. Biraz bekle! ⏳',
+          statusCode: 429,
+          errorCode: 'RATE_LIMIT',
+        );
+      }
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  @override
+  Future<MentorAskResponseModel> askMentor(MentorAskRequestModel request) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.mentorAsk,
+        data: {
+          'message': request.message,
+          'user_level': request.userLevel,
+          if (request.learningPath != null) 'learning_path': request.learningPath,
+          'attempt_count': request.attemptCount,
+        },
+      );
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw const ApiException(message: 'Geçersiz yanıt formatı');
+      }
+      return MentorAskResponseModel.fromJson(data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 429) {
         throw const ApiException(

@@ -78,11 +78,16 @@ def _configure_cors(application: FastAPI, allow_origins: list[str]) -> None:
     Güvenlik: allow_origins=["*"] ile allow_credentials=True birlikte kullanılamaz.
     Production'da ALLOWED_ORIGINS'e gerçek domain'ler girilmeli.
 
+    Development modunda (allow_origins=["*"]) localhost regex kullanılır ve
+    tüm method/header'lara izin verilir.
+    Production modunda yalnızca gerekli HTTP method'ları ve header'lar açılır.
+
     Args:
         application: FastAPI uygulama örneği.
         allow_origins: İzin verilen origin listesi.
     """
     if "*" in allow_origins:
+        # Development: localhost'a geniş izin, wildcard origin yerine regex
         application.add_middleware(
             CORSMiddleware,
             allow_origin_regex=r"http://localhost:\d+",
@@ -91,12 +96,13 @@ def _configure_cors(application: FastAPI, allow_origins: list[str]) -> None:
             allow_headers=["*"],
         )
     else:
+        # Production: yalnızca gerekli method ve header'lar
         application.add_middleware(
             CORSMiddleware,
             allow_origins=allow_origins,
             allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
         )
 
 

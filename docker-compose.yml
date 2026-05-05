@@ -6,7 +6,7 @@ services:
     env_file: .env
     environment:
       # Docker network içinde servis adları kullanılmalı (localhost değil)
-      DATABASE_URL: postgresql+asyncpg://coderun:coderun@db:5432/coderun
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
     depends_on:
       db:

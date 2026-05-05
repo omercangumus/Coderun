@@ -20,7 +20,9 @@ mixin _$MentorChatState {
   bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of MentorChatState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $MentorChatStateCopyWith<MentorChatState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -31,8 +33,7 @@ abstract class $MentorChatStateCopyWith<$Res> {
           MentorChatState value, $Res Function(MentorChatState) then) =
       _$MentorChatStateCopyWithImpl<$Res, MentorChatState>;
   @useResult
-  $Res call(
-      {List<ChatMessageModel> messages, bool isLoading, String? error});
+  $Res call({List<ChatMessageModel> messages, bool isLoading, String? error});
 }
 
 /// @nodoc
@@ -40,9 +41,13 @@ class _$MentorChatStateCopyWithImpl<$Res, $Val extends MentorChatState>
     implements $MentorChatStateCopyWith<$Res> {
   _$MentorChatStateCopyWithImpl(this._value, this._then);
 
+  // ignore: unused_field
   final $Val _value;
+  // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of MentorChatState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -53,9 +58,16 @@ class _$MentorChatStateCopyWithImpl<$Res, $Val extends MentorChatState>
     return _then(_value.copyWith(
       messages: null == messages
           ? _value.messages
-          : messages as List<ChatMessageModel>,
-      isLoading: null == isLoading ? _value.isLoading : isLoading as bool,
-      error: freezed == error ? _value.error : error as String?,
+          : messages // ignore: cast_nullable_to_non_nullable
+              as List<ChatMessageModel>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -68,8 +80,7 @@ abstract class _$$MentorChatStateImplCopyWith<$Res>
       __$$MentorChatStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {List<ChatMessageModel> messages, bool isLoading, String? error});
+  $Res call({List<ChatMessageModel> messages, bool isLoading, String? error});
 }
 
 /// @nodoc
@@ -80,6 +91,8 @@ class __$$MentorChatStateImplCopyWithImpl<$Res>
       _$MentorChatStateImpl _value, $Res Function(_$MentorChatStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of MentorChatState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -90,9 +103,16 @@ class __$$MentorChatStateImplCopyWithImpl<$Res>
     return _then(_$MentorChatStateImpl(
       messages: null == messages
           ? _value._messages
-          : messages as List<ChatMessageModel>,
-      isLoading: null == isLoading ? _value.isLoading : isLoading as bool,
-      error: freezed == error ? _value.error : error as String?,
+          : messages // ignore: cast_nullable_to_non_nullable
+              as List<ChatMessageModel>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -111,6 +131,7 @@ class _$MentorChatStateImpl implements _MentorChatState {
   @JsonKey()
   List<ChatMessageModel> get messages {
     if (_messages is EqualUnmodifiableListView) return _messages;
+    // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_messages);
   }
 
@@ -130,8 +151,7 @@ class _$MentorChatStateImpl implements _MentorChatState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MentorChatStateImpl &&
-            const DeepCollectionEquality()
-                .equals(other._messages, _messages) &&
+            const DeepCollectionEquality().equals(other._messages, _messages) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error));
@@ -141,7 +161,9 @@ class _$MentorChatStateImpl implements _MentorChatState {
   int get hashCode => Object.hash(runtimeType,
       const DeepCollectionEquality().hash(_messages), isLoading, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of MentorChatState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$MentorChatStateImplCopyWith<_$MentorChatStateImpl> get copyWith =>
@@ -161,8 +183,11 @@ abstract class _MentorChatState implements MentorChatState {
   bool get isLoading;
   @override
   String? get error;
+
+  /// Create a copy of MentorChatState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MentorChatStateImplCopyWith<_$MentorChatStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

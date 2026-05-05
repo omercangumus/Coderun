@@ -46,6 +46,7 @@ abstract class ApiConstants {
   static const String mentorChat = '/mentor/chat';
   static const String mentorChatStream = '/mentor/chat/stream';
   static const String mentorStatus = '/mentor/status';
+  static const String mentorAsk = '/mentor/ask'; // attempt_count destekli LLM endpoint
 
   // Timeout değerleri (milisaniye)
   static const int connectTimeout = 30000;

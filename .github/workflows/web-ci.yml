@@ -21,7 +21,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: web/coderun-web/package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: web/coderun-web
       - name: Lint
         run: npm run lint
