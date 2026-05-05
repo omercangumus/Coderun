@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lesson - Coderun</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "tertiary-container": "#9c5ab7",
+                "outline-variant": "#c6c5d7",
+                "on-tertiary-fixed": "#320047",
+                "surface-tint": "#3f4cda",
+                "on-secondary-container": "#00743a",
+                "surface-container-low": "#f1f4f8",
+                "on-surface": "#181c1f",
+                "on-secondary-fixed-variant": "#005228",
+                "surface-container-highest": "#e0e3e7",
+                "primary": "#3d4ad8",
+                "on-tertiary-container": "#fffdff",
+                "inverse-on-surface": "#eef1f5",
+                "outline": "#767686",
+                "on-primary": "#ffffff",
+                "on-error-container": "#93000a",
+                "inverse-primary": "#bec2ff",
+                "surface-container-high": "#e5e8ec",
+                "surface-bright": "#f7fafd",
+                "error": "#ba1a1a",
+                "on-tertiary-fixed-variant": "#692984",
+                "background": "#f7fafd",
+                "surface-variant": "#e0e3e7",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#00210c",
+                "inverse-surface": "#2d3134",
+                "secondary-container": "#6bfe9c",
+                "primary-container": "#5865f2",
+                "surface": "#f7fafd",
+                "on-surface-variant": "#454655",
+                "on-tertiary": "#ffffff",
+                "on-secondary": "#ffffff",
+                "secondary": "#006d37",
+                "on-error": "#ffffff",
+                "secondary-fixed-dim": "#4ae183",
+                "on-primary-fixed-variant": "#222fc2",
+                "surface-dim": "#d7dade",
+                "tertiary-fixed-dim": "#ebb2ff",
+                "tertiary": "#81419c",
+                "surface-container": "#ebeef2",
+                "on-primary-fixed": "#000569",
+                "primary-fixed-dim": "#bec2ff",
+                "on-background": "#181c1f",
+                "tertiary-fixed": "#f8d8ff",
+                "secondary-fixed": "#6bfe9c",
+                "primary-fixed": "#e0e0ff",
+                "error-container": "#ffdad6",
+                "on-primary-container": "#fffdff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-lg": "48px",
+                "stack-md": "24px",
+                "gutter": "24px",
+                "stack-sm": "12px",
+                "margin-page": "32px",
+                "unit": "8px"
+        },
+        "fontFamily": {
+                "button-text": [
+                        "Lexend"
+                ],
+                "body-lg": [
+                        "Lexend"
+                ],
+                "label-caps": [
+                        "Space Grotesk"
+                ],
+                "body-md": [
+                        "Lexend"
+                ],
+                "h2": [
+                        "Plus Jakarta Sans"
+                ],
+                "h1": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "button-text": [
+                        "16px",
+                        {
+                                "lineHeight": "1.0",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-caps": [
+                        "14px",
+                        {
+                                "lineHeight": "1.0",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "h2": [
+                        "32px",
+                        {
+                                "lineHeight": "1.3",
+                                "fontWeight": "700"
+                        }
+                ],
+                "h1": [
+                        "40px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "800"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<nav class="bg-white dark:bg-slate-900 border-b-4 border-slate-200 dark:border-slate-800 shadow-[0_30px_60px_-15px_rgba(88,101,242,0.05)] fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 md:max-w-[1200px] md:mx-auto md:left-1/2 md:-translate-x-1/2">
+<div class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center border-2 border-outline-variant overflow-hidden shrink-0">
+<img alt="Friendly Ghost Mascot avatar" class="w-full h-full object-cover" data-alt="A small, stylized 3D avatar of a friendly ghost mascot. The ghost is rendered in a soft, bright, modern 3D style resembling high-quality designer toys, set against a clean, light-mode background. The color palette features pristine whites with subtle blue ambient shadows, fitting a playful, approachable tech-learning brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhtPhRiegJv9LuVv1IvD2RxkWhRf2rJ_h9B-IwgNqjthIa-XcRMWPr8KW5xkqMC0BBxmTTVcitjYhqO_GStP1wuouJqtZAENHYO6I-XPcR6wRx5f6YdVWSMEvhCLT6FZSjy933eyYqj1cY6VvF6JFHq62uMJpRgyZny35_PvjN3W8zJYEv1f9yVzt6uOWtzQiptuMCTmKR7cT68be9BR6uqCkuVMuzh2L7KmHc0dgmBKAHZzOcIHNMbSd2WlW07dIY4b1dcSY_DpI"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-error font-plus-jakarta-sans font-bold text-lg">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span>4</span>
+</div>
+<div class="flex items-center gap-1.5 text-[#5865F2] font-plus-jakarta-sans font-bold text-lg cursor-pointer hover:scale-105 transition-transform active:translate-y-[2px]">
+<span class="tracking-widest">52</span>
+<span>🔥</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-safe flex flex-col md:max-w-[800px] md:mx-auto px-6">
+<div class="mb-8 w-full flex items-center gap-4">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface transition-colors">close</span>
+<div class="h-3 bg-surface-container-highest rounded-full w-full overflow-hidden border border-outline-variant/30 shadow-inner">
+<div class="h-full bg-secondary w-[65%] rounded-full relative shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]">
+<div class="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-r from-transparent to-white/20"></div>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant shrink-0">12 / 18</span>
+</div>
+<header class="mb-stack-md mb-stack-lg">
+<div class="flex items-center gap-2 mb-2"><div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Syntax Challenge</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase tracking-wider border border-outline-variant">Medium</span>
+</div>
+<span class="material-symbols-outlined text-primary text-sm">code</span></div>
+<h1 class="font-h1 text-h1 text-on-surface mb-4">How do you correctly initialize an empty dictionary?</h1>
+</header>
+<div class="flex flex-col gap-stack-sm mb-48">
+<button class="w-full text-left p-5 rounded-xl border-2 border-error border-b-[6px] bg-error-container text-on-error-container font-button-text text-button-text transition-all relative overflow-hidden group translate-y-[2px]"><div class="flex justify-between items-center relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full border-2 border-error flex items-center justify-center bg-white">
+<span class="material-symbols-outlined text-[16px] text-error" style="font-variation-settings: 'FILL' 1;">close</span>
+</div>
+<code class="font-mono text-lg bg-white/40 px-2 py-1 rounded">my_dict = []</code>
+</div>
+</div>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition-opacity"></div></button>
+<button class="w-full text-left p-5 rounded-xl border-2 border-secondary border-b-[6px] bg-secondary-fixed-dim text-on-secondary-fixed font-button-text text-button-text transition-all relative overflow-hidden group"><div class="flex justify-between items-center relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full border-2 border-secondary flex items-center justify-center bg-white">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<code class="font-mono text-lg bg-white/40 px-2 py-1 rounded">my_dict = {}</code>
+</div>
+</div></button>
+<button class="w-full text-left p-5 rounded-xl border-2 border-outline-variant border-b-[6px] bg-surface hover:border-primary hover:bg-primary-fixed text-on-surface font-button-text text-button-text transition-all relative overflow-hidden group opacity-50 cursor-not-allowed">
+<div class="flex justify-between items-center relative z-10">
+<code class="font-mono text-lg bg-surface-variant px-2 py-1 rounded">my_dict = ()</code>
+</div>
+</button>
+<button class="w-full text-left p-5 rounded-xl border-2 border-outline-variant border-b-[6px] bg-surface hover:border-primary hover:bg-primary-fixed text-on-surface font-button-text text-button-text transition-all relative overflow-hidden group opacity-50 cursor-not-allowed">
+<div class="flex justify-between items-center relative z-10">
+<code class="font-mono text-lg bg-surface-variant px-2 py-1 rounded">my_dict = set()</code>
+</div>
+</button>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 w-full z-40 md:max-w-[800px] md:left-1/2 md:-translate-x-1/2">
+<div class="bg-surface-container-high w-full rounded-t-[32px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] border-t border-outline-variant/50 flex flex-col p-6 pt-8 pb-safe relative">
+<div class="absolute -top-12 left-6 w-24 h-24 bg-surface rounded-full border-4 border-surface-container-high flex items-center justify-center shadow-lg overflow-hidden shrink-0">
+<img alt="Mascot Oh No expression" class="w-full h-full object-cover" data-alt="A 3D rendering of a cute, friendly ghost mascot displaying a slightly dismayed or 'oh no' expression. The ghost is stylized with tactile, soft-rounded modernism, appearing like a premium designer toy. The setting is a bright studio environment with soft, ambient lighting. The color palette focuses on whites, soft grays, and a touch of red to signify a minor mistake, fitting a polished, light-mode educational app aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa4__gz4nn87b8G8Wt8netWRGHMKrEeQZZ634f2id5-tQP6GvbNyhvLB9Gz-9tJEqIWQS2HL_uAq4XqJSvrEJr2HMxhioJDHZxBxm3HV9Lyx5vtVt0_Ymkgy6Zv88lNeOQOEYpQ8d_XJhp8vXYzo62nAgszjphiEzQqZSOAOkyZqiirRE9yMdv3Zq93Bsda9fRg3QLRVXayMOL_NE_8BK3Uvo_bVND16M6Yk4xAgXX3haq4DMVlBUzZjtD6WTmMlreYi5Q7HEGiYA"/>
+</div>
+<div class="ml-28 mb-4"><h2 class="font-h2 text-h2 text-on-surface mb-0.5">Not quite!</h2>
+<p class="font-body-md text-on-surface-variant">Let's refine your understanding of Python collections.</p></div>
+<div class="bg-surface rounded-xl p-5 mb-4 border border-outline-variant shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1.5 h-full bg-error"></div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-error mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<h3 class="font-label-caps text-[12px] text-on-surface/60 mb-1 tracking-wider">MASTERY INSIGHT</h3>
+<p class="font-body-md text-on-surface-variant">
+      You selected <code class="font-mono bg-surface-container-highest px-1.5 py-0.5 rounded text-sm font-bold">[]</code>. In Python, square brackets define a <strong>List</strong>, an ordered sequence. Dictionaries require curly braces <code class="font-mono bg-secondary-container px-1.5 py-0.5 rounded text-sm font-bold">{}</code> to hold key-value pairs.
+    </p>
+</div>
+</div></div>
+<div class="bg-primary-container rounded-xl p-4 mb-6 flex items-start gap-3 border border-primary/10"><div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-on-primary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-lg" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div>
+<h3 class="font-label-caps text-[12px] text-on-primary-container/60 mb-1 tracking-wider">QUICK HINT</h3>
+<p class="font-body-md text-on-primary-container/90 text-sm">
+      Think of it this way: <strong>C</strong>urly braces are for a <strong>C</strong>ollection of items. Square brackets are for straight lines (ordered lists).
+    </p>
+</div>
+</div></div>
+<div class="flex gap-3">
+<button class="flex-1 py-4 px-6 rounded-xl bg-surface text-primary font-button-text text-button-text border-2 border-primary/20 hover:border-primary/40 active:translate-y-[2px] transition-all flex justify-center items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+        Ask Ghostie AI
+    </button>
+<button class="flex-[2] py-4 px-6 rounded-xl bg-primary text-on-primary font-button-text text-button-text border-b-[4px] border-on-primary-fixed-variant active:border-b-0 active:translate-y-[4px] transition-all flex justify-center items-center gap-2 shadow-lg shadow-primary/20">Try Again
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 600;">refresh</span></button>
+</div>
+</div>
+</div>
+</body></html>

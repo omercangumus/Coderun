@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Mentor Chat</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#00210c",
+                        "on-primary-fixed": "#000569",
+                        "tertiary-container": "#9c5ab7",
+                        "surface": "#f7fafd",
+                        "secondary": "#006d37",
+                        "on-secondary-container": "#00743a",
+                        "on-surface": "#181c1f",
+                        "primary-fixed-dim": "#bec2ff",
+                        "background": "#f7fafd",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e0e3e7",
+                        "error": "#ba1a1a",
+                        "tertiary": "#81419c",
+                        "outline": "#767686",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "surface-container-low": "#f1f4f8",
+                        "surface-tint": "#3f4cda",
+                        "inverse-primary": "#bec2ff",
+                        "primary": "#3d4ad8",
+                        "on-tertiary-fixed": "#320047",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-high": "#e5e8ec",
+                        "on-tertiary-container": "#fffdff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#454655",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-container": "#6bfe9c",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2d3134",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "surface-dim": "#d7dade",
+                        "tertiary-fixed": "#f8d8ff",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-background": "#181c1f",
+                        "on-tertiary-fixed-variant": "#692984",
+                        "primary-fixed": "#e0e0ff",
+                        "inverse-on-surface": "#eef1f5",
+                        "surface-variant": "#e0e3e7",
+                        "surface-container": "#ebeef2",
+                        "surface-bright": "#f7fafd",
+                        "on-primary-container": "#fffdff",
+                        "outline-variant": "#c6c5d7",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#5865f2",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "unit": "8px",
+                        "margin-page": "32px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Plus Jakarta Sans"],
+                        "label-caps": ["Space Grotesk"],
+                        "body-md": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "button-text": ["Lexend"],
+                        "h1": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-caps": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "button-text": ["16px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for webkit to match the clean aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e7;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c6c5d7;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-bright text-on-surface font-body-md flex flex-col min-h-screen overflow-hidden">
+<!-- JSON Injected TopAppBar -->
+<!-- Applying exact styles from JSON: style_shell_layout, style_bg_color, style_separation_logic, style_shadows_and_elevation -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 md:max-w-[1200px] md:mx-auto md:left-1/2 md:-translate-x-1/2 bg-white dark:bg-slate-900 border-b-4 border-slate-200 dark:border-slate-800 shadow-[0_30px_60px_-15px_rgba(88,101,242,0.05)] flex-shrink-0">
+<!-- Leading Avatar & Brand -->
+<div class="flex items-center gap-3">
+<img alt="Friendly Ghost Mascot" class="w-8 h-8 rounded-full border-2 border-[#5865F2] object-cover" data-alt="A 3D stylized render of a cute, friendly ghost mascot character. The ghost is glowing softly with a vibrant blue and purple aura, featuring large expressive, encouraging eyes. It is rendered in a modern, tactile, slightly squishy art style typical of high-end gamified educational applications, set against a pristine, well-lit white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfWxmBUtOIMK75cvN9AWNeAOE2JTdTxPI4flgJdmsTDLhXCzU7CIdLRWZOgjU84VCHAmpIrxO-FBUumUCOfPESQCMWT8SReA6yd-p73R1L6zWsCotTpQZIWb5rD3aBp4HGo2zOrDfwtxuuAmEsk2b4zsfJqDRrba5PPDSPnpXUJbXekJoUVIP1SY7u5H6gSEGQNPjeSDq7RLVHnFNUnUGDURHMI0an_QogXnEOfmHRWXOyQP3ycndGkwJo3ni1AHyWIg5FVH2EvX8"/>
+<!-- style_typography, style_brand_logo -->
+<span class="font-plus-jakarta-sans font-bold text-lg text-2xl font-black text-[#5865F2] tracking-tight">Coderun</span>
+</div>
+<!-- Trailing Action -->
+<!-- style_primary_color, style_typography -->
+<div class="flex items-center gap-1 text-[#5865F2] dark:text-[#5865F2] font-plus-jakarta-sans font-bold text-lg px-3 py-1 bg-indigo-50 rounded-full border-b-2 border-indigo-200">
+<span>52</span>
+<span>🔥</span>
+</div>
+</header>
+<!-- Context Breadcrumb Bar -->
+<div class="mt-16 bg-surface-container-lowest border-b-2 border-surface-variant px-gutter py-stack-sm flex items-center gap-2 flex-shrink-0 relative z-40 shadow-sm">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-outline">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap hide-scrollbar">
+<span class="font-label-caps text-label-caps text-outline-variant">PYTHON</span>
+<span class="material-symbols-outlined text-outline-variant text-[16px]">chevron_right</span>
+<span class="font-label-caps text-label-caps text-outline-variant">DATA STRUCTURES</span>
+<span class="material-symbols-outlined text-outline-variant text-[16px]">chevron_right</span>
+<span class="font-label-caps text-label-caps text-primary">ATTEMPT 2</span>
+</div>
+</div>
+<!-- Chat Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter pb-[140px] flex flex-col gap-stack-md bg-surface-bright w-full max-w-[800px] mx-auto">
+<!-- AI Message 1 (Context Setting) -->
+<div class="flex gap-4 w-full">
+<div class="flex-shrink-0">
+<div class="w-12 h-12 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center shadow-sm relative">
+<img alt="Ghostie Avatar" class="w-full h-full rounded-full object-cover" data-alt="A close-up 3D render of the friendly ghost mascot's face, looking highly attentive and supportive. The ghost has a smooth, matte white texture with subtle blue ambient lighting on the edges, conveying a sense of digital intelligence and approachability. The background is completely transparent or solid white to blend perfectly into a circular UI container." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHsRS4fZBFWfzYVNoxag7wHJ_swTCBVYMhkGfeQ1ANA0zK7bhjDPzxomNVWbCv_g5AV1S4W_jWF_rV1aF0-C9j4PohvxPHyDUUakB_AVwTdxTQW2iZ16Tl3U_9GI44eF50pbjKqh7lD6a9R4gHUQ2aZVeasxOeoonygf9k0E0M8d_p9mY5VwV37whfLmjCbEHlNBCsS9nut0mSm0U_OEJ3MEtOBXGxhEpji4iEtORS4RQu00d62uucBzu2Pfj2-D-0JwyGFUPG2Ro"/>
+<!-- Status indicator -->
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-surface-bright"></div>
+</div>
+</div>
+<div class="flex-1 max-w-[85%]">
+<div class="font-label-caps text-label-caps text-outline mb-1 ml-1">GHOSTIE • AI MENTOR</div>
+<div class="bg-surface-container-lowest border-2 border-surface-variant border-b-[4px] rounded-2xl rounded-tl-none p-stack-sm shadow-sm relative">
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                        I noticed you struggled a bit with dictionaries in the last attempt. Don't worry, they can be tricky! Let's break down the error in your code.
+                    </p>
+<div class="mt-4 bg-surface-container p-4 rounded-xl border border-outline-variant font-mono text-[14px] text-on-surface-variant overflow-x-auto">
+<code>
+<span class="text-tertiary">my_dict</span> = {<span class="text-secondary">'apple'</span>: 1, <span class="text-secondary">'banana'</span>: 2}<br/>
+                            print(<span class="text-tertiary">my_dict</span>[<span class="text-secondary">'orange'</span>]) <span class="text-error"># KeyError</span>
+</code>
+</div>
+</div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-4 w-full flex-row-reverse">
+<div class="flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-primary-container border-2 border-primary flex items-center justify-center shadow-sm text-on-primary-container font-h2 text-h2 text-[16px]">
+                    U
+                </div>
+</div>
+<div class="flex-1 max-w-[85%] flex flex-col items-end">
+<div class="font-label-caps text-label-caps text-outline mb-1 mr-1">YOU</div>
+<div class="bg-primary border-2 border-on-primary-fixed-variant border-b-[4px] rounded-2xl rounded-tr-none p-stack-sm shadow-sm text-on-primary">
+<p class="font-body-lg text-body-lg leading-relaxed">
+                        I thought if a key wasn't there, it would just return None. How do I avoid the error?
+                    </p>
+</div>
+</div>
+</div>
+<!-- AI Message 2 (Response with Actions) -->
+<div class="flex gap-4 w-full">
+<div class="flex-shrink-0">
+<div class="w-12 h-12 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center shadow-sm relative">
+<img alt="Ghostie Avatar" class="w-full h-full rounded-full object-cover" data-alt="A close-up 3D render of the friendly ghost mascot giving a thumbs-up gesture. The lighting is warm and encouraging, highlighting the soft, squishy geometry of the character. The style is deeply aligned with modern, tactile SaaS interfaces, utilizing a crisp, clean light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4XfHRR5NnQ2k-OzfuGn0eOlTmtsG270Bx0MnAnv2g40HLxKj_HP1QCRBMF_7FjdaXvcLuW-Bc1oUNbxautcDSjBbgX00Lz6v_Gas5bRLotkkM8BlrnTThC-8sxq7JOLXmcScnfWog4fBbBOFzWsIH9A0q3Ixccs27H0tc4GwhKZCAP9jRQz2vBzeQgHW4kwrA5fUHIsYgkwxsLh7JgxbZdCTbuV3jVFEYEJ5YE6Rll8mHarLhBabDqTJZMsz4s3WEva5uBclsExg"/>
+</div>
+</div>
+<div class="flex-1 max-w-[85%]">
+<div class="font-label-caps text-label-caps text-outline mb-1 ml-1">GHOSTIE • AI MENTOR</div>
+<div class="bg-surface-container-lowest border-2 border-surface-variant border-b-[4px] rounded-2xl rounded-tl-none p-stack-sm shadow-sm">
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                        Ah, that's a very common assumption! Using square brackets directly expects the key to exist. If you want it to return <code>None</code> safely, there is a specific built-in method for dictionaries you should use.
+                    </p>
+<!-- Tactile Quick Actions (Bento-style grid) -->
+<div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+<button class="bg-surface-bright border-2 border-surface-variant border-b-[4px] rounded-xl p-3 text-left hover:bg-surface-container hover:border-primary transition-all active:border-b-2 active:translate-y-[2px] group">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<span class="font-button-text text-button-text text-on-surface group-hover:text-primary">Give me a hint</span>
+</div>
+<p class="font-body-md text-[13px] text-outline-variant">Nudge me in the right direction.</p>
+</button>
+<button class="bg-surface-bright border-2 border-surface-variant border-b-[4px] rounded-xl p-3 text-left hover:bg-surface-container hover:border-primary transition-all active:border-b-2 active:translate-y-[2px] group">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-button-text text-button-text text-on-surface group-hover:text-primary">Explain simply</span>
+</div>
+<p class="font-body-md text-[13px] text-outline-variant">Break it down like I'm 5.</p>
+</button>
+<button class="bg-surface-bright border-2 border-surface-variant border-b-[4px] rounded-xl p-3 text-left hover:bg-surface-container hover:border-primary transition-all active:border-b-2 active:translate-y-[2px] group">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">code</span>
+<span class="font-button-text text-button-text text-on-surface group-hover:text-primary">Show tiny example</span>
+</div>
+<p class="font-body-md text-[13px] text-outline-variant">See the exact syntax needed.</p>
+</button>
+<button class="bg-surface-bright border-2 border-surface-variant border-b-[4px] rounded-xl p-3 text-left hover:bg-surface-container hover:border-error transition-all active:border-b-2 active:translate-y-[2px] group">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">help</span>
+<span class="font-button-text text-button-text text-on-surface group-hover:text-error">Why is this wrong?</span>
+</div>
+<p class="font-body-md text-[13px] text-outline-variant">Deep dive into the error.</p>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Input Area -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t-2 border-surface-variant p-4 pb-safe z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:max-w-[1200px] md:left-1/2 md:-translate-x-1/2">
+<div class="max-w-[800px] mx-auto flex items-end gap-3">
+<div class="flex-1 relative">
+<textarea class="w-full bg-surface-container-low border-2 border-surface-variant rounded-2xl px-5 py-4 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-0 resize-none outline-none transition-colors overflow-hidden" placeholder="Type your answer or ask a question..." rows="1" style="min-height: 56px; max-height: 120px;"></textarea>
+<button class="absolute right-3 bottom-3 text-outline hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined">mic</span>
+</button>
+</div>
+<button class="w-14 h-14 rounded-2xl bg-primary text-on-primary border-b-[4px] border-on-primary-fixed-variant flex items-center justify-center flex-shrink-0 active:border-b-[0px] active:translate-y-[4px] transition-all hover:bg-surface-tint">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+<!-- Safe area padding for mobile -->
+<div class="h-2 w-full"></div>
+</div>
+</body></html>

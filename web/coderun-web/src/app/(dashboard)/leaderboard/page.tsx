@@ -1,92 +1,127 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useLeaderboard } from '@/lib/hooks/use-gamification';
-import { LeaderboardEntry } from '@/components/dashboard/leaderboard-entry';
-import { Avatar } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
-import { formatXP } from '@/lib/utils/format';
+import { CoderunCard, SectionHeader } from '@/components/stitch/CoderunCard';
+import { GhostieMotivationCard } from '@/components/stitch/GhostieCard';
+import { LeaderboardRow, LeaderboardPodium, LeagueBadge } from '@/components/stitch/LeaderboardCard';
+import { cn } from '@/lib/utils/cn';
+
+type Filter = 'weekly' | 'monthly' | 'global';
+
+const filterLabels: Record<Filter, string> = {
+  weekly: 'Bu Hafta',
+  monthly: 'Bu Ay',
+  global: 'Tüm Zamanlar',
+};
 
 export default function LeaderboardPage() {
   const { user } = useAuth();
   const { data: leaderboard, isLoading } = useLeaderboard(50);
+  const [activeFilter, setActiveFilter] = useState<Filter>('weekly');
 
-  const top3 = leaderboard?.entries.slice(0, 3) ?? [];
-  const rest = leaderboard?.entries.slice(3) ?? [];
+  const entries = leaderboard?.entries ?? [];
+  const top3 = entries.slice(0, 3);
+  const rest = entries.slice(3);
+
+  const mappedEntries = entries.map((e) => ({
+    rank: e.rank,
+    username: e.username,
+    xpThisWeek: e.weeklyXp,
+    streak: e.streak ?? 0,
+    level: e.level ?? 1,
+    isCurrentUser: e.userId === user?.id,
+  }));
+
+  const top3Mapped = mappedEntries.slice(0, 3);
+  const restMapped = mappedEntries.slice(3);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Liderboard</h1>
-        {leaderboard && (
-          <p className="text-slate-400 mt-1 text-sm">
-            {leaderboard.weekStart} – {leaderboard.weekEnd} haftası
-          </p>
+    <div className="max-w-4xl mx-auto">
+      <div className="flex flex-col gap-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-h2 font-bold text-on-surface">
+              Liderboard 🏆
+            </h1>
+            {leaderboard && (
+              <p className="font-sans text-body-sm text-on-surface-variant mt-1">
+                {leaderboard.weekStart} – {leaderboard.weekEnd} haftası
+              </p>
+            )}
+          </div>
+          <LeagueBadge
+            league="Diamond"
+            rank={leaderboard?.userRank ?? undefined}
+          />
+        </div>
+
+        {/* Filter tabs */}
+        <div className="flex gap-2">
+          {(Object.keys(filterLabels) as Filter[]).map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={cn(
+                'px-4 py-2 rounded-full font-sans text-body-sm font-semibold transition-all duration-150',
+                activeFilter === f
+                  ? 'bg-primary text-white shadow-primary'
+                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+              )}
+            >
+              {filterLabels[f]}
+            </button>
+          ))}
+        </div>
+
+        {/* Podium */}
+        {isLoading ? (
+          <Skeleton className="h-48" />
+        ) : top3Mapped.length >= 3 ? (
+          <CoderunCard>
+            <LeaderboardPodium top3={top3Mapped} />
+          </CoderunCard>
+        ) : null}
+
+        {/* Full list */}
+        <div>
+          <SectionHeader title="Tam Sıralama" />
+          <div className="mt-4 flex flex-col gap-2">
+            {isLoading ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <Skeleton key={i} className="h-14" />
+              ))
+            ) : (
+              mappedEntries.map((entry) => (
+                <LeaderboardRow key={entry.username} entry={entry} />
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Ghostie motivation */}
+        <GhostieMotivationCard
+          message="Harika! Sıralamada yükselmeye devam et. Her ders seni bir adım öne taşıyor! 💪"
+          mood="celebrating"
+        />
+
+        {/* User rank sticky */}
+        {leaderboard?.userRank && (
+          <div className="sticky bottom-20 lg:bottom-4">
+            <CoderunCard variant="highlight" className="text-center">
+              <p className="font-sans text-body-sm font-semibold text-primary">
+                Senin sıran:{' '}
+                <span className="font-heading text-h4 font-bold">
+                  #{leaderboard.userRank}
+                </span>
+              </p>
+            </CoderunCard>
+          </div>
         )}
       </div>
-
-      {/* Podium */}
-      {isLoading ? (
-        <Skeleton className="h-40" />
-      ) : top3.length >= 3 && top3[0] && top3[1] && top3[2] ? (
-        <div className="flex items-end justify-center gap-3 py-4">
-          {/* 2. sıra */}
-          <div className="flex flex-col items-center gap-2">
-            <Avatar username={top3[1].username} size="md" />
-            <p className="text-sm text-slate-300 font-medium">{top3[1].username}</p>
-            <p className="text-xs text-xpGold">{formatXP(top3[1].weeklyXp)}</p>
-            <div className="w-20 h-16 bg-slate-600 rounded-t-lg flex items-center justify-center">
-              <span className="text-2xl font-bold text-slate-300">2</span>
-            </div>
-          </div>
-          {/* 1. sıra */}
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-2xl">👑</span>
-            <Avatar username={top3[0].username} size="lg" />
-            <p className="text-sm text-white font-bold">{top3[0].username}</p>
-            <p className="text-xs text-xpGold font-semibold">{formatXP(top3[0].weeklyXp)}</p>
-            <div className="w-20 h-24 bg-xpGold/30 border border-xpGold/50 rounded-t-lg flex items-center justify-center">
-              <span className="text-3xl font-bold text-xpGold">1</span>
-            </div>
-          </div>
-          {/* 3. sıra */}
-          <div className="flex flex-col items-center gap-2">
-            <Avatar username={top3[2].username} size="md" />
-            <p className="text-sm text-slate-300 font-medium">{top3[2].username}</p>
-            <p className="text-xs text-xpGold">{formatXP(top3[2].weeklyXp)}</p>
-            <div className="w-20 h-12 bg-amber-700/40 rounded-t-lg flex items-center justify-center">
-              <span className="text-2xl font-bold text-amber-600">3</span>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {/* Tam Liste */}
-      <Card padding="sm">
-        {isLoading
-          ? Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 mb-2" />
-            ))
-          : leaderboard?.entries.map((entry) => (
-              <LeaderboardEntry
-                key={entry.userId}
-                entry={entry}
-                isCurrentUser={entry.userId === user?.id}
-              />
-            ))}
-      </Card>
-
-      {/* Kullanıcının sırası */}
-      {leaderboard?.userRank && (
-        <div className="sticky bottom-20 lg:bottom-4">
-          <Card className="border-accent/50 bg-accent/10">
-            <p className="text-center text-sm text-white font-medium">
-              Senin sıran: <span className="text-accent font-bold">#{leaderboard.userRank}</span>
-            </p>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }

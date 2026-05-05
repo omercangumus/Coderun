@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun Lesson</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d7dade",
+                    "surface-bright": "#f7fafd",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface-container-low": "#f1f4f8",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#006d37",
+                    "surface-container-high": "#e5e8ec",
+                    "background": "#f7fafd",
+                    "surface": "#f7fafd",
+                    "surface-tint": "#3f4cda",
+                    "tertiary-fixed": "#f8d8ff",
+                    "primary-fixed": "#e0e0ff",
+                    "outline-variant": "#c6c5d7",
+                    "on-surface-variant": "#454655",
+                    "surface-container": "#ebeef2",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e0e3e7",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e0e3e7",
+                    "primary-fixed-dim": "#bec2ff",
+                    "on-tertiary-fixed": "#320047",
+                    "on-background": "#181c1f",
+                    "on-secondary-container": "#00743a",
+                    "inverse-primary": "#bec2ff",
+                    "tertiary-fixed-dim": "#ebb2ff",
+                    "on-primary-fixed": "#000569",
+                    "secondary-fixed-dim": "#4ae183",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-primary-container": "#fffdff",
+                    "primary-container": "#5865f2",
+                    "inverse-on-surface": "#eef1f5",
+                    "on-tertiary-container": "#fffdff",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "tertiary": "#81419c",
+                    "on-surface": "#181c1f",
+                    "outline": "#767686",
+                    "primary": "#3d4ad8",
+                    "on-tertiary-fixed-variant": "#692984",
+                    "inverse-surface": "#2d3134",
+                    "on-secondary-fixed-variant": "#005228",
+                    "tertiary-container": "#9c5ab7",
+                    "secondary-container": "#6bfe9c",
+                    "on-secondary-fixed": "#00210c",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-page": "32px",
+                    "stack-sm": "12px",
+                    "stack-lg": "48px",
+                    "gutter": "24px",
+                    "unit": "8px",
+                    "stack-md": "24px"
+            },
+            "fontFamily": {
+                    "label-caps": [
+                            "Space Grotesk"
+                    ],
+                    "h2": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ],
+                    "button-text": [
+                            "Lexend"
+                    ],
+                    "h1": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Lexend"
+                    ]
+            },
+            "fontSize": {
+                    "label-caps": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h2": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "button-text": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h1": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md text-body-md">
+<!-- Top Navigation -->
+<nav class="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-30 max-w-[1200px] mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-md docked full-width border-b-4 border-slate-100 dark:border-slate-800 shadow-sm transition-all">
+<div class="flex items-center gap-4">
+<div class="hidden md:block text-xl font-black text-indigo-600 dark:text-indigo-400 font-['Plus_Jakarta_Sans']">Coderun</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="font-['Plus_Jakarta_Sans'] font-bold text-indigo-600 dark:text-indigo-400">5 Day Streak</div>
+<div class="font-['Plus_Jakarta_Sans'] font-bold text-slate-500 dark:text-slate-400">1,240 XP</div>
+<button class="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg active:scale-95 duration-150 ease-in-out transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border-2 border-surface-container-high object-cover shadow-sm" data-alt="A small circular profile picture of a young professional smiling against a clean bright studio background. The lighting is soft and flat, perfect for a UI avatar. High quality, crisp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIknIebBdYNZ_fd3yKG7J8YUtYdTY43rOzNtsOY7Qmk_CKoyUMEcYCziKqtYE-aEEP-vHpYMoKxE2Z0sU8Ef8yX8cB2KSRO8F_UNaqhQKK5P5DUk3DcENjgInMYXRmW86LwXfJv_KdbotDxtoyvSnTHb8aN6KV4ksfF0NDeT1m_uEo2_dNQT2uhJ5mFY04A1CEwdDFyBQOtNOmg4UK1P-O0dE9iLBkYsW_LH87CRkKayTLE3EzGI0369TGrkXgQMPK2XIaYITBvAk"/>
+</div>
+</nav>
+<!-- Side Navigation -->
+<nav class="fixed left-0 top-0 flex flex-col h-full z-40 bg-white dark:bg-slate-900 h-screen w-64 border-r-4 border-slate-100 dark:border-slate-800 shadow-[4px_0px_0px_0px_#E5E9F0] dark:shadow-none transition-all">
+<div class="p-6 border-b-4 border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 mb-6">
+<img alt="Friendly Ghostie mascot smiling" class="w-10 h-10 rounded-full border-2 border-indigo-100 bg-indigo-50 shadow-sm" data-alt="A cute, stylized 3D render of a friendly white ghost mascot smiling playfully. The mascot is floating slightly, rendered in a clean, modern SaaS illustration style with soft, tactile lighting and a subtle drop shadow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpO2yYg6pRsEi2TcZEc30Cuc_8pGJr2E84JQndh_tqGLpoP-PlWCNH2gRZyYhBAuROYImE-JnONpCESlMF10mnpsahyyAe2ou-YlD75pTfH6PATa6T-IkVoz6vp9KSCuNZhBkxYknmfaBqDUbSUaSBiBcNZJ3reQh2LvGFQ5U_zubtrng5T01odq65GBQfGFhwCeovBWOYU2lJdNq4IXK1g2kz-Wr21C-I5s8Ha9gWMYuf6lBkpyA1E2naQkCgGJgk7uWXept-FAE"/>
+<div>
+<h1 class="text-2xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400 uppercase font-['Plus_Jakarta_Sans']">Coderun</h1>
+<p class="text-xs font-semibold text-slate-500">Level 12 Developer</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-button-text text-button-text py-3 rounded-lg border-b-4 border-[#2d3134] active:border-b-0 active:translate-y-1 transition-all hover:bg-surface-tint shadow-sm">
+                Start Daily Lab
+            </button>
+</div>
+<ul class="flex-1 overflow-y-auto py-4 font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight">
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">map</span>
+                    Learning Paths
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border-r-4 border-indigo-600 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+                    Labs
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">rate_review</span>
+                    Review
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">emoji_events</span>
+                    Achievements
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+                    Ghostie AI
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+                    Profile
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-margin-page min-h-[calc(100vh-64px)] max-w-[1200px] mx-auto flex gap-gutter">
+<!-- Left Panel: Theory Recap (25%) -->
+<aside class="w-1/4 flex flex-col gap-stack-md">
+<div class="bg-surface-container-lowest rounded-xl p-6 border-2 border-surface-container shadow-sm h-full">
+<div class="flex items-center gap-2 mb-4 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">book</span>
+<span class="font-label-caps text-label-caps text-primary">THEORY RECAP</span>
+</div>
+<h2 class="font-h2 text-[24px] mb-4 text-on-surface">Python Dictionaries</h2>
+<p class="text-on-surface-variant mb-6 text-sm leading-relaxed">
+                    Dictionaries store data values in <strong class="text-primary">key:value</strong> pairs. They are ordered, changeable, and do not allow duplicates.
+                </p>
+<div class="bg-[#1e1e1e] rounded-lg p-4 mb-6 relative overflow-hidden group shadow-inner border-b-4 border-[#000000]">
+<div class="absolute top-2 right-2 flex gap-1.5 opacity-50">
+<div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary"></div>
+</div>
+<pre class="text-sm font-mono text-primary-fixed leading-loose mt-2"><code>user = {
+  <span class="text-secondary-fixed">"name"</span>: <span class="text-secondary-fixed">"Ghostie"</span>,
+  <span class="text-secondary-fixed">"level"</span>: <span class="text-tertiary-fixed">12</span>,
+  <span class="text-secondary-fixed">"active"</span>: <span class="text-tertiary-fixed">True</span>
+}</code></pre>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-surface-variant">
+<span class="material-symbols-outlined text-secondary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<span class="font-label-caps text-xs text-on-surface block mb-1">Key Concept</span>
+<span class="text-sm text-on-surface-variant">Keys must be immutable types (like strings or numbers).</span>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-surface-container-low rounded-lg border border-surface-variant">
+<span class="material-symbols-outlined text-secondary mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<span class="font-label-caps text-xs text-on-surface block mb-1">Accessing</span>
+<span class="text-sm text-on-surface-variant">Use bracket notation: <code>user["name"]</code></span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Center Panel: Quiz Area (50%) -->
+<section class="w-2/4 flex flex-col relative">
+<!-- Progress Bar -->
+<div class="mb-8 flex items-center gap-4">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">close</span>
+<div class="h-4 flex-1 bg-surface-container-high rounded-full overflow-hidden border border-surface-variant shadow-inner">
+<div class="h-full bg-secondary w-3/5 rounded-full relative">
+<div class="absolute inset-0 bg-white/20 w-1/3 skew-x-12 translate-x-full"></div>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-secondary">3/5</span>
+</div>
+<!-- Question Card -->
+<div class="flex-1 flex flex-col justify-center">
+<h1 class="font-h1 text-h1 text-on-surface mb-8 leading-tight">
+                    How do you add a new key-value pair <code>"role": "admin"</code> to the <code>user</code> dictionary?
+                </h1>
+<!-- Answer Grid -->
+<div class="grid grid-cols-1 gap-4 mb-12">
+<button class="text-left p-6 bg-surface-container-lowest rounded-xl border-2 border-surface-container hover:border-primary hover:bg-primary-fixed/20 transition-all border-b-4 hover:translate-y-[2px] hover:border-b-2 font-body-lg text-body-lg text-on-surface shadow-sm flex items-center justify-between group">
+<code>user.add("role", "admin")</code>
+<span class="w-6 h-6 rounded border-2 border-outline-variant group-hover:border-primary transition-colors flex items-center justify-center"></span>
+</button>
+<button class="text-left p-6 bg-surface-container-lowest rounded-xl border-2 border-primary bg-primary-fixed/20 transition-all border-b-[2px] translate-y-[2px] font-body-lg text-body-lg text-on-surface shadow-sm flex items-center justify-between relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+<code>user["role"] = "admin"</code>
+<span class="w-6 h-6 rounded border-2 border-primary bg-primary text-white flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+</button>
+<button class="text-left p-6 bg-surface-container-lowest rounded-xl border-2 border-surface-container hover:border-primary hover:bg-primary-fixed/20 transition-all border-b-4 hover:translate-y-[2px] hover:border-b-2 font-body-lg text-body-lg text-on-surface shadow-sm flex items-center justify-between group">
+<code>user.push({"role": "admin"})</code>
+<span class="w-6 h-6 rounded border-2 border-outline-variant group-hover:border-primary transition-colors flex items-center justify-center"></span>
+</button>
+<button class="text-left p-6 bg-error-container rounded-xl border-2 border-error border-b-[2px] translate-y-[2px] font-body-lg text-body-lg text-on-surface shadow-sm flex items-center justify-between relative overflow-hidden group">
+<code>user = {"role": "admin"}</code>
+<span class="w-6 h-6 rounded border-2 border-error bg-error text-white flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">close</span>
+</span>
+</button>
+</div>
+</div>
+<!-- Feedback Area (Fixed to bottom of content area) -->
+<div class="mt-auto bg-error-container border-2 border-error/20 rounded-xl p-6 shadow-sm flex gap-6 items-start">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-error shrink-0">
+<span class="material-symbols-outlined text-error text-2xl" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div>
+<h3 class="font-h2 text-[20px] text-on-error-container mb-2">Why it is wrong</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+                        Reassigning the <code>user</code> variable to a new dictionary will completely erase the existing data. You want to modify the existing dictionary, not replace it entirely.
+                    </p>
+<button class="bg-surface-container-lowest text-error font-button-text text-button-text px-6 py-2.5 rounded-lg border-2 border-error/20 shadow-sm hover:bg-white transition-colors border-b-4 active:border-b-2 active:translate-y-[2px]">
+                        Got it, Retry
+                    </button>
+</div>
+</div>
+</section>
+<!-- Right Panel: Ghostie AI Helper (25%) -->
+<aside class="w-1/4">
+<div class="bg-surface-container-lowest rounded-xl p-6 border-2 border-surface-container shadow-sm h-full flex flex-col relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/4"></div>
+<div class="flex items-center gap-2 mb-6 relative z-10">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-label-caps text-label-caps text-tertiary">GHOSTIE AI</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center text-center relative z-10 py-8">
+<img alt="Ghostie AI Mascot" class="w-24 h-24 mb-6 rounded-3xl drop-shadow-lg" data-alt="A cute, stylized 3D render of a friendly white ghost mascot looking helpful and encouraging. It is floating slightly against a clean background, rendered in a modern SaaS illustration style with soft, tactile lighting and a drop shadow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClvxu2XTzkU_RuKfMSrqNSRJ-0362b642M6eN_zuBMRh1Oa-A39exweY9uE2OoxqZRlC2EhT72gfNBFoiqgf4wRt3M2yxOUX3mIx0imWdu3aPJFYXLsa36rrXVIrIwvbnOeyNHHkYaN-2NMjjJSG4A_mb21K3XM4jFpasiUzM0BhK1_V64Va2H84UHf57z9fVjIb6KPU2ags9awHJdzUG0yVh1SGjIe7Hzo2yGKUJJN-1hDZZpNgs-C6ZywLc5BwK-S5Eh3eQCCPs"/>
+<h3 class="font-h2 text-[20px] text-on-surface mb-2">Stuck on this one?</h3>
+<p class="text-on-surface-variant text-sm px-4">I can help break it down or give you a gentle nudge in the right direction.</p>
+</div>
+<div class="flex flex-col gap-3 relative z-10 mt-auto">
+<button class="w-full flex items-center justify-between px-4 py-3 bg-surface-container text-on-surface font-button-text text-[14px] rounded-lg border-2 border-transparent hover:border-primary/20 hover:bg-primary-fixed/10 transition-all border-b-4 active:border-b-2 active:translate-y-[2px]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">lightbulb</span>
+                            Give me a hint
+                        </div>
+<span class="material-symbols-outlined text-outline text-sm" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between px-4 py-3 bg-surface-container text-on-surface font-button-text text-[14px] rounded-lg border-2 border-transparent hover:border-primary/20 hover:bg-primary-fixed/10 transition-all border-b-4 active:border-b-2 active:translate-y-[2px]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">translate</span>
+                            Explain simply
+                        </div>
+<span class="material-symbols-outlined text-outline text-sm" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between px-4 py-3 bg-surface-container text-on-surface font-button-text text-[14px] rounded-lg border-2 border-transparent hover:border-primary/20 hover:bg-primary-fixed/10 transition-all border-b-4 active:border-b-2 active:translate-y-[2px]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">code</span>
+                            Show example
+                        </div>
+<span class="material-symbols-outlined text-outline text-sm" style="font-variation-settings: 'FILL' 0;">chevron_right</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
+</body></html>
