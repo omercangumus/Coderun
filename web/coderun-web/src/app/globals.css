@@ -2,23 +2,234 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === Coderun Stitch Design System — Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Lexend:wght@400;600&family=Space+Grotesk:wght@600&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @layer base {
   :root {
-    --background: #0f0f1a;
-    --foreground: #e2e8f0;
+    /* Stitch color tokens */
+    --color-primary: #3D4AD8;
+    --color-primary-container: #5865F2;
+    --color-primary-fixed: #E0E0FF;
+    --color-secondary: #006D37;
+    --color-secondary-container: #6BFE9C;
+    --color-tertiary: #81419C;
+    --color-background: #F7FAFD;
+    --color-surface: #F7FAFD;
+    --color-surface-lowest: #FFFFFF;
+    --color-surface-low: #F1F4F8;
+    --color-surface-container: #EBEEF2;
+    --color-surface-high: #E5E8EC;
+    --color-surface-highest: #E0E3E7;
+    --color-on-surface: #181C1F;
+    --color-on-surface-variant: #454655;
+    --color-outline: #767686;
+    --color-outline-variant: #C6C5D7;
+    --color-error: #BA1A1A;
+    --color-xp-gold: #FFD700;
+    --color-streak-orange: #FF6B35;
+
+    /* Sidebar */
+    --sidebar-width: 240px;
+    --mentor-panel-width: 320px;
+  }
+
+  html {
+    font-family: 'Lexend', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-[#0f0f1a] text-slate-200 antialiased;
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
   }
 
   * {
-    @apply border-slate-700;
+    border-color: var(--color-outline-variant);
+    box-sizing: border-box;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface-low);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-outline);
+  }
+}
+
+@layer components {
+  /* === Coderun Card === */
+  .cr-card {
+    @apply bg-surface-container-lowest rounded-xl border border-outline-variant shadow-card;
+  }
+
+  .cr-card-hover {
+    @apply cr-card transition-shadow duration-200 hover:shadow-card-hover cursor-pointer;
+  }
+
+  /* === Coderun Buttons === */
+  .cr-btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-primary text-white font-sans font-semibold text-button
+           px-6 py-3 rounded-full
+           shadow-primary hover:shadow-primary-lg
+           transition-all duration-200
+           hover:bg-primary-container active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+  }
+
+  .cr-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-primary font-sans font-semibold text-button
+           px-6 py-3 rounded-full
+           border-2 border-primary
+           transition-all duration-200
+           hover:bg-primary-fixed active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .cr-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-on-surface-variant font-sans font-semibold text-button-sm
+           px-4 py-2 rounded-full
+           transition-all duration-200
+           hover:bg-surface-container active:scale-95;
+  }
+
+  .cr-btn-success {
+    @apply inline-flex items-center justify-center gap-2
+           bg-secondary text-white font-sans font-semibold text-button
+           px-6 py-3 rounded-full
+           transition-all duration-200
+           hover:opacity-90 active:scale-95;
+  }
+
+  /* === Progress Bar === */
+  .cr-progress-bar {
+    @apply w-full h-2 bg-primary-fixed rounded-full overflow-hidden;
+  }
+
+  .cr-progress-fill {
+    @apply h-full bg-primary rounded-full transition-all duration-500;
+  }
+
+  /* === Badge/Chip === */
+  .cr-badge {
+    @apply inline-flex items-center gap-1
+           px-3 py-1 rounded-full
+           font-label text-label-sm font-semibold;
+  }
+
+  .cr-badge-primary {
+    @apply cr-badge bg-primary-fixed text-primary;
+  }
+
+  .cr-badge-success {
+    @apply cr-badge bg-secondary-container text-secondary;
+  }
+
+  .cr-badge-warning {
+    @apply cr-badge bg-amber-100 text-amber-700;
+  }
+
+  .cr-badge-purple {
+    @apply cr-badge bg-tertiary-fixed text-tertiary;
+  }
+
+  /* === Sidebar === */
+  .cr-sidebar {
+    @apply fixed left-0 top-0 h-full w-sidebar
+           bg-surface-container-lowest border-r border-outline-variant
+           flex flex-col z-40;
+  }
+
+  .cr-sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl mx-2
+           font-sans text-body-sm font-semibold text-on-surface-variant
+           transition-all duration-150 cursor-pointer
+           hover:bg-surface-container hover:text-on-surface;
+  }
+
+  .cr-sidebar-item-active {
+    @apply cr-sidebar-item bg-primary-fixed text-primary;
+  }
+
+  /* === Node states === */
+  .node-completed {
+    @apply bg-node-completed shadow-success;
+  }
+  .node-active {
+    @apply bg-node-active shadow-primary animate-pulse-glow;
+  }
+  .node-locked {
+    @apply bg-node-locked;
+  }
+  .node-review {
+    @apply bg-node-review;
+  }
+  .node-checkpoint {
+    @apply bg-node-checkpoint;
+  }
+  .node-project {
+    @apply bg-node-project;
+  }
+
+  /* === Ghostie chat bubble === */
+  .ghostie-bubble {
+    @apply bg-primary-fixed rounded-tl rounded-tr-2xl rounded-bl-2xl rounded-br-2xl
+           px-4 py-3 text-body-sm text-on-surface;
+  }
+
+  /* === Code editor area === */
+  .cr-editor-panel {
+    @apply bg-[#1E1E2E] rounded-xl overflow-hidden border border-outline-variant;
+  }
+
+  .cr-terminal {
+    @apply bg-[#0D1117] text-green-400 font-mono text-sm p-4 rounded-xl
+           border border-outline-variant overflow-auto;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .font-heading {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .font-label {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* Gradient text */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+
+  /* Scrollable without scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

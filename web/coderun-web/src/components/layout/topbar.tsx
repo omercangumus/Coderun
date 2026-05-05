@@ -11,29 +11,35 @@ export function Topbar() {
   const { data: stats } = useUserStats();
 
   return (
-    <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-secondary/95 backdrop-blur border-b border-slate-700/50">
+    <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur border-b border-outline-variant">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2">
-        <span className="text-xl">🚀</span>
-        <span className="font-bold text-white">Coderun</span>
+        <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-sm">
+          👻
+        </div>
+        <span className="font-heading text-base font-bold text-on-surface">Coderun</span>
       </Link>
 
-      {/* XP */}
-      {stats && (
-        <div className="flex items-center gap-1.5 bg-xpGold/10 border border-xpGold/30 rounded-full px-3 py-1">
-          <span className="text-xpGold text-sm">⚡</span>
-          <span className="text-xpGold text-sm font-semibold">
-            {formatXP(stats.totalXp)}
-          </span>
-        </div>
-      )}
-
-      {/* Avatar */}
-      {user && (
-        <Link href="/profile">
-          <Avatar username={user.username} size="sm" />
-        </Link>
-      )}
+      {/* Stats row */}
+      <div className="flex items-center gap-2">
+        {stats && (
+          <>
+            <span className="inline-flex items-center gap-1 bg-primary-fixed text-primary rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
+              ⚡ {formatXP(stats.totalXp)}
+            </span>
+            {stats.currentStreak > 0 && (
+              <span className="inline-flex items-center gap-1 bg-orange-50 text-streak-orange rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
+                🔥 {stats.currentStreak}
+              </span>
+            )}
+          </>
+        )}
+        {user && (
+          <Link href="/profile">
+            <Avatar username={user.username} size="sm" />
+          </Link>
+        )}
+      </div>
     </header>
   );
 }
