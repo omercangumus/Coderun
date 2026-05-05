@@ -19,6 +19,7 @@ os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./tests/test_auth.db"
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only-32ch")
 os.environ.setdefault("ENVIRONMENT", "development")
+os.environ.setdefault("OPENROUTER_API_KEY", "test-openrouter-key-for-testing-only")
 
 from app.api.v1.dependencies import get_db
 from app.core.database import Base
@@ -69,12 +70,23 @@ async def db_session(setup_test_database: None) -> AsyncGenerator[AsyncSession, 
 @pytest_asyncio.fixture()
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Dependency override edilmiş async test istemcisi döndürür."""
+    from unittest.mock import AsyncMock, MagicMock
+    from app.api.v1.dependencies import get_openrouter
 
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         """API için test veritabanı oturumu sağlar."""
         yield db_session
 
+    # Test ortamında OpenRouter client'ı mock'la (gerçek API key gerekmez)
+    def override_get_openrouter() -> MagicMock:
+        mock_client = AsyncMock()
+        mock_completion = MagicMock()
+        mock_completion.choices[0].message.content = "Test yanıtı"
+        mock_client.chat.completions.create = AsyncMock(return_value=mock_completion)
+        return mock_client
+
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_openrouter] = override_get_openrouter
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()

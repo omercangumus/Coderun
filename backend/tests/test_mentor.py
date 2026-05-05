@@ -191,6 +191,9 @@ async def test_chat_message_too_long(client: AsyncClient, test_user: dict):
 @pytest.mark.asyncio
 async def test_chat_success(client: AsyncClient, test_user: dict):
     """Başarılı mentor yanıtı dönmeli."""
+    from app.api.v1.dependencies import get_openrouter
+    from app.main import app as fastapi_app
+
     login = await client.post(
         "/api/v1/auth/login",
         data={"username": test_user["email"], "password": test_user["password"]},
@@ -198,19 +201,14 @@ async def test_chat_success(client: AsyncClient, test_user: dict):
     token = login.json()["access_token"]
 
     mock_completion = _make_mock_completion("Bir ipucu: döngüleri dene!")
+    mock_client = AsyncMock()
+    mock_client.chat.completions.create = AsyncMock(return_value=mock_completion)
 
-    with patch(
-        "app.api.v1.endpoints.mentor.get_openrouter",
-    ) as mock_dep:
-        mock_client = AsyncMock()
-        mock_client.chat.completions.create = AsyncMock(
-            return_value=mock_completion
-        )
-        mock_dep.return_value = mock_client
+    # FastAPI dependency override ile OpenRouter client'ı mock'la
+    fastapi_app.dependency_overrides[get_openrouter] = lambda: mock_client
 
-        with patch(
-            "app.services.mentor_service.settings"
-        ) as mock_settings:
+    try:
+        with patch("app.services.mentor_service.settings") as mock_settings:
             mock_settings.OPENROUTER_MODEL = "test-model"
             mock_settings.OPENROUTER_MAX_TOKENS = 512
             mock_settings.OPENROUTER_TEMPERATURE = 0.3
@@ -221,6 +219,8 @@ async def test_chat_success(client: AsyncClient, test_user: dict):
                 json={"message": "Döngüler nasıl çalışır?"},
                 headers={"Authorization": f"Bearer {token}"},
             )
+    finally:
+        fastapi_app.dependency_overrides.pop(get_openrouter, None)
 
     assert response.status_code == 200
     data = response.json()
@@ -230,7 +230,11 @@ async def test_chat_success(client: AsyncClient, test_user: dict):
 
 @pytest.mark.asyncio
 async def test_chat_rate_limit(client: AsyncClient, test_user: dict):
-    """20 istek sonrası 429 dönmeli."""
+    """Rate limit aşıldığında 429 dönmeli."""
+    from app.api.v1.dependencies import get_openrouter
+    from app.core.rate_limiter import InMemoryRateLimiter
+    from app.main import app as fastapi_app
+
     login = await client.post(
         "/api/v1/auth/login",
         data={"username": test_user["email"], "password": test_user["password"]},
@@ -238,41 +242,41 @@ async def test_chat_rate_limit(client: AsyncClient, test_user: dict):
     token = login.json()["access_token"]
 
     mock_completion = _make_mock_completion("Yanıt")
+    mock_client = AsyncMock()
+    mock_client.chat.completions.create = AsyncMock(return_value=mock_completion)
 
-    with patch("app.core.rate_limiter.settings") as mock_settings:
-        mock_settings.MENTOR_RATE_LIMIT_PER_MINUTE = 2
+    fastapi_app.dependency_overrides[get_openrouter] = lambda: mock_client
 
-        with patch(
-            "app.api.v1.endpoints.mentor.get_openrouter",
-        ) as mock_dep:
-            mock_client = AsyncMock()
-            mock_client.chat.completions.create = AsyncMock(
-                return_value=mock_completion
-            )
-            mock_dep.return_value = mock_client
+    # Limit=2 olan özel bir rate limiter oluştur ve endpoint'e inject et
+    test_limiter = InMemoryRateLimiter()
 
-            with patch(
-                "app.services.mentor_service.settings"
-            ) as mock_svc_settings:
-                mock_svc_settings.OPENROUTER_MODEL = "test-model"
-                mock_svc_settings.OPENROUTER_MAX_TOKENS = 512
-                mock_svc_settings.OPENROUTER_TEMPERATURE = 0.3
-                mock_svc_settings.MENTOR_MAX_HISTORY = 10
+    try:
+        with patch("app.api.v1.endpoints.mentor.rate_limiter", test_limiter):
+            with patch("app.core.rate_limiter.settings") as mock_settings:
+                mock_settings.MENTOR_RATE_LIMIT_PER_MINUTE = 2
 
-                # 2 istek gönder (limit dolu)
-                for _ in range(2):
-                    await client.post(
+                with patch("app.services.mentor_service.settings") as mock_svc:
+                    mock_svc.OPENROUTER_MODEL = "test-model"
+                    mock_svc.OPENROUTER_MAX_TOKENS = 512
+                    mock_svc.OPENROUTER_TEMPERATURE = 0.3
+                    mock_svc.MENTOR_MAX_HISTORY = 10
+
+                    # 2 istek gönder (limit dolu)
+                    for _ in range(2):
+                        await client.post(
+                            CHAT_URL,
+                            json={"message": "Test"},
+                            headers={"Authorization": f"Bearer {token}"},
+                        )
+
+                    # 3. istek 429 dönmeli
+                    response = await client.post(
                         CHAT_URL,
                         json={"message": "Test"},
                         headers={"Authorization": f"Bearer {token}"},
                     )
-
-                # 3. istek 429 dönmeli
-                response = await client.post(
-                    CHAT_URL,
-                    json={"message": "Test"},
-                    headers={"Authorization": f"Bearer {token}"},
-                )
+    finally:
+        fastapi_app.dependency_overrides.pop(get_openrouter, None)
 
     assert response.status_code == 429
 
