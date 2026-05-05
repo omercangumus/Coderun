@@ -29,11 +29,13 @@ class Settings(BaseSettings):
     # --- Harici Servisler — OpenRouter AI ---
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_CHAT_URL: str = "https://openrouter.ai/api/v1/chat/completions"
     OPENROUTER_MODEL: str = "meta-llama/llama-3.1-8b-instruct:free"
     OPENROUTER_MAX_TOKENS: int = 512
     OPENROUTER_TEMPERATURE: float = 0.3
     OPENROUTER_SITE_URL: str = "https://coderun.com"
     OPENROUTER_SITE_NAME: str = "Coderun"
+    OPENROUTER_TIMEOUT_SECONDS: float = 30.0
 
     # --- Mentor Ayarları ---
     MENTOR_RATE_LIMIT_PER_MINUTE: int = 20
