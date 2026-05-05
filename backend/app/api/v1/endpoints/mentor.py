@@ -8,7 +8,6 @@ from fastapi.responses import StreamingResponse
 from openai import AsyncOpenAI
 
 from app.api.v1.dependencies import get_current_active_user, get_openrouter
-from app.core.config import settings
 from app.core.rate_limiter import rate_limiter
 from app.models.user import User
 from app.schemas.llm_mentor import LlmMentorRequest, LlmMentorResponse

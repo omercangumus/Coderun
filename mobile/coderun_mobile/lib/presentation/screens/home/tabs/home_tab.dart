@@ -11,7 +11,6 @@ import '../../../../providers/gamification_provider.dart';
 import '../../../../providers/module_provider.dart';
 import '../../../widgets/app_error_widget.dart';
 import '../../../widgets/ghostie_avatar.dart';
-import '../../../widgets/loading_widget.dart';
 import '../../../widgets/xp_streak_header.dart';
 
 class HomeTab extends ConsumerWidget {

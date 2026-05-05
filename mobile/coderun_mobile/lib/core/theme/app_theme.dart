@@ -131,12 +131,12 @@ abstract class AppTheme {
             fontSize: 16,
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: const CardThemeData(
           elevation: 0,
           color: AppColors.surfaceContainerLowest,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-            side: const BorderSide(color: AppColors.outlineVariant, width: 1),
+            borderRadius: BorderRadius.all(Radius.circular(AppSpacing.radiusXl)),
+            side: BorderSide(color: AppColors.outlineVariant, width: 1),
           ),
           margin: EdgeInsets.zero,
         ),

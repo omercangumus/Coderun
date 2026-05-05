@@ -1,5 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
@@ -121,7 +120,7 @@ class NotificationService {
     }
 
     try {
-      await _dio!.post(
+      await _dio.post(
         ApiConstants.registerFcmToken,
         data: {'fcm_token': token},
       );

@@ -13,6 +13,7 @@ abstract class AuthRemoteDataSource {
   Future<TokenModel> refreshToken(String refreshToken);
   Future<UserModel> getMe();
   Future<void> logout();
+  Future<void> registerFcmToken(String fcmToken);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -88,6 +89,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> logout() async {
     try {
       await _dio.post(ApiConstants.logout);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  @override
+  Future<void> registerFcmToken(String fcmToken) async {
+    try {
+      await _dio.post(
+        ApiConstants.registerFcmToken,
+        data: {'fcm_token': fcmToken},
+      );
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

@@ -31,13 +31,10 @@ export const PLACEMENT_ENDPOINTS = {
   submit: (slug: string) => `/placement/${slug}/submit`,
 } as const;
 
-export const AI_ENDPOINTS = {
-  mentor: '/ai/mentor',
-} as const;
-
 export const MENTOR_ENDPOINTS = {
   chat: '/mentor/chat',
-  stream: '/mentor/chat/stream',
+  // Note: /mentor/chat/stream is available on backend but not yet implemented in frontend
+  // stream: '/mentor/chat/stream',
   status: '/mentor/status',
   ask: '/mentor/ask',
 } as const;
