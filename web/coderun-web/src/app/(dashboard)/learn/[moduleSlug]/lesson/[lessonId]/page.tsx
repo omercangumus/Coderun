@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
-import { ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLessonDetail } from '@/lib/hooks/use-modules';
@@ -10,6 +10,7 @@ import { MultipleChoiceQuestion } from '@/components/lesson/multiple-choice-ques
 import { CodeCompletionQuestion } from '@/components/lesson/code-completion-question';
 import { MiniProjectQuestion } from '@/components/lesson/mini-project-question';
 import { QuestionProgress } from '@/components/lesson/question-progress';
+import { AiMentorSidebar } from '@/components/lab/ai-mentor-sidebar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,6 +24,7 @@ export default function LessonPage({
   const router = useRouter();
   const { data: lesson, isLoading } = useLessonDetail(lessonId);
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const [mentorOpen, setMentorOpen] = useState(false);
 
   const {
     currentQuestionIndex,
@@ -83,6 +85,15 @@ export default function LessonPage({
         <span className="text-sm text-slate-400 flex-shrink-0">
           {currentQuestionIndex + 1}/{total}
         </span>
+        {/* AI Mentor butonu */}
+        <button
+          onClick={() => setMentorOpen(true)}
+          title="AI Mentor'a Sor"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600/20 border border-purple-500/40 text-purple-400 hover:bg-purple-600/30 transition-colors text-xs font-medium"
+        >
+          <Bot className="w-3.5 h-3.5" />
+          Mentor
+        </button>
       </div>
 
       {/* Soru kartı */}
@@ -159,6 +170,15 @@ export default function LessonPage({
           </Card>
         </div>
       )}
+
+      {/* AI Mentor sidebar */}
+      <AiMentorSidebar
+        isOpen={mentorOpen}
+        onClose={() => setMentorOpen(false)}
+        moduleSlug={moduleSlug}
+        lessonTitle={lesson.title}
+        lessonContext={currentQuestion?.questionText}
+      />
     </div>
   );
 }

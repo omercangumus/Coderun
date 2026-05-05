@@ -39,6 +39,7 @@ export const MENTOR_ENDPOINTS = {
   chat: '/mentor/chat',
   stream: '/mentor/chat/stream',
   status: '/mentor/status',
+  ask: '/mentor/ask',
 } as const;
 
 export const QUERY_KEYS = {

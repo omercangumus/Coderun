@@ -22,7 +22,7 @@ export function AiMentorSidebar({
   moduleSlug,
   lessonTitle,
 }: Props) {
-  const { messages, isLoading, sendMessage, clearChat } = useMentor({
+  const { messages, isLoading, attemptCount, sendMessage, clearChat } = useMentor({
     context: 'lab',
     moduleSlug,
     lessonTitle,
@@ -62,6 +62,10 @@ export function AiMentorSidebar({
           <span className="text-xs text-gray-500">(Phantom)</span>
         </div>
         <div className="flex items-center gap-1">
+          {/* Attempt count göstergesi */}
+          <span className="text-xs text-purple-400 bg-purple-50 px-2 py-0.5 rounded-full">
+            {attemptCount === 1 ? 'İpucu modu' : attemptCount === 2 ? 'Açık ipucu' : 'Örnek modu'}
+          </span>
           <button
             onClick={clearChat}
             title="Sohbeti temizle"

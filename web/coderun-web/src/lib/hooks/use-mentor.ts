@@ -1,11 +1,12 @@
 'use client';
 
 // useMentor hook — AI Mentor sohbet state yönetimi.
+// attempt_count takibi ile akıllı ipucu mantığı.
 
 import { useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 
-import { mentorApi, ChatMessage, MentorRequest } from '@/lib/api/mentor-api';
+import { mentorApi, ChatMessage } from '@/lib/api/mentor-api';
 
 interface UseMentorOptions {
   moduleSlug?: string;
@@ -17,6 +18,7 @@ interface UseMentorOptions {
 interface UseMentorReturn {
   messages: ChatMessage[];
   isLoading: boolean;
+  attemptCount: number;
   sendMessage: (userMessage: string) => Promise<void>;
   clearChat: () => void;
 }
@@ -30,10 +32,10 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(1);
 
   // Stale closure'ı önlemek için ref kullan
-  const messagesRef = useRef<ChatMessage[]>(messages);
-  messagesRef.current = messages;
+  const attemptRef = useRef(1);
 
   const sendMessage = useCallback(
     async (userMessage: string) => {
@@ -43,25 +45,29 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
       setMessages((prev) => [...prev, userMsg]);
       setIsLoading(true);
 
-      try {
-        const request: MentorRequest = {
-          message: userMessage,
-          context: options.context ?? 'general',
-          // Güncel mesaj listesini ref'ten al (stale closure'dan kaçın)
-          history: messagesRef.current,
-          moduleSlug: options.moduleSlug,
-          lessonTitle: options.lessonTitle,
-          questionText: options.questionText,
-        };
+      const currentAttempt = attemptRef.current;
 
-        const response = await mentorApi.sendMessage(request);
+      try {
+        // /mentor/ask endpoint'i — attempt_count destekli, daha akıllı ipucu mantığı
+        const response = await mentorApi.ask({
+          message: userMessage,
+          user_level: 'beginner',
+          learning_path: options.moduleSlug,
+          attempt_count: currentAttempt,
+        });
+
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: response.reply },
+          { role: 'assistant', content: response.answer },
         ]);
+
+        // Her başarılı soruda attempt_count artır (max 3'te sabit)
+        const nextAttempt = Math.min(currentAttempt + 1, 3);
+        attemptRef.current = nextAttempt;
+        setAttemptCount(nextAttempt);
+
       } catch (err: unknown) {
-        const status = (err as { response?: { status?: number } })?.response
-          ?.status;
+        const status = (err as { response?: { status?: number } })?.response?.status;
 
         if (status === 429) {
           toast.error('Çok fazla istek! Biraz bekle ⏳');
@@ -69,8 +75,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
             ...prev,
             {
               role: 'assistant',
-              content:
-                'Çok fazla istek gönderildi. Biraz bekleyip tekrar dene! ⏳',
+              content: 'Çok fazla istek gönderildi. Biraz bekleyip tekrar dene! ⏳',
             },
           ]);
         } else {
@@ -86,12 +91,12 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
         setIsLoading(false);
       }
     },
-    // isLoading ve options değiştiğinde yeniden oluştur
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isLoading, options.context, options.moduleSlug, options.lessonTitle, options.questionText],
+    [isLoading, options.moduleSlug],
   );
 
   const clearChat = useCallback(() => {
+    attemptRef.current = 1;
+    setAttemptCount(1);
     setMessages([
       {
         role: 'assistant',
@@ -100,5 +105,5 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
     ]);
   }, []);
 
-  return { messages, isLoading, sendMessage, clearChat };
+  return { messages, isLoading, attemptCount, sendMessage, clearChat };
 }
