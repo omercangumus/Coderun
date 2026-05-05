@@ -1,9 +1,8 @@
-// Splash ekranı.
-// Uygulama açılışında auth durumu kontrol edilirken gösterilir.
+// Splash Screen — Coderun Stitch Design
 
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,17 +22,12 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
     );
-
     _controller.forward();
   }
 
@@ -55,26 +49,46 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  AppConstants.appName,
-                  style: const TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
-                    letterSpacing: 4,
+                // Ghostie mascot
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Text('👻', style: TextStyle(fontSize: 52)),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.xl),
+                const Text(
+                  'Coderun',
+                  style: TextStyle(
+                    fontFamily: 'PlusJakartaSans',
+                    fontSize: 40,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
                 const Text(
                   'Kodlamayı öğren, seviye atla',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.grey,
+                    fontFamily: 'Lexend',
+                    fontSize: 15,
+                    color: Colors.white70,
                   ),
                 ),
-                const SizedBox(height: 48),
-                const CircularProgressIndicator(
-                  color: AppColors.highlight,
+                const SizedBox(height: AppSpacing.xxxl),
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
                 ),
               ],
             ),
