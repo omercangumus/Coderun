@@ -72,7 +72,11 @@ class Settings(BaseSettings):
     LEADERBOARD_TTL_SECONDS: int = 604800
     LEADERBOARD_TOP_N: int = 100
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=[".env", "../.env"],  # backend/ veya root'tan çalışırken her ikisini de dene
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     @property
     def is_production(self) -> bool:
