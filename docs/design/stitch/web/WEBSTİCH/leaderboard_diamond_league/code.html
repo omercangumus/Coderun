@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#e0e3e7",
+                      "on-tertiary-fixed": "#320047",
+                      "on-surface-variant": "#454655",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary": "#006d37",
+                      "tertiary": "#81419c",
+                      "primary-fixed": "#e0e0ff",
+                      "tertiary-container": "#9c5ab7",
+                      "on-tertiary-container": "#fffdff",
+                      "on-secondary-container": "#00743a",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#3f4cda",
+                      "surface-dim": "#d7dade",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e5e8ec",
+                      "inverse-on-surface": "#eef1f5",
+                      "secondary-container": "#6bfe9c",
+                      "surface-variant": "#e0e3e7",
+                      "secondary-fixed-dim": "#4ae183",
+                      "on-error": "#ffffff",
+                      "primary-container": "#5865f2",
+                      "on-secondary-fixed-variant": "#005228",
+                      "surface": "#f7fafd",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#c6c5d7",
+                      "inverse-surface": "#2d3134",
+                      "outline": "#767686",
+                      "background": "#f7fafd",
+                      "on-tertiary-fixed-variant": "#692984",
+                      "on-primary-fixed-variant": "#222fc2",
+                      "on-background": "#181c1f",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#f8d8ff",
+                      "surface-container": "#ebeef2",
+                      "primary": "#3d4ad8",
+                      "surface-container-low": "#f1f4f8",
+                      "on-surface": "#181c1f",
+                      "on-primary-container": "#fffdff",
+                      "tertiary-fixed-dim": "#ebb2ff",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#000569",
+                      "secondary-fixed": "#6bfe9c",
+                      "primary-fixed-dim": "#bec2ff",
+                      "inverse-primary": "#bec2ff",
+                      "on-secondary-fixed": "#00210c",
+                      "surface-bright": "#f7fafd",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "gutter": "24px",
+                      "stack-sm": "12px",
+                      "stack-md": "24px",
+                      "margin-page": "32px",
+                      "stack-lg": "48px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Lexend"
+                      ],
+                      "h2": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "button-text": [
+                              "Lexend"
+                      ],
+                      "label-caps": [
+                              "Space Grotesk"
+                      ],
+                      "h1": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Lexend"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "button-text": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-30 max-w-[1200px] mx-auto bg-surface-container-lowest/80 backdrop-blur-md text-primary font-h2 font-bold docked full-width border-b-4 border-surface-container shadow-sm hover:bg-surface-container-lowest rounded-lg active:scale-95 duration-150 ease-in-out hidden md:flex">
+<div class="flex items-center gap-4">
+<span class="text-xl font-black text-primary hidden md:block">Coderun</span>
+<div class="relative ml-8">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="bg-surface-container-low border-2 border-surface-container rounded-full py-2 pl-10 pr-4 text-sm font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors w-64" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full font-label-caps text-label-caps border-b-2 border-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                5 Day Streak
+            </div>
+<div class="flex items-center gap-2 bg-primary-container text-on-primary-container px-3 py-1.5 rounded-full font-label-caps text-label-caps border-b-2 border-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+                1,240 XP
+            </div>
+<button class="text-outline hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border-2 border-primary object-cover" data-alt="A small circular avatar showing a young professional in a light blue shirt smiling confidently against a neutral background. The lighting is bright and even, fitting a modern tech platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA74Q_X1j0U4-PdKcimAU3_yXohVUkRht5KQvGZqmF-ydn389Ee3256DtX4INdgcYzkgUVgK5Rk5-vV32nhjjXo1bxRKdszZsQA-4rwnIq_vwlHHMeCt5E8IZuRXkl_nJeHtHybfl6YGpTHSVO8TNDds0tvPrHI7F2nQJDCCbybG4xXeQxK7uiEWgKR5H9ikoKiF-r7wTBQtbzyTjhO8fat_U_BIiE662gtpW71YSfBbJMynWNrCDUeOo6lhF1rT8jXM4BjdAuWWJo"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 flex flex-col h-full z-40 bg-surface-container-lowest text-primary font-h2 text-sm font-semibold tracking-tight h-screen w-64 border-r-4 border-surface-container shadow-[4px_0px_0px_0px_#ebeef2]">
+<div class="p-6 border-b-4 border-surface-container flex flex-col items-center gap-4">
+<img alt="Friendly Ghostie mascot smiling" class="w-20 h-20 rounded-xl border-4 border-primary-container object-cover bg-primary-fixed" data-alt="A friendly, slightly transparent ghost mascot with big expressive eyes and a warm smile, rendered in a 3D isometric style against a clean white background. It represents a helpful guide." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkA3rWx8Eqjzw8rUVtNH6LbxQDDbwTGVzwYF8Lkfjj7_e2xG6YVtm-vWPA0DunnFdVJHvauVnYRloM4KFWd4EzPwGpU07Yt7AzbrvurSrAGucACRe-xxgbcvWjxA_L-NtILiWeNWR8yTCQWRk0LcoyfCfJyteJimaZ8H7ohodjN0k_Gdl8mHWjJT_ZFOOgVXHxXNEyayStSzU9PfCCi5BLzvAGtzfdmQ3gGfutYoR7tnZdeeHSid-p9sfGtST93Z_bD_qeyh3FfmY"/>
+<div class="text-center">
+<h2 class="font-h2 text-h2 text-on-surface">Coderun</h2>
+<p class="font-body-md text-sm text-outline">Level 12 Developer</p>
+</div>
+<button class="w-full bg-primary text-on-primary font-button-text text-button-text py-3 px-4 rounded-xl border-b-4 border-on-primary-fixed-variant hover:translate-y-0.5 hover:border-b-2 active:border-b-0 active:translate-y-1 transition-all mt-2">
+                Start Daily Lab
+            </button>
+</div>
+<ul class="flex flex-col gap-2 p-4 flex-grow overflow-y-auto">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">map</span>
+                    Learning Paths
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">terminal</span>
+                    Labs
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">rate_review</span>
+                    Review
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl bg-primary-fixed text-primary border-r-4 border-primary hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+                    Achievements
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+                    Achievements
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+                    Ghostie AI
+                </a>
+</li>
+</ul>
+<div class="p-4 border-t-4 border-surface-container mt-auto">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-outline hover:bg-surface-container-low hover:scale-[1.02] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+                Profile
+            </a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="ml-64 pt-24 p-8 max-w-[1200px] mx-auto grid grid-cols-12 gap-8">
+<!-- Left Column: Leaderboard -->
+<div class="col-span-8 space-y-8">
+<!-- Header Section -->
+<div class="flex items-center justify-between">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface flex items-center gap-3">
+                        Weekly Leaderboard
+                    </h1>
+<div class="flex items-center gap-2 mt-2 text-outline font-body-md text-body-md">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="text-tertiary font-label-caps text-label-caps">Diamond League</span>
+<span>• Ends in 2d 14h</span>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex gap-2 bg-surface-container-low p-2 rounded-xl border-2 border-surface-container w-fit">
+<button class="px-6 py-2 rounded-lg bg-surface-container-lowest text-primary font-button-text text-button-text shadow-sm border-b-2 border-surface-container">Weekly</button>
+<button class="px-6 py-2 rounded-lg text-outline font-button-text text-button-text hover:bg-surface-container-lowest/50">Monthly</button>
+<button class="px-6 py-2 rounded-lg text-outline font-button-text text-button-text hover:bg-surface-container-lowest/50">Friends</button>
+<button class="px-6 py-2 rounded-lg text-outline font-button-text text-button-text hover:bg-surface-container-lowest/50">Global</button>
+</div>
+<!-- Podium -->
+<div class="flex justify-center items-end gap-6 pt-12 pb-8">
+<!-- 2nd Place -->
+<div class="flex flex-col items-center gap-3">
+<div class="relative">
+<img class="w-20 h-20 rounded-full border-4 border-surface-container object-cover z-10 relative" data-alt="A portrait of a young woman smiling warmly, used as a user avatar. The image is bright and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9960ELLxEdHPbMVpFStYVLcZll48f9HaQyCjlVrWtF_NpokaqcKV3U2ZEsBJ7TC7oyQi8__8R76i6et6JxjuudL3chPC1OZRZNp4C9Vcp8wtXo1bQY5utEjRSV-3bPDhQBTZ82Iri_ZLltc5Bjta22q68ZrZnHe3-B-LEkSXURr5FIo3cOFi_CIKlpV0udcdWvqzjCIWa2goAk0C5sfcXd1umAxz-wztIb26sfP7tIYv_nDAFy9fbL2MqF9747InF4LLGA-Fi7A8"/>
+<div class="absolute -top-5 -right-2 bg-surface-container-lowest rounded-full p-1 shadow-sm z-20">
+<span class="text-xl font-bold text-outline">2</span>
+</div>
+</div>
+<div class="text-center bg-surface-container-lowest p-4 rounded-xl border-2 border-surface-container shadow-sm w-32 relative">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-8 h-8 bg-surface-container-lowest rotate-45 border-l-2 border-t-2 border-surface-container z-0"></div>
+<p class="font-button-text text-button-text text-on-surface relative z-10 truncate">SarahCodes</p>
+<p class="font-label-caps text-label-caps text-primary relative z-10 mt-1">4,200 XP</p>
+</div>
+</div>
+<!-- 1st Place -->
+<div class="flex flex-col items-center gap-3 -mt-12">
+<div class="relative">
+<span class="material-symbols-outlined absolute -top-10 left-1/2 -translate-x-1/2 text-5xl text-tertiary drop-shadow-md z-30" style="font-variation-settings: 'FILL' 1;">crown</span>
+<img class="w-28 h-28 rounded-full border-4 border-tertiary object-cover z-10 relative shadow-[0_8px_30px_rgb(0,0,0,0.12)]" data-alt="A portrait of a man with glasses smiling, serving as the first-place user avatar. High quality and well-lit." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9mfkzSGowSL5C82Mfs6xLaNjNQ_sk4Df36Y-Rz_6SfjJTyi9PXINGyEfv3tG-UtPCQ-kqglVdxtSGxOAuw7LpqkmlR2j1ZkBH_LXteJcB0nRhHvA59C5UpLQ01CiE9ZvaMekfob3D7DHEhg1nNsTnAltqTdNrU7Ra6bLk_D11MpixfCVirS3P6JNG-ZllmsYJZqf6WmEdOp6CmpTUbbmpci-KWJYmSwtmpTMT5SK0ajx3BKZYfcRe7NImO-Jij0ceKR16oP-sl-4"/>
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-tertiary text-on-tertiary rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-md z-20">
+                            1
+                        </div>
+</div>
+<div class="text-center bg-tertiary-fixed p-5 rounded-xl border-2 border-tertiary shadow-sm w-40 relative mt-4">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-8 h-8 bg-tertiary-fixed rotate-45 border-l-2 border-t-2 border-tertiary z-0"></div>
+<p class="font-button-text text-button-text text-on-tertiary-fixed relative z-10 truncate">DevKing</p>
+<p class="font-h2 text-xl text-tertiary relative z-10 mt-1">5,150 XP</p>
+</div>
+</div>
+<!-- 3rd Place -->
+<div class="flex flex-col items-center gap-3">
+<div class="relative">
+<img class="w-20 h-20 rounded-full border-4 border-surface-container object-cover z-10 relative" data-alt="A portrait of a person with a slight smile, used as a user avatar. Clear and modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1rLgSAcNFZC2ujF5yEyKis3zNHRtThi867aHpzCOFip_n1Zfzft_7lXMgJdFce-wTS4vEtmumHE5Txrguaui7Tihkk887-DTLKMKxNqt18MjSMX1cYP773hd2vK8cxDR7ORvEih4tB5O1eY1tuI5qDJOW_aEEC9DlGwfsO5YjURjEldCzJYN1AsgZFn7ihfrLXvzrxx2tB7KxbUoKo4-ljlH819R_oAyW66cKZc8CPIMZDE9449OunpizDrQKMrtpfokFA15uhQs"/>
+<div class="absolute -top-5 -left-2 bg-surface-container-lowest rounded-full p-1 shadow-sm z-20">
+<span class="text-xl font-bold text-outline">3</span>
+</div>
+</div>
+<div class="text-center bg-surface-container-lowest p-4 rounded-xl border-2 border-surface-container shadow-sm w-32 relative">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-8 h-8 bg-surface-container-lowest rotate-45 border-l-2 border-t-2 border-surface-container z-0"></div>
+<p class="font-button-text text-button-text text-on-surface relative z-10 truncate">AlexBuilds</p>
+<p class="font-label-caps text-label-caps text-primary relative z-10 mt-1">3,900 XP</p>
+</div>
+</div>
+</div>
+<!-- Ranking List -->
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-surface-container overflow-hidden">
+<div class="flex flex-col">
+<!-- Row 4 -->
+<div class="flex items-center gap-4 p-4 border-b-2 border-surface-container hover:bg-surface-container-low transition-colors">
+<span class="w-8 text-center font-button-text text-button-text text-outline">4</span>
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Avatar of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2usA1IU2WD7U-6GAGw1oTRCyY3EI4hhH2wrA6T0TxQNpTE0WY7FmgVqbWTBaMRSoWdAsnlwpjmejpOKFUt77Ii-ip3-fMOGATATYVbnWdWw2s2LuMl-6bPmE68aqaqRBNCiQ6Op7wFQZAPmLQc00Nky_dlyKg-_DXGSCF7P1wjTcltGjIi0Z4q9_6ykkFCDGzLMEn1OruyfzOOtTAVbg_kznPaLDE0vM_TQbJnEq2GBHUfHpjcKvWj0FvWVdLXxX3HyKR8eYm-qE"/>
+<span class="font-button-text text-button-text text-on-surface flex-grow">CodeNinja</span>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-caps text-label-caps">12</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary w-24 text-right">3,100 XP</span>
+</div>
+<!-- Row 5 (Promotion Cutoff) -->
+<div class="relative py-2 text-center border-b-2 border-dashed border-outline-variant bg-surface-container-low/50">
+<span class="bg-surface-container-lowest px-4 text-xs font-label-caps text-outline absolute left-1/2 -translate-x-1/2 -top-2 rounded-full border border-outline-variant">Promotion Zone</span>
+<div class="flex items-center gap-4 p-2 px-4 hover:bg-surface-container-low transition-colors">
+<span class="w-8 text-center font-button-text text-button-text text-outline">5</span>
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Avatar of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsMw4LPmZYeyb6VIKxEMUB1LUViM0KojQGuwLUoKb3ZHAoVOLPMY8IpLuD7wiRzKnRe-NAXZpnzGCXok0GFD8A7tKM1mhMtmyQOEclRyCTNFDMbGvf4W941KUarTXm4-dB0LRjPThrXLkOBt-7h2-mKFKyxwNOlPSFedUDkK69hCCU6i8WLrW4vBlb3IpBmFzJVR7D62mAYaCP3TqrCR6MLEPEdhoTK1SDcIrWQfAITj1vMDoBLu7zAyt1_0SAVxghd_TEThQb564"/>
+<span class="font-button-text text-button-text text-on-surface flex-grow">ByteMe</span>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-caps text-label-caps">8</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary w-24 text-right">2,850 XP</span>
+</div>
+</div>
+<!-- Row ... -->
+<div class="p-2 text-center text-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</div>
+<!-- Current User Row -->
+<div class="flex items-center gap-4 p-4 bg-primary-fixed border-l-4 border-l-primary hover:bg-primary-fixed-dim transition-colors">
+<span class="w-8 text-center font-button-text text-button-text text-primary">12</span>
+<img class="w-12 h-12 rounded-full border-2 border-primary object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuYJcQKuWBnLvnl4j6gx3qRuJCoEBquETPsuCjYx-lp9zmZ1HF4Jza10EBH4PYm887IS-nufgXBvOupn1d9bg-pnNAs_gmHikPCyRjIcOgJd9dQ6paL_8pumOxdE8ca8bpTQF0qrcMWTwLOGsQZlK81o0pW3Fjgmqdxmj5reuihV9ssh5xnKe3kheAfsOZuZZNM5QK7IxaAGdcf4XjQcHQsDyNCm2HzHEo5CgfmiZsqH5PaThVGTufLVvk9nDvSdrLsJoINbK6XoA"/>
+<span class="font-button-text text-button-text text-on-primary-fixed flex-grow">Future Dev</span>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-caps text-label-caps">5</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary w-24 text-right font-bold">1,240 XP</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar Panels -->
+<div class="col-span-4 space-y-6">
+<!-- Performance Card -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl border-2 border-surface-container shadow-sm">
+<h3 class="font-h2 text-xl text-on-surface mb-4">Your Performance</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center p-3 bg-surface-container-low rounded-xl">
+<span class="font-body-md text-outline">Current Rank</span>
+<span class="font-button-text text-button-text text-primary flex items-center gap-1">
+                            #12 <span class="material-symbols-outlined text-secondary text-sm">arrow_upward</span>
+</span>
+</div>
+<div class="flex justify-between items-center p-3 bg-surface-container-low rounded-xl">
+<span class="font-body-md text-outline">Weekly XP</span>
+<span class="font-button-text text-button-text text-on-surface">1,240</span>
+</div>
+<div class="pt-2">
+<div class="flex justify-between text-xs font-label-caps text-outline mb-1">
+<span>To Rank 10</span>
+<span>150 XP needed</span>
+</div>
+<div class="w-full bg-surface-container h-3 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 85%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Ghostie Motivation -->
+<div class="relative bg-tertiary-fixed p-6 rounded-2xl border-2 border-tertiary-container shadow-sm overflow-hidden">
+<!-- Decorative blurred shape -->
+<div class="absolute -right-10 -bottom-10 w-32 h-32 bg-tertiary/20 rounded-full blur-2xl"></div>
+<div class="flex gap-4 relative z-10">
+<img class="w-16 h-16 rounded-xl border-2 border-tertiary-container object-cover bg-surface-container-lowest flex-shrink-0" data-alt="A small 3D rendering of a friendly ghost mascot with an encouraging smile, set against a soft purple background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA19Kw4sb4KCX3YYsGqQWp-uz-GxIHe-Ni_kNl1S831QajP0N1Edsksq7SES1n0pI5B9Wy5wmBVQnMhiPPSHZUXMzWLjlKtEEDD4oupTWA2DGir4lf6sB3UCFRBF2DiJcJXbgIFfIt_i88djrfEzrpraquV5mgXffAJ8J_O9Vgey9yvjoK6_29l6zTJVcYZlG2mss9fsUPAGjX_Dwr9DVmbKvWnbjxG3d2-staCn9P1VaQZlTja9bRbvL1jlxH50lsNmrj37MCxSg"/>
+<div>
+<div class="bg-surface-container-lowest p-3 rounded-xl rounded-tl-none border border-tertiary-container shadow-sm text-sm font-body-md text-on-tertiary-fixed relative">
+<div class="absolute -left-2 top-0 w-4 h-4 bg-surface-container-lowest border-l border-t border-tertiary-container transform -rotate-45 -mt-[1px] ml-[1px]"></div>
+                            "You're doing great! Just one more Lab to break into the Top 10. Let's go!"
+                        </div>
+<button class="mt-4 bg-tertiary text-on-tertiary font-button-text text-sm py-2 px-4 rounded-lg border-b-4 border-on-tertiary-fixed-variant hover:translate-y-0.5 hover:border-b-2 active:border-b-0 active:translate-y-1 transition-all">
+                            Start Lab
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

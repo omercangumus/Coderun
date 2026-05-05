@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Refined Lesson Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Lexend:wght@400;600&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#00210c",
+                        "on-primary-fixed": "#000569",
+                        "tertiary-container": "#9c5ab7",
+                        "surface": "#f7fafd",
+                        "secondary": "#006d37",
+                        "on-secondary-container": "#00743a",
+                        "on-surface": "#181c1f",
+                        "primary-fixed-dim": "#bec2ff",
+                        "background": "#f7fafd",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e0e3e7",
+                        "error": "#ba1a1a",
+                        "tertiary": "#81419c",
+                        "outline": "#767686",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "surface-container-low": "#f1f4f8",
+                        "surface-tint": "#3f4cda",
+                        "inverse-primary": "#bec2ff",
+                        "primary": "#3d4ad8",
+                        "on-tertiary-fixed": "#320047",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-high": "#e5e8ec",
+                        "on-tertiary-container": "#fffdff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#454655",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-container": "#6bfe9c",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2d3134",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "surface-dim": "#d7dade",
+                        "tertiary-fixed": "#f8d8ff",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-background": "#181c1f",
+                        "on-tertiary-fixed-variant": "#692984",
+                        "primary-fixed": "#e0e0ff",
+                        "inverse-on-surface": "#eef1f5",
+                        "surface-variant": "#e0e3e7",
+                        "surface-container": "#ebeef2",
+                        "surface-bright": "#f7fafd",
+                        "on-primary-container": "#fffdff",
+                        "outline-variant": "#c6c5d7",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#5865f2",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "unit": "8px",
+                        "margin-page": "32px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Plus Jakarta Sans"],
+                        "label-caps": ["Space Grotesk"],
+                        "body-md": ["Lexend"],
+                        "body-lg": ["Lexend"],
+                        "button-text": ["Lexend"],
+                        "h1": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-caps": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "button-text": ["16px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-x-hidden">
+<!-- Top Navigation (Suppressed for focused learning task, but progress bar is here) -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface px-6 h-16 flex items-center shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border-b-2 border-surface-variant">
+<div class="flex items-center gap-4 w-full max-w-[800px] mx-auto">
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<div class="flex-grow h-4 bg-surface-container rounded-full overflow-hidden border-b-[3px] border-surface-variant relative">
+<div class="h-full bg-secondary-container w-[65%] rounded-full relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-tertiary-container font-label-caps text-label-caps font-bold">
+<span class="material-symbols-outlined icon-fill text-[20px]">favorite</span>
+<span>4</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-6 max-w-[800px] mx-auto flex flex-col gap-stack-lg relative">
+<!-- Question Section -->
+<section class="flex flex-col gap-stack-md">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps uppercase text-tertiary bg-tertiary-fixed px-3 py-1 rounded-full border-b-[2px] border-tertiary-container">Syntax</span>
+<span class="font-label-caps text-label-caps uppercase text-secondary bg-secondary-fixed-dim/20 px-3 py-1 rounded-full border-b-[2px] border-secondary-fixed">Medium</span>
+</div>
+<h1 class="font-h1 text-h1 text-on-surface">How do you correctly initialize an empty dictionary?</h1>
+<!-- User's Wrong Answer Display -->
+<div class="bg-error-container/30 border-2 border-error/20 rounded-xl p-4 flex items-center justify-between border-b-[4px] border-error/30 mt-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined icon-fill text-error text-[24px]">cancel</span>
+<code class="font-mono text-body-lg text-error font-semibold">my_dict = []</code>
+</div>
+<span class="font-label-caps text-label-caps text-error opacity-80 uppercase">Your Answer</span>
+</div>
+</section>
+<!-- Feedback Card -->
+<section class="relative">
+<!-- Mascot Ghostie -->
+<div class="absolute -top-12 -right-4 z-10 w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-surface bg-primary-fixed-dim flex items-center justify-center">
+<img alt="Supportive Ghost Mascot" class="w-full h-full object-cover" data-alt="A highly detailed illustration of a cute, friendly ghost mascot character floating against a soft pastel purple background. The ghost has big, encouraging eyes and a small supportive smile, rendered in a 3D tactile modernism style with soft ambient lighting and smooth, squishy textures. The lighting is bright and cheerful, reflecting a modern light-mode educational app aesthetic. The overall mood is supportive, engaging, and playful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXHtNheijHyjx6EIY8mFA6eijM4_KiDLx_trEYwFBpeIiJ2CRqbgM68hspW7O_wclBIAIErSkH_VBm_eW2Oia_purnj10nu93QQll63MjgDTE4wxOmAYrGiN5jQCAYCgVhsB3QubFS5vIfheIt13GREfmO5jdrf5g2kV5x8ZENEXSFBKyWn6pJ6DgaVlt8O1X4otwRlHjup_UQlmkttwXSM3QWYj48s9OGXFzktGTt7LHo9u2cZV9X0rTp91plw42IjegOIArr74c"/>
+</div>
+<div class="bg-surface-container-lowest border-2 border-error-container rounded-xl p-6 border-b-[4px] border-error/20 shadow-[0_20px_40px_-15px_rgba(186,26,26,0.1)] flex flex-col gap-stack-md">
+<!-- Feedback Content -->
+<div class="flex flex-col gap-4">
+<div>
+<h3 class="font-label-caps text-label-caps text-error uppercase flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[18px]">error</span> Why it is wrong
+                        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Square brackets <code>[]</code> are used to initialize empty <strong>Lists</strong> in Python, not dictionaries. Using them creates an ordered sequence, which lacks the key-value structure of a dictionary.</p>
+</div>
+<div class="h-[1px] w-full bg-surface-variant my-2"></div>
+<div>
+<h3 class="font-label-caps text-label-caps text-primary uppercase flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[18px]">lightbulb</span> Quick Hint
+                        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Dictionaries need to be able to hold key-value pairs. Think about the curly braces <code>{}</code> or the explicit <code>dict()</code> constructor.</p>
+</div>
+<div class="h-[1px] w-full bg-surface-variant my-2"></div>
+<div>
+<h3 class="font-label-caps text-label-caps text-tertiary uppercase flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[18px]">menu_book</span> Review Topic
+                        </h3>
+<a class="inline-flex items-center gap-2 text-primary font-body-md text-body-md font-semibold hover:underline decoration-2 underline-offset-4" href="#">
+                            Python Collections Overview <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Actions Toolbar -->
+<div class="fixed bottom-0 left-0 w-full bg-surface border-t-2 border-surface-variant p-4 pb-safe flex justify-center z-50">
+<div class="max-w-[800px] w-full flex flex-col sm:flex-row gap-4 items-center justify-between">
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none font-button-text text-button-text font-semibold text-primary bg-primary-fixed border-2 border-primary-fixed-dim py-3 px-6 rounded-lg border-b-[4px] hover:bg-primary-fixed-dim active:border-b-[2px] active:translate-y-[2px] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span> Ask Ghostie AI
+                </button>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none font-button-text text-button-text font-semibold text-on-surface-variant bg-surface-container border-2 border-surface-variant py-3 px-6 rounded-lg border-b-[4px] hover:bg-surface-container-high active:border-b-[2px] active:translate-y-[2px] transition-all">
+                    Review Topic
+                </button>
+<button class="flex-1 sm:flex-none font-button-text text-button-text font-semibold text-on-primary bg-primary border-2 border-primary-fixed-variant py-3 px-8 rounded-lg border-b-[4px] shadow-[0_15px_30px_-10px_rgba(61,74,216,0.4)] hover:bg-surface-tint active:border-b-[2px] active:translate-y-[2px] transition-all">
+                    Try Again
+                </button>
+</div>
+</div>
+</div>
+</body></html>

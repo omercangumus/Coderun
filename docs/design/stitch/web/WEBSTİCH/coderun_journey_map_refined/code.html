@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun Learning Path</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d7dade",
+                    "surface-bright": "#f7fafd",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface-container-low": "#f1f4f8",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#006d37",
+                    "surface-container-high": "#e5e8ec",
+                    "background": "#f7fafd",
+                    "surface": "#f7fafd",
+                    "surface-tint": "#3f4cda",
+                    "tertiary-fixed": "#f8d8ff",
+                    "primary-fixed": "#e0e0ff",
+                    "outline-variant": "#c6c5d7",
+                    "on-surface-variant": "#454655",
+                    "surface-container": "#ebeef2",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e0e3e7",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e0e3e7",
+                    "primary-fixed-dim": "#bec2ff",
+                    "on-tertiary-fixed": "#320047",
+                    "on-background": "#181c1f",
+                    "on-secondary-container": "#00743a",
+                    "inverse-primary": "#bec2ff",
+                    "tertiary-fixed-dim": "#ebb2ff",
+                    "on-primary-fixed": "#000569",
+                    "secondary-fixed-dim": "#4ae183",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-primary-container": "#fffdff",
+                    "primary-container": "#5865f2",
+                    "inverse-on-surface": "#eef1f5",
+                    "on-tertiary-container": "#fffdff",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "tertiary": "#81419c",
+                    "on-surface": "#181c1f",
+                    "outline": "#767686",
+                    "primary": "#3d4ad8",
+                    "on-tertiary-fixed-variant": "#692984",
+                    "inverse-surface": "#2d3134",
+                    "on-secondary-fixed-variant": "#005228",
+                    "tertiary-container": "#9c5ab7",
+                    "secondary-container": "#6bfe9c",
+                    "on-secondary-fixed": "#00210c",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-page": "32px",
+                    "stack-sm": "12px",
+                    "stack-lg": "48px",
+                    "gutter": "24px",
+                    "unit": "8px",
+                    "stack-md": "24px"
+            },
+            "fontFamily": {
+                    "label-caps": [
+                            "Space Grotesk"
+                    ],
+                    "h2": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ],
+                    "button-text": [
+                            "Lexend"
+                    ],
+                    "h1": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Lexend"
+                    ]
+            },
+            "fontSize": {
+                    "label-caps": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h2": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "button-text": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h1": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 flex flex-col h-full z-40 bg-white dark:bg-slate-900 h-screen w-64 border-r-4 border-slate-100 dark:border-slate-800 shadow-[4px_0px_0px_0px_#E5E9F0] dark:shadow-none hidden md:flex">
+<div class="p-8 flex items-center gap-4 border-b-4 border-slate-200 dark:border-slate-800">
+<img alt="Friendly Ghostie mascot smiling" class="w-12 h-12 rounded-full border-2 border-indigo-600 bg-indigo-50" data-alt="A friendly, stylized ghost mascot character design, highly polished 3D render in a playful, modern SaaS aesthetic. The ghost is smiling warmly, rendered with soft lighting and a slightly squishy, tactile material feel. The background is a crisp white to match a light mode UI, with subtle bright blue and purple ambient reflections to fit the Coderun brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoPx59PT3mdJYV3wjoVFqx4Oc2zB-nQO25bOo47nQTEkvKFYj5Hi-oRuc3HnSCvCPXPmgE21ndZHdXQ3NnNQUEVbxvbYxzTC08ClsqwuLDv4n8NEZ_F2tGSC6IAJwPWR6GlE0udDDdzms__c1RdJtOtcYbPhfVTkWMuW50dKSqYrmLcTFk4TRkfF3SwXDxkiwsIPNwlk2Z5StXQMLeFpcPGJ4vi2UxGiIDd3mknhboY_mGRQS_YrheRU0aHKsI3nBSKX1x-PlxAk4"/>
+<div>
+<h1 class="hidden md:block text-xl font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tighter">Coderun</h1>
+<p class="text-slate-500 font-label-caps text-label-caps mt-1">Level 12 Developer</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border-r-4 border-indigo-600 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">map</span>
+                Learning Paths
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">terminal</span>
+                Labs
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">rate_review</span>
+                Review
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">emoji_events</span>
+                Achievements
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+                Ghostie AI
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined text-xl">person</span>
+                Profile
+            </a>
+</div>
+<div class="p-6 border-t-4 border-slate-200 dark:border-slate-800">
+<button class="w-full bg-primary text-on-primary font-button-text text-button-text py-4 rounded-xl border-b-4 border-[#2a34a8] hover:translate-y-[2px] hover:border-b-2 active:translate-y-[4px] active:border-b-0 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">play_arrow</span>
+                Start Daily Lab
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col h-full bg-surface-container-low">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 flex justify-between items-center px-8 z-30 max-w-[1200px] mx-auto docked full-width border-b-4 border-slate-100 dark:border-slate-800 shadow-sm bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b-4 border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-4">
+<h2 class="font-['Plus_Jakarta_Sans'] font-bold text-h2 font-h2 text-primary tracking-tight">Python Mastery</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-2 bg-surface px-4 py-2 rounded-full border-2 border-surface-variant">
+<span class="material-symbols-outlined text-secondary">local_fire_department</span>
+<span class="font-label-caps text-label-caps text-on-surface">5 Day Streak</span>
+</div>
+<div class="hidden lg:flex items-center gap-2 bg-surface px-4 py-2 rounded-full border-2 border-surface-variant">
+<span class="material-symbols-outlined text-tertiary">star</span>
+<span class="font-label-caps text-label-caps text-on-surface">1,240 XP</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border-2 border-primary cursor-pointer hover:scale-105 transition-transform" data-alt="A clean, professional headshot of a young adult looking directly at the camera, smiling slightly. The lighting is bright and even, typical of a modern SaaS user profile picture. The background is a soft, neutral off-white, ensuring the face stands out clearly. The image quality is high, resembling a polished corporate portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeuLa7I34nnwT8QzSVcSy5vB9gT52zU5Yv4lepmuLPjQp2wVofxf9DrCu4v00h7C8mTtVQIwNVW5vP_P2Shh66yKQcCx7GRIx3_s4QE_lNGo8omg7hpuJLqJtnMCuiQyHV2NpnREZMiB986U7WFmADcdTUmqwDm_tIkK3w56saMTAUrTF9zDjVX5Mzxrm9gjasheG_ohSm_ew8yfCf6rdVjgLHu3eGSW_gNQuOseQzPDgA53goU6ui1jJnEb5ccHL6YgzM7A3fk5o"/>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 mt-16 flex flex-col lg:flex-row overflow-hidden max-w-[1200px] w-full mx-auto">
+<!-- Path Map Area -->
+<div class="flex-1 overflow-y-auto relative p-8 pb-32">
+<!-- SVG Curved Path Background -->
+<svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" style="min-height: 800px;">
+<path d="M 200 100 Q 400 100, 400 300 T 200 500 T 400 700" fill="none" stroke="#e0e3e7" stroke-linecap="round" stroke-width="16"></path>
+<!-- Highlighted Path Portion -->
+<path d="M 200 100 Q 400 100, 400 300 T 300 400" fill="none" stroke="#6bfe9c" stroke-linecap="round" stroke-width="16"></path>
+</svg>
+<div class="relative z-10 flex flex-col items-center gap-20 py-12">
+<!-- Node: Lists (Completed) -->
+<div class="relative flex flex-col items-center group cursor-pointer -ml-32">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center border-b-8 border-[#005228] shadow-lg mb-4 transform transition-transform group-hover:-translate-y-1 group-active:translate-y-2 group-active:border-b-0">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-h2 text-h2 text-on-surface-variant">Lists</span>
+</div>
+<!-- Node: Methods (Completed) -->
+<div class="relative flex flex-col items-center group cursor-pointer ml-48">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center border-b-8 border-[#005228] shadow-lg mb-4 transform transition-transform group-hover:-translate-y-1 group-active:translate-y-2 group-active:border-b-0">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-h2 text-h2 text-on-surface-variant">Methods</span>
+</div>
+<!-- Node: Dictionaries (Active) -->
+<div class="relative flex flex-col items-center group cursor-pointer -ml-16">
+<!-- Ghostie Tooltip -->
+<div class="absolute -top-24 -right-48 w-48 bg-inverse-surface text-inverse-on-surface p-4 rounded-2xl rounded-bl-none shadow-xl z-20 backdrop-blur-md bg-opacity-95 border border-outline">
+<p class="font-body-md text-body-md">Dictionaries are just key-value pairs! You got this.</p>
+<img alt="Ghostie helper" class="w-12 h-12 absolute -bottom-6 -left-6 border-2 border-primary rounded-full bg-surface" data-alt="A friendly, stylized ghost mascot character design, highly polished 3D render in a playful, modern SaaS aesthetic. The ghost is smiling warmly, rendered with soft lighting and a slightly squishy, tactile material feel. The background is a crisp white to match a light mode UI, with subtle bright blue and purple ambient reflections to fit the Coderun brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_0_hplZscyyUwc_DPFenWPVd7z70ra_o1-38_ZAfFOzhfbW7iRlBg1FHhVdoN8Kdgir1CC_5HxLmCY1skT8vZui1YpsfuAFOFMoZG8N6J2BN8eG4YH1EUPnjx7BlK9L-Ida7VQ1NJcse9NTK5eN-rFKfDX8BhrhImF3ZtwPBc3Ix0FLYjL5UtQauZlhOSIW5NwRGh5sjs4oHugL7MOkUx4WuIuFoHAv--XsvFBULY-3XSGSVyVoLiRTHR9RpRiBhBI8Dr_jEe4lU"/>
+</div>
+<div class="w-28 h-28 rounded-[2rem] bg-primary text-on-primary flex items-center justify-center border-b-[10px] border-[#222fc2] shadow-[0_20px_40px_-10px_rgba(88,101,242,0.4)] mb-4 transform transition-transform group-hover:-translate-y-2 group-active:translate-y-2 group-active:border-b-0 relative">
+<div class="absolute inset-0 rounded-[2rem] border-4 border-primary-fixed-dim animate-pulse opacity-50"></div>
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<span class="font-h2 text-h2 text-primary">Dictionaries</span>
+</div>
+<!-- Node: Review (Review Due) -->
+<div class="relative flex flex-col items-center group cursor-pointer ml-32 mt-12">
+<div class="absolute -top-4 -right-4 bg-error text-on-error w-8 h-8 rounded-full flex items-center justify-center animate-bounce shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div class="w-24 h-24 rounded-full bg-surface text-on-surface flex items-center justify-center border-b-8 border-surface-variant border-2 shadow-lg mb-4 transform transition-transform group-hover:-translate-y-1 group-active:translate-y-2 group-active:border-b-0">
+<span class="material-symbols-outlined text-4xl text-error">rate_review</span>
+</div>
+<span class="font-h2 text-h2 text-on-surface-variant">Review</span>
+</div>
+<!-- Node: Quiz (Locked) -->
+<div class="relative flex flex-col items-center opacity-60 ml-8 mt-8">
+<div class="w-24 h-24 rounded-full bg-surface-container-high text-outline flex items-center justify-center border-b-8 border-outline-variant shadow-sm mb-4 cursor-not-allowed">
+<span class="material-symbols-outlined text-4xl">lock</span>
+</div>
+<span class="font-h2 text-h2 text-outline">Quiz</span>
+</div>
+<!-- Node: Mini Project (Locked) -->
+<div class="relative flex flex-col items-center opacity-60 -ml-32 mt-8">
+<div class="w-28 h-28 rounded-xl bg-surface-container-high text-outline flex items-center justify-center border-b-8 border-outline-variant shadow-sm mb-4 cursor-not-allowed">
+<span class="material-symbols-outlined text-5xl">construction</span>
+</div>
+<span class="font-h2 text-h2 text-outline">Mini Project</span>
+</div>
+</div>
+</div>
+<!-- Right Panel: Lesson Details -->
+<div class="w-full lg:w-96 bg-surface border-l-4 border-surface-variant p-8 flex flex-col gap-6 overflow-y-auto">
+<div>
+<h3 class="font-label-caps text-label-caps text-tertiary mb-2">CURRENT UNIT</h3>
+<h2 class="font-h1 text-h1 text-on-surface mb-4">Unit 3: Data Structures</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Master the core ways to store and manipulate data in Python. This unit unlocks powerful algorithms.</p>
+</div>
+<!-- Progress Glass Card -->
+<div class="bg-surface-bright rounded-2xl p-6 border-2 border-surface-variant shadow-sm relative overflow-hidden group hover:border-primary transition-colors">
+<div class="flex justify-between items-end mb-4">
+<span class="font-h2 text-h2 text-on-surface">3/8</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Lessons</span>
+</div>
+<!-- Progress Bar -->
+<div class="h-4 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-3/8 rounded-full relative">
+<!-- Shimmer effect -->
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+</div>
+<!-- Next Lesson Recommendation -->
+<div class="bg-primary-fixed rounded-2xl p-6 border-b-[6px] border-primary-fixed-dim shadow-sm flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">play_circle</span>
+<h3 class="font-h2 text-h2 text-on-primary-fixed text-2xl">Dictionaries</h3>
+</div>
+<div class="flex items-center gap-2 text-on-primary-fixed-variant font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Est. 45m</span>
+</div>
+<button class="mt-2 w-full bg-primary text-on-primary font-button-text text-button-text py-3 rounded-xl border-b-4 border-[#222fc2] hover:translate-y-[2px] hover:border-b-2 active:translate-y-[4px] active:border-b-0 transition-all">
+                        Resume Learning
+                    </button>
+</div>
+<!-- Journey Stats -->
+<div class="grid grid-cols-2 gap-4 mt-auto">
+<div class="bg-surface rounded-xl p-4 border-2 border-surface-variant text-center">
+<span class="material-symbols-outlined text-tertiary mb-2">flag</span>
+<p class="font-h2 text-h2 text-on-surface text-2xl">5</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant text-xs">To Checkpoint</p>
+</div>
+<div class="bg-surface rounded-xl p-4 border-2 border-surface-variant text-center">
+<span class="material-symbols-outlined text-secondary mb-2">psychology</span>
+<p class="font-h2 text-h2 text-on-surface text-2xl">12</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant text-xs">Concepts</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</body></html>
