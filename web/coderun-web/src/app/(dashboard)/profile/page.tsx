@@ -71,17 +71,17 @@ export default function ProfilePage() {
                 </p>
               </div>
               <p className="font-heading text-h3 font-bold text-primary">
-                {Math.round(stats.levelProgress * 100)}%
+                {Math.round(stats.levelProgress.progressPercentage)}%
               </p>
             </div>
             <div className="cr-progress-bar">
               <div
                 className="cr-progress-fill"
-                style={{ width: `${stats.levelProgress * 100}%` }}
+                style={{ width: `${stats.levelProgress.progressPercentage}%` }}
               />
             </div>
             <p className="font-sans text-body-sm text-on-surface-variant mt-2">
-              Sonraki seviyeye {100 - Math.round(stats.levelProgress * 100)} XP kaldı
+              Sonraki seviyeye {100 - Math.round(stats.levelProgress.progressPercentage)} XP kaldı
             </p>
           </CoderunCard>
         )}

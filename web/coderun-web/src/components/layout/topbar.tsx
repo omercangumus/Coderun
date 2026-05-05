@@ -27,9 +27,9 @@ export function Topbar() {
             <span className="inline-flex items-center gap-1 bg-primary-fixed text-primary rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
               ⚡ {formatXP(stats.totalXp)}
             </span>
-            {stats.currentStreak > 0 && (
+            {stats.streak > 0 && (
               <span className="inline-flex items-center gap-1 bg-orange-50 text-streak-orange rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
-                🔥 {stats.currentStreak}
+                🔥 {stats.streak}
               </span>
             )}
           </>

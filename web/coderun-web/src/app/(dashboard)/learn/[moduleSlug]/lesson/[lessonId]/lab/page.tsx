@@ -78,7 +78,6 @@ export default function LabPage({
   const { messages, sendMessage, isLoading } = useMentor({
     context: 'lab',
     moduleSlug,
-    lessonId,
   });
 
   const toggleItem = (id: number) => {

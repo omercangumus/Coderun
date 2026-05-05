@@ -63,7 +63,7 @@ export default function DashboardPage() {
             </div>
             <div className="text-right">
               <p className="font-heading text-h3 font-bold text-primary">
-                {stats ? Math.round(stats.levelProgress * 100) : 0}%
+                {stats ? Math.round(stats.levelProgress.progressPercentage) : 0}%
               </p>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function DashboardPage() {
             <div className="cr-progress-bar">
               <div
                 className="cr-progress-fill"
-                style={{ width: `${stats.levelProgress * 100}%` }}
+                style={{ width: `${stats.levelProgress.progressPercentage}%` }}
               />
             </div>
           ) : (
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                     1 Ders Tamamla
                   </p>
                   <p className="font-sans text-body-sm text-on-surface-variant mt-1">
-                    Streak'ini korumak için bugün en az 1 ders tamamla.
+                    Streak&apos;ini korumak için bugün en az 1 ders tamamla.
                   </p>
                 </div>
               </div>
