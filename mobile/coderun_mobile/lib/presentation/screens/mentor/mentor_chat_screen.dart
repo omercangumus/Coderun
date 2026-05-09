@@ -172,7 +172,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                   icon: const Icon(Icons.send_rounded),
                   color: AppColors.primary,
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     disabledBackgroundColor: Colors.grey.shade100,
                   ),
                 ),

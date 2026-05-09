@@ -41,7 +41,7 @@ class CoderunCard extends StatelessWidget {
         boxShadow: shadows ??
             [
               BoxShadow(
-                color: AppColors.onSurface.withOpacity(0.04),
+                color: AppColors.onSurface.withValues(alpha: 0.04),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -82,7 +82,7 @@ class CoderunHighlightCard extends StatelessWidget {
       onTap: onTap,
       shadows: [
         BoxShadow(
-          color: AppColors.primary.withOpacity(0.2),
+          color: AppColors.primary.withValues(alpha: 0.2),
           blurRadius: 12,
           offset: const Offset(0, 4),
         ),
@@ -107,7 +107,7 @@ class CoderunSuccessCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CoderunCard(
       padding: padding,
-      backgroundColor: AppColors.secondaryContainer.withOpacity(0.3),
+      backgroundColor: AppColors.secondaryContainer.withValues(alpha: 0.3),
       borderColor: AppColors.secondaryFixedDim,
       child: child,
     );
@@ -134,7 +134,7 @@ class StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chipColor = color ?? AppColors.primary;
-    final bgColor = backgroundColor ?? chipColor.withOpacity(0.1);
+    final bgColor = backgroundColor ?? chipColor.withValues(alpha: 0.1);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -164,7 +164,7 @@ class StatChip extends StatelessWidget {
                 fontFamily: 'Lexend',
                 fontSize: 11,
                 fontWeight: FontWeight.w400,
-                color: chipColor.withOpacity(0.8),
+                color: chipColor.withValues(alpha: 0.8),
               ),
             ),
           ],

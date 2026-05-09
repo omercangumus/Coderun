@@ -86,7 +86,7 @@ class HomeTab extends ConsumerWidget {
                           icon: '🔥',
                           value: '${stats.streak}',
                           color: AppColors.streakOrange,
-                          bg: AppColors.streakOrange.withOpacity(0.1),
+                          bg: AppColors.streakOrange.withValues(alpha: 0.1),
                         ),
                       ],
                     ),
@@ -283,7 +283,7 @@ class _XpCard extends StatelessWidget {
         border: Border.all(color: AppColors.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.onSurface.withOpacity(0.04),
+            color: AppColors.onSurface.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -320,7 +320,7 @@ class _ContinueLearningCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.25),
+              color: AppColors.primary.withValues(alpha: 0.25),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -361,7 +361,7 @@ class _ContinueLearningCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                     ),
                     child: const Text(
@@ -492,7 +492,7 @@ class _GhostieCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             AppColors.primaryFixed,
             AppColors.surfaceContainerLowest,
@@ -501,17 +501,17 @@ class _GhostieCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
-      child: Row(
+      child: const Row(
         children: [
           GhostieAvatar(size: GhostieSize.medium, mood: GhostieMood.happy),
-          const SizedBox(width: AppSpacing.md),
+          SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Ghostie AI',
                   style: TextStyle(
                     fontFamily: 'PlusJakartaSans',
@@ -520,8 +520,8 @@ class _GhostieCard extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 2),
-                const Text(
+                SizedBox(height: 2),
+                Text(
                   'Takıldığın bir yer mi var? Sana yardım etmekten mutluluk duyarım!',
                   style: TextStyle(
                     fontFamily: 'Lexend',

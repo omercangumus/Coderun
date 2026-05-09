@@ -169,7 +169,7 @@ class _PathCard extends StatelessWidget {
           border: Border.all(color: AppColors.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: AppColors.onSurface.withOpacity(0.04),
+              color: AppColors.onSurface.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -267,7 +267,7 @@ class _LevelBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
       ),
       child: Text(

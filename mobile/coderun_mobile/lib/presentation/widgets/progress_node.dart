@@ -113,14 +113,14 @@ class ProgressNode extends StatelessWidget {
           shape: BoxShape.circle,
           border: isActive
               ? Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 4,
                 )
               : null,
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.35),
+                    color: AppColors.primary.withValues(alpha: 0.35),
                     blurRadius: 16,
                     spreadRadius: 2,
                   ),
@@ -128,7 +128,7 @@ class ProgressNode extends StatelessWidget {
               : state == NodeState.completed
                   ? [
                       BoxShadow(
-                        color: AppColors.nodeCompleted.withOpacity(0.3),
+                        color: AppColors.nodeCompleted.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

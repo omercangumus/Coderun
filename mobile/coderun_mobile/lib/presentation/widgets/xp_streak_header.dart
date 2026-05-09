@@ -186,7 +186,7 @@ class XpStreakRow extends StatelessWidget {
           icon: '🔥',
           value: '$streak gün',
           color: AppColors.streakOrange,
-          bgColor: AppColors.streakOrange.withOpacity(0.1),
+          bgColor: AppColors.streakOrange.withValues(alpha: 0.1),
         ),
       ],
     );
