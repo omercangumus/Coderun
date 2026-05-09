@@ -12,6 +12,7 @@ from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.lesson import Lesson
+    from app.models.unit import Unit
 
 
 class Module(BaseModel):
@@ -40,5 +41,11 @@ class Module(BaseModel):
         "Lesson",
         back_populates="module",
         order_by="Lesson.order",
+        lazy="select",
+    )
+    units: Mapped[list[Unit]] = relationship(
+        "Unit",
+        back_populates="module",
+        order_by="Unit.order",
         lazy="select",
     )

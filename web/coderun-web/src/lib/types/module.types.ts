@@ -34,10 +34,22 @@ export interface ModuleProgressResponse {
 export interface QuestionResponse {
   id: string;
   lessonId: string;
-  questionType: 'multiple_choice' | 'code_completion' | 'code_editor';
+  questionType:
+    | 'multiple_choice'
+    | 'code_completion'
+    | 'code_editor'
+    | 'fill_in_blank'
+    | 'reorder'
+    | 'true_false_reason'
+    | 'spot_the_bug'
+    | 'multi_select';
   questionText: string;
-  options: Record<string, string[]> | null;
+  options: Record<string, unknown> | null;
+  hint: string | null;
+  codeBlock: string | null;
+  wordBank: { words: string[] } | null;
   order: number;
+  reinforcementQuestion: QuestionResponse | null;
 }
 
 export interface LessonDetailResponse extends LessonResponse {
@@ -61,6 +73,7 @@ export interface LessonResultResponse {
   newLevel: number;
   newStreak: number;
   badgesEarned: BadgeResponse[];
+  reinforcementQuestion: QuestionResponse | null;
 }
 
 export interface PlacementTestResponse {

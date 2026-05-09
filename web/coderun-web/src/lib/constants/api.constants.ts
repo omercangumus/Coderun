@@ -39,6 +39,21 @@ export const MENTOR_ENDPOINTS = {
   ask: '/mentor/ask',
 } as const;
 
+export const ADMIN_ENDPOINTS = {
+  stats: '/admin/stats',
+  paths: '/admin/paths',
+  pathDetail: (id: string) => `/admin/paths/${id}`,
+  pathsReorder: '/admin/paths/reorder',
+  units: '/admin/units',
+  unitDetail: (id: string) => `/admin/units/${id}`,
+  lessons: '/admin/lessons',
+  lessonDetail: (id: string) => `/admin/lessons/${id}`,
+  questions: '/admin/questions',
+  questionDetail: (id: string) => `/admin/questions/${id}`,
+  users: '/admin/users',
+  userProgress: (id: string) => `/admin/users/${id}/progress`,
+} as const;
+
 export const QUERY_KEYS = {
   modules: ['modules'] as const,
   moduleProgress: (slug: string) => ['module-progress', slug] as const,
@@ -49,4 +64,11 @@ export const QUERY_KEYS = {
   streak: ['streak'] as const,
   levelProgress: ['level-progress'] as const,
   badges: ['badges'] as const,
+  // Admin
+  adminStats: ['admin-stats'] as const,
+  adminPaths: ['admin-paths'] as const,
+  adminUnits: (moduleId: string) => ['admin-units', moduleId] as const,
+  adminLessons: (moduleId?: string) => ['admin-lessons', moduleId] as const,
+  adminQuestions: (lessonId: string) => ['admin-questions', lessonId] as const,
+  adminUsers: (search?: string) => ['admin-users', search] as const,
 } as const;

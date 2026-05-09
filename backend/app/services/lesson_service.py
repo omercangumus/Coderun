@@ -1,5 +1,6 @@
 # Coderun backend — ders servis katmanı; ders iş mantığını, cevap değerlendirmesini ve gamification'ı yönetir.
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -7,6 +8,7 @@ from fastapi import HTTPException, status
 from redis.asyncio import Redis
 
 from app.core.config import settings
+from app.models.question import Question
 from app.repositories.badge_repository import BadgeRepository
 from app.repositories.lesson_repository import LessonRepository
 from app.repositories.module_repository import ModuleRepository
@@ -20,6 +22,7 @@ from app.schemas.lesson import (
     LessonWithProgressResponse,
 )
 from app.schemas.progress import AnswerSubmit
+from app.schemas.question import QuestionResponse
 from app.services import gamification_service
 from app.services.leaderboard_service import add_xp_to_leaderboard
 
@@ -152,6 +155,66 @@ async def _check_module_completed(
     return rate >= 1.0
 
 
+# ---------------------------------------------------------------------------
+# Soru türüne göre cevap değerlendirmesi
+# ---------------------------------------------------------------------------
+
+
+def _evaluate_answer(question: Question, user_answer: str) -> bool:
+    """Soru türüne göre kullanıcı cevabını değerlendirir.
+
+    Args:
+        question: Soru ORM nesnesi.
+        user_answer: Kullanıcının gönderdiği cevap.
+
+    Returns:
+        Cevap doğruysa True.
+    """
+    q_type = question.question_type
+    correct = question.correct_answer.strip()
+    answer = user_answer.strip()
+
+    if q_type == "multiple_choice":
+        return answer.lower() == correct.lower()
+
+    elif q_type == "fill_in_blank" or q_type == "code_completion":
+        # Cevap, boşlukları doldurulmuş tam metin veya virgülle ayrılmış kelimeler
+        return answer.lower() == correct.lower()
+
+    elif q_type == "reorder":
+        # Cevap: virgülle ayrılmış sıralı indeksler veya JSON list
+        try:
+            user_order = json.loads(answer) if answer.startswith("[") else answer.split(",")
+            correct_order = json.loads(correct) if correct.startswith("[") else correct.split(",")
+            return [str(x).strip() for x in user_order] == [str(x).strip() for x in correct_order]
+        except (json.JSONDecodeError, ValueError):
+            return answer.lower() == correct.lower()
+
+    elif q_type == "true_false_reason":
+        # Cevap: "true|reason_index" veya "false|reason_index" formatı
+        return answer.lower() == correct.lower()
+
+    elif q_type == "spot_the_bug":
+        # Cevap: satır indeksi + düzeltme seçeneği, ör. "4|fix_option_1"
+        return answer.lower() == correct.lower()
+
+    elif q_type == "multi_select":
+        # Cevap: virgülle ayrılmış seçenekler (sıra bağımsız)
+        try:
+            user_set = set(x.strip().lower() for x in answer.split(","))
+            correct_set = set(x.strip().lower() for x in correct.split(","))
+            return user_set == correct_set
+        except (ValueError, AttributeError):
+            return False
+
+    elif q_type == "code_editor":
+        return answer.lower() == correct.lower()
+
+    else:
+        # Bilinmeyen tür — basit string karşılaştırma
+        return answer.lower() == correct.lower()
+
+
 async def submit_lesson_answer(
     lesson_id: UUID,
     user_id: UUID,
@@ -168,6 +231,9 @@ async def submit_lesson_answer(
     Skor = (doğru sayısı / toplam soru) * 100.
     Skor >= LESSON_PASS_SCORE ise ders tamamlandı sayılır.
     Tamamlandıysa gamification_service.award_xp_and_update_streak() çağrılır.
+
+    Yanlış cevaplanan ve reinforcement_question_id'si olan ilk soru varsa,
+    pekiştirme sorusu response'a eklenir.
 
     Args:
         lesson_id: Cevaplanan dersin UUID'si.
@@ -197,10 +263,20 @@ async def submit_lesson_answer(
     answer_map = {a.question_id: a.answer for a in answers}
 
     correct_count = 0
+    reinforcement_q: Question | None = None
+
     for question in questions:
         user_answer = answer_map.get(question.id, "")
-        if user_answer.strip().lower() == question.correct_answer.strip().lower():
+        if _evaluate_answer(question, user_answer):
             correct_count += 1
+        else:
+            # İlk yanlış sorunun pekiştirme sorusunu yakala
+            if (
+                reinforcement_q is None
+                and question.reinforcement_question_id is not None
+                and question.reinforcement_question is not None
+            ):
+                reinforcement_q = question.reinforcement_question
 
     total_questions = len(questions)
     wrong_count = total_questions - correct_count
@@ -291,6 +367,21 @@ async def submit_lesson_answer(
     else:
         message = f"Skor: {score}/100. Geçmek için en az {settings.LESSON_PASS_SCORE} puan gerekiyor."
 
+    # Pekiştirme sorusu response'u oluştur
+    reinforcement_response = None
+    if reinforcement_q is not None:
+        reinforcement_response = QuestionResponse(
+            id=reinforcement_q.id,
+            lesson_id=reinforcement_q.lesson_id,
+            question_type=reinforcement_q.question_type,
+            question_text=reinforcement_q.question_text,
+            options=reinforcement_q.options,
+            hint=reinforcement_q.hint,
+            code_block=reinforcement_q.code_block,
+            word_bank=reinforcement_q.word_bank,
+            order=reinforcement_q.order,
+        )
+
     return LessonResultResponse(
         lesson_id=lesson_id,
         score=score,
@@ -303,4 +394,5 @@ async def submit_lesson_answer(
         new_streak=new_streak,
         badges_earned=badges_earned,
         message=message,
+        reinforcement_question=reinforcement_response,
     )

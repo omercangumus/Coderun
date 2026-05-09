@@ -132,6 +132,7 @@ terraform.rc
 .env
 .env.local
 .env.*.local
+**/.env
 **/.env.local
 **/.env.*.local
 *.pem

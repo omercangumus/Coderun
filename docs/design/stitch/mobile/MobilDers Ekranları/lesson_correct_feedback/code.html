@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Correct Answer Feedback - Coderun</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#3f4cda",
+                    "surface-container-low": "#f1f4f8",
+                    "inverse-surface": "#2d3134",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#6bfe9c",
+                    "secondary": "#006d37",
+                    "on-secondary-container": "#00743a",
+                    "primary": "#3d4ad8",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "tertiary-fixed-dim": "#ebb2ff",
+                    "on-surface": "#181c1f",
+                    "tertiary-fixed": "#f8d8ff",
+                    "surface-bright": "#f7fafd",
+                    "on-surface-variant": "#454655",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00210c",
+                    "on-tertiary-container": "#fffdff",
+                    "tertiary-container": "#9c5ab7",
+                    "on-secondary-fixed-variant": "#005228",
+                    "primary-container": "#5865f2",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#4ae183",
+                    "background": "#f7fafd",
+                    "tertiary": "#81419c",
+                    "surface-container-highest": "#e0e3e7",
+                    "on-primary-container": "#fffdff",
+                    "surface-dim": "#d7dade",
+                    "surface-container": "#ebeef2",
+                    "secondary-fixed": "#6bfe9c",
+                    "outline-variant": "#c6c5d7",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#bec2ff",
+                    "on-tertiary-fixed": "#320047",
+                    "surface-container-high": "#e5e8ec",
+                    "surface": "#f7fafd",
+                    "on-primary-fixed": "#000569",
+                    "primary-fixed": "#e0e0ff",
+                    "inverse-on-surface": "#eef1f5",
+                    "on-tertiary-fixed-variant": "#692984",
+                    "on-error-container": "#93000a",
+                    "outline": "#767686",
+                    "error": "#ba1a1a",
+                    "on-background": "#181c1f",
+                    "surface-variant": "#e0e3e7",
+                    "inverse-primary": "#bec2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "12px",
+                    "stack-md": "24px",
+                    "gutter": "24px",
+                    "unit": "8px",
+                    "stack-lg": "48px",
+                    "margin-page": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Lexend"
+                    ],
+                    "h2": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "button-text": [
+                            "Lexend"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ],
+                    "h1": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-caps": [
+                            "Space Grotesk"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h2": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "button-text": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "label-caps": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg flex justify-center min-h-screen">
+<!-- Mobile Frame Container -->
+<div class="relative w-full max-w-[420px] h-[884px] bg-surface overflow-hidden shadow-2xl">
+<!-- Dimmed Background (Previous Exercise) -->
+<div class="absolute inset-0 p-gutter flex flex-col gap-stack-md opacity-30 blur-[2px] pointer-events-none select-none">
+<!-- Fake Header Progress -->
+<div class="flex items-center gap-4 mt-2">
+<span class="material-symbols-outlined text-outline">close</span>
+<div class="flex-1 h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-4/5 h-full bg-primary rounded-full"></div>
+</div>
+<div class="flex items-center gap-1 text-error">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-button-text text-button-text">5</span>
+</div>
+</div>
+<!-- Fake Content -->
+<h2 class="font-h2 text-h2 text-on-surface mt-stack-md">Select the 2nd item in the list.</h2>
+<div class="bg-inverse-surface text-on-tertiary p-6 rounded-xl font-mono text-sm leading-relaxed border-b-4 border-[#1a1c1e]">
+<span class="text-tertiary-fixed-dim">fruits</span> = ["apple", "banana", "cherry"]<br/>
+                print(fruits[ <span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-md mx-1">?</span> ])
+            </div>
+<div class="flex flex-col gap-unit mt-stack-sm">
+<div class="p-4 border-2 border-surface-variant rounded-xl text-center font-button-text text-button-text text-on-surface-variant">0</div>
+<div class="p-4 border-2 border-secondary bg-secondary-fixed/20 rounded-xl text-center font-button-text text-button-text text-secondary relative">
+                    1
+                    <div class="absolute inset-0 border-b-4 border-secondary/30 rounded-xl"></div>
+</div>
+<div class="p-4 border-2 border-surface-variant rounded-xl text-center font-button-text text-button-text text-on-surface-variant">2</div>
+</div>
+</div>
+<!-- Dark Overlay -->
+<div class="absolute inset-0 bg-inverse-surface/40 z-10"></div>
+<!-- Success Bottom Sheet -->
+<div class="absolute bottom-0 left-0 w-full bg-surface-container-lowest z-20 rounded-t-[32px] px-gutter pb-[40px] pt-stack-md flex flex-col items-center transform transition-transform duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+<!-- Subtle Handle -->
+<div class="w-12 h-1.5 bg-surface-variant rounded-full mb-stack-md"></div>
+<!-- Mascot Container (Popping up from sheet) -->
+<div class="relative flex justify-center items-end h-[120px] w-full -mt-[80px] mb-stack-sm pointer-events-none">
+<!-- Glowing effect behind ghost -->
+<div class="absolute w-32 h-32 bg-secondary-fixed/40 blur-2xl rounded-full bottom-0"></div>
+<img alt="Ghost Mascot Celebrating" class="relative z-10 w-[180px] h-[180px] object-contain drop-shadow-[0_15px_15px_rgba(0,109,55,0.2)]" data-alt="A high-quality 3D render of a cute, friendly white ghost mascot character in a dynamic jumping pose. The ghost has a joyful, squishy expression and is surrounded by floating, glowing golden stars and vibrant bright green sparkles. The aesthetic is 'Tactile Modernism', resembling a premium, polished vinyl designer toy. The lighting is bright and high-key, creating a victorious and deeply encouraging mood against a transparent background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFvWQtfuFZ6_UmnBPZHk-xthVsy_q4mC2n5Ewgq06Aq6D0XGAYbvmC5o8VyQapdnxKrFX63_spUnxqw1ks5KdOrr62KJptzuKZTHLJvzgOGAc7tlsXn9SHSIRmf5eog6HyAQaYAbgEyrpogvRxi7-Seb0QceVNv7kujtOx56AoyYl1ldGkKnLnmpMPwsbO5Kxg8e2LiKh-A4GJbNq7NQGfsZ6PzfWcJEMytLJY8tJPPwtKiANRYmHLIVLUha2PGUR2KsL1X5P9ces"/>
+</div>
+<!-- Text Content -->
+<div class="text-center w-full flex flex-col gap-unit items-center mb-stack-lg">
+<h1 class="font-h1 text-h1 text-secondary tracking-tight">Awesome!</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">You mastered list indexing!</p>
+<!-- XP Badge -->
+<div class="mt-stack-sm inline-flex items-center justify-center gap-2 bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-xl font-label-caps text-label-caps border-b-2 border-tertiary shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                    +10 XP
+                </div>
+</div>
+<!-- Action Area -->
+<div class="w-full">
+<!-- Grand Slam Button Structure -->
+<button class="relative w-full group outline-none">
+<!-- The 3D Shadow/Border Layer -->
+<div class="absolute inset-0 bg-secondary rounded-xl transform translate-y-[4px] group-active:translate-y-0 transition-transform duration-100"></div>
+<!-- The Main Button Surface -->
+<div class="relative w-full bg-secondary-fixed text-on-secondary-fixed font-button-text text-button-text py-[18px] rounded-xl flex items-center justify-center transform group-active:translate-y-[4px] transition-transform duration-100 uppercase tracking-wide">
+                        Continue
+                    </div>
+</button>
+</div>
+</div>
+</div>
+</body></html>

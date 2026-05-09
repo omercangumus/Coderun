@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Lesson</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#3f4cda",
+                        "surface-container-low": "#f1f4f8",
+                        "inverse-surface": "#2d3134",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#6bfe9c",
+                        "secondary": "#006d37",
+                        "on-secondary-container": "#00743a",
+                        "primary": "#3d4ad8",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "on-surface": "#181c1f",
+                        "tertiary-fixed": "#f8d8ff",
+                        "surface-bright": "#f7fafd",
+                        "on-surface-variant": "#454655",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#00210c",
+                        "on-tertiary-container": "#fffdff",
+                        "tertiary-container": "#9c5ab7",
+                        "on-secondary-fixed-variant": "#005228",
+                        "primary-container": "#5865f2",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#4ae183",
+                        "background": "#f7fafd",
+                        "tertiary": "#81419c",
+                        "surface-container-highest": "#e0e3e7",
+                        "on-primary-container": "#fffdff",
+                        "surface-dim": "#d7dade",
+                        "surface-container": "#ebeef2",
+                        "secondary-fixed": "#6bfe9c",
+                        "outline-variant": "#c6c5d7",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-tertiary-fixed": "#320047",
+                        "surface-container-high": "#e5e8ec",
+                        "surface": "#f7fafd",
+                        "on-primary-fixed": "#000569",
+                        "primary-fixed": "#e0e0ff",
+                        "inverse-on-surface": "#eef1f5",
+                        "on-tertiary-fixed-variant": "#692984",
+                        "on-error-container": "#93000a",
+                        "outline": "#767686",
+                        "error": "#ba1a1a",
+                        "on-background": "#181c1f",
+                        "surface-variant": "#e0e3e7",
+                        "inverse-primary": "#bec2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "button-text": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "button-text": ["16px", {"lineHeight": "1.0", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h1": ["40px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                        "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary selection:text-on-primary flex justify-center">
+<div class="w-full max-w-md h-[884px] flex flex-col bg-surface overflow-hidden relative">
+<!-- Lesson Header: Suppressed global nav, custom task-focused header -->
+<header class="flex items-center px-4 py-6 gap-4 z-10 shrink-0">
+<button aria-label="Close lesson" class="text-on-surface-variant hover:text-on-surface transition-colors active:scale-90">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0; font-weight: 600;">close</span>
+</button>
+<div class="flex-grow h-4 bg-surface-container-high rounded-full overflow-hidden shadow-inner">
+<div class="h-full bg-secondary-fixed w-1/2 rounded-full relative overflow-hidden shadow-[inset_0_-2px_0_rgba(0,0,0,0.1)] transition-all duration-500 ease-out">
+<div class="absolute inset-0 bg-white/20 -skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-button-text text-button-text">5</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col px-6 pb-6 overflow-y-auto">
+<!-- Mascot & Tooltip -->
+<div class="flex items-end gap-4 mt-2">
+<div class="w-20 h-20 shrink-0 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest shadow-sm overflow-hidden relative">
+<img alt="Ghostie Mascot" class="w-full h-full object-cover" data-alt="A 3D rendered, cute ghost mascot character with an encouraging, happy expression. The character is floating against a bright, modern, solid-color backdrop. The lighting is soft and high-key, emphasizing a playful, tactile, premium designer-toy aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3ftP30C-KwiePkjA8krd9LF307nShKycGQH-upKbQFuVXq9s999zPvgfdD-sMB8pA1kHjS3WVeENRvMetbj5KCf7akig0Q0nPd3QOVrPwlRn7ILAxFO2tgDrmRLUaiWbshpoD4qKAuldac7dzF14FddVE2gHx7a13n8NB-EIQrQRMyEq_pHGirKW0fJ0jx3pD8-uBIeilc2cLkPPO-hClz-USm25-QsohGMfhrstCj3lb1Ut5bJ7XZK8vEUffjjXadnxAv7UMGEA"/>
+</div>
+<div class="bg-inverse-surface text-inverse-on-surface p-4 rounded-2xl rounded-bl-none shadow-lg max-w-[200px] mb-4 relative z-10">
+<p class="font-body-md text-body-md leading-tight">Order matters in Python. You've got this!</p>
+</div>
+</div>
+<!-- Instruction -->
+<h1 class="font-h2 text-h2 text-on-surface mt-8 mb-8 tracking-tight">Put these Python lines in order to print the first item</h1>
+<!-- Draggable Blocks Area -->
+<div class="flex flex-col gap-3 mt-4">
+<!-- Block 1 -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant border-b-[4px] rounded-xl p-4 flex items-center justify-between cursor-grab shadow-sm active:cursor-grabbing active:translate-y-[2px] active:border-b-2 active:shadow-none transition-all touch-none">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-outline-variant cursor-grab">drag_indicator</span>
+<code class="font-body-lg text-body-lg text-primary font-semibold tracking-tight whitespace-nowrap">print(fruits[0])</code>
+</div>
+</div>
+<!-- Block 2 -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant border-b-[4px] rounded-xl p-4 flex items-center justify-between cursor-grab shadow-sm active:cursor-grabbing active:translate-y-[2px] active:border-b-2 active:shadow-none transition-all touch-none">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-outline-variant cursor-grab">drag_indicator</span>
+<code class="font-body-lg text-body-lg text-primary font-semibold tracking-tight whitespace-nowrap">fruits = ["apple", "banana"]</code>
+</div>
+</div>
+</div>
+<!-- Spacer to push button to bottom -->
+<div class="flex-grow min-h-[40px]"></div>
+<!-- Grand Slam Button -->
+<div class="mt-auto pt-4 pb-2 z-10 bg-surface">
+<button class="w-full bg-primary text-on-primary font-button-text text-button-text py-5 rounded-xl border-b-[4px] border-on-primary-fixed-variant shadow-[0_10px_30px_-10px_rgba(61,74,216,0.5)] active:translate-y-[4px] active:border-b-0 active:shadow-none transition-all duration-150 flex items-center justify-center gap-2">
+                    CONTINUE
+                </button>
+</div>
+</main>
+</div>
+</body></html>

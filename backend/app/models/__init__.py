@@ -5,6 +5,7 @@ from app.models.base import BaseModel
 from app.models.lesson import Lesson
 from app.models.module import Module
 from app.models.question import Question
+from app.models.unit import Unit
 from app.models.user import User
 from app.models.user_badge import UserBadge
 from app.models.user_progress import UserProgress
@@ -14,7 +15,9 @@ __all__ = [
     "Lesson",
     "Module",
     "Question",
+    "Unit",
     "User",
     "UserBadge",
     "UserProgress",
 ]
+

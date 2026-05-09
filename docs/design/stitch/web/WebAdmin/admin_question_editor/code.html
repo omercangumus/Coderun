@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun Admin - Edit Question</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#767686",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#00743a",
+                        "on-tertiary-container": "#fffdff",
+                        "primary-container": "#5865f2",
+                        "inverse-primary": "#bec2ff",
+                        "tertiary-fixed": "#f8d8ff",
+                        "surface-container": "#ebeef2",
+                        "on-primary-fixed": "#000569",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#3f4cda",
+                        "primary": "#3d4ad8",
+                        "surface-dim": "#d7dade",
+                        "on-tertiary-fixed": "#320047",
+                        "tertiary-container": "#9c5ab7",
+                        "outline-variant": "#c6c5d7",
+                        "on-background": "#181c1f",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#81419c",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "inverse-on-surface": "#eef1f5",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-bright": "#f7fafd",
+                        "background": "#f7fafd",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "primary-fixed": "#e0e0ff",
+                        "on-surface-variant": "#454655",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e7",
+                        "on-surface": "#181c1f",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e7",
+                        "on-primary-container": "#fffdff",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2d3134",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e5e8ec",
+                        "secondary-container": "#6bfe9c",
+                        "surface-container-low": "#f1f4f8",
+                        "surface": "#f7fafd",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-tertiary-fixed-variant": "#692984"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "margin-page": "32px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Plus Jakarta Sans", "sans-serif"],
+                        "h2": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-lg": ["Lexend", "sans-serif"],
+                        "body-md": ["Lexend", "sans-serif"],
+                        "label-caps": ["Space Grotesk", "sans-serif"],
+                        "button-text": ["Lexend", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "button-text": ["16px", { "lineHeight": "1.0", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .isometric-btn {
+            transition: all 0.1s ease;
+        }
+        .isometric-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 0 !important;
+            margin-bottom: 4px; /* maintain layout */
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c6c5d7;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- Minimal Back-to-Main Header (Applied strict exception rule for Focused Views) -->
+<header class="bg-surface-container-lowest border-b border-surface-variant px-gutter py-4 flex items-center justify-between sticky top-0 z-50">
+<a class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="font-button-text">Back to Questions</span>
+</a>
+<div class="flex items-center gap-stack-sm">
+<button class="font-button-text text-on-surface-variant hover:text-on-surface px-4 py-2">Discard</button>
+<button class="isometric-btn bg-primary text-on-primary font-button-text px-6 py-3 rounded border-b-[4px] border-on-primary-fixed-variant flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined" data-icon="save" style="font-size: 20px;">save</span>
+                Save Draft
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-[1000px] mx-auto px-gutter py-margin-page flex flex-col gap-stack-lg">
+<!-- Context & Title -->
+<div class="flex flex-col gap-stack-sm">
+<nav class="flex flex-wrap items-center gap-2 text-body-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Admin</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Python Path</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Unit 3</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Lesson 5</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Questions</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-medium">Edit Question 4</span>
+</nav>
+<div class="flex items-end justify-between gap-4">
+<h1 class="font-h1 text-h1 text-on-background">Edit Spot the Bug Question</h1>
+<div class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-label-caps rounded-full flex items-center gap-1 border border-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[16px]" data-icon="bug_report">bug_report</span>
+                    Type: Debugging
+                </div>
+</div>
+</div>
+<!-- Form Layout -->
+<form class="flex flex-col gap-stack-lg">
+<!-- Card 1: Core Details -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_8px_30px_rgba(0,0,0,0.02)] p-stack-md flex flex-col gap-stack-md">
+<h2 class="font-h2 text-[24px] text-on-background border-b border-surface-variant pb-4">Question Content</h2>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Question Prompt</label>
+<textarea class="w-full bg-surface-container border-2 border-transparent focus:border-primary focus:ring-0 rounded-lg p-4 font-body-md text-on-surface resize-y min-h-[100px] transition-colors" placeholder="Explain what the student needs to find... e.g., 'There is a bug in the loop condition below. Spot it and select the correct line.'">Find the logical error in the discount calculation loop.</textarea>
+</div>
+<!-- Code Editor Mockup -->
+<div class="flex flex-col gap-2 mt-2">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Code Snippet (Spot the Bug)</label>
+<button class="text-primary font-button-text text-sm flex items-center gap-1 hover:underline" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="format_color_text">format_color_text</span> Format Python
+                        </button>
+</div>
+<div class="flex rounded-lg overflow-hidden border-2 border-surface-variant bg-surface-container-lowest focus-within:border-primary transition-colors shadow-inner">
+<!-- Line Numbers -->
+<div class="w-12 bg-surface flex flex-col items-end py-4 pr-3 text-outline font-mono text-[14px] select-none border-r border-surface-variant leading-[1.6]">
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+<span>5</span>
+<span>6</span>
+</div>
+<!-- Code Area -->
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 p-4 font-mono text-[14px] text-on-surface resize-y min-h-[160px] leading-[1.6] whitespace-pre custom-scrollbar" spellcheck="false">def calculate_total(prices):
+    total = 0
+    for price in prices:
+        total -= price # Bug: should be +=
+    return total</textarea>
+</div>
+<p class="text-sm text-outline mt-1">Students will be able to click on line numbers to select the bug location.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md mt-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Hint Text (Optional)</label>
+<textarea class="w-full bg-surface-container border-2 border-transparent focus:border-primary focus:ring-0 rounded-lg p-4 font-body-md text-on-surface resize-none h-[120px] transition-colors" placeholder="Give a gentle nudge...">Check how the variable 'total' is being accumulated inside the loop.</textarea>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Explanation (After completion)</label>
+<textarea class="w-full bg-surface-container border-2 border-transparent focus:border-primary focus:ring-0 rounded-lg p-4 font-body-md text-on-surface resize-none h-[120px] transition-colors" placeholder="Explain the solution clearly...">The loop subtracts the price instead of adding it. Changing `-=` to `+=` correctly accumulates the total sum.</textarea>
+</div>
+</div>
+</section>
+<!-- Mascot Guidance Tooltip -->
+<div class="flex items-start gap-4 bg-inverse-surface text-inverse-on-surface p-stack-md rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.1)] relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent pointer-events-none"></div>
+<div class="w-16 h-16 shrink-0 rounded-full border-2 border-inverse-on-surface/20 overflow-hidden bg-surface-container-highest flex items-center justify-center relative">
+<!-- Placeholder for mascot image requiring specific data-alt -->
+<img alt="Ghost Mascot" class="w-full h-full object-cover relative z-10" data-alt="A 3D rendered, cute, squishy, semi-transparent ghost mascot character floating against a dark background. The ghost has a friendly, encouraging smile and large, expressive dot eyes. It is illuminated by a soft, neon blue and purple ambient light, fitting perfectly within a modern, playful, gamified tech learning platform aesthetic. The lighting is high-contrast yet soft, creating a premium tactile feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABWawZ9mU78Y5mpcIt8HlQM8DW14lXQ7u7O28-rx_A83QsQGslHVKlTbk-wbvvXNW3nUezUo23oztILmroWpYaG_ez75fB_yUcFObM6iaRJi8192x5d9yV6goPUECuDKa50KF1VvE6knq7AwpH95eHo9qGW5n9bQRxnS9qCo1Y84WqC6dRtZYZllDTv-FIBIdmPpC3kMyq1-SriqQXhnbQBBt0HtArJ8yxAIUjowRIDhNvKAXplDI23gLM-0e6lW1fEc2rHh8gFCA"/>
+</div>
+<div class="flex flex-col gap-1 relative z-10">
+<p class="font-button-text text-[18px]">Pro Tip from Byte!</p>
+<p class="font-body-md opacity-90 leading-relaxed">If the bug is tricky, adding an <strong class="text-tertiary-fixed-dim">Extra Reinforcement Question</strong> helps cement the concept after they solve the main puzzle.</p>
+</div>
+</div>
+<!-- Card 2: Extra Reinforcement (Toggled ON State representation) -->
+<section class="bg-surface-container-lowest rounded-xl border-2 border-secondary-fixed shadow-sm p-stack-md flex flex-col gap-stack-md relative overflow-hidden transition-all">
+<!-- Decorative top border accent -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-secondary-fixed"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<h2 class="font-h2 text-[24px] text-on-background flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="school">school</span>
+                            Extra Reinforcement
+                        </h2>
+<p class="text-on-surface-variant font-body-md">Show a simpler follow-up question immediately after they spot the bug.</p>
+</div>
+<!-- CSS Toggle Mockup (ON State) -->
+<label class="flex items-center cursor-pointer relative">
+<input checked="" class="sr-only" type="checkbox"/>
+<div class="w-14 h-8 bg-secondary rounded-full relative transition-colors border-2 border-transparent">
+<div class="absolute right-1 top-[2px] w-6 h-6 bg-surface-container-lowest rounded-full shadow-sm transition-transform"></div>
+</div>
+</label>
+</div>
+<!-- Nested Form (Visible when toggled ON) -->
+<div class="bg-surface rounded-lg p-stack-md border border-outline-variant flex flex-col gap-stack-md mt-2">
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+                            Follow-up Prompt
+                            <span class="material-symbols-outlined text-[16px] text-outline" data-icon="help" title="Ask a concept question related to the bug they just fixed.">help</span>
+</label>
+<textarea class="w-full bg-surface-container-lowest border-2 border-surface-variant focus:border-secondary focus:ring-0 rounded-lg p-4 font-body-md text-on-surface resize-y min-h-[80px]" placeholder="e.g., 'What operator is used to add and assign in one step?'">Why does the `-=` operator cause an issue in a sum calculation?</textarea>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Correct Answer (Exact Match)</label>
+<input class="w-full bg-surface-container-lowest border-2 border-surface-variant focus:border-secondary focus:ring-0 rounded-lg p-3 font-body-md text-on-surface" placeholder="Enter the expected short answer..." type="text" value="It subtracts the value instead of adding it to the total."/>
+</div>
+</div>
+</section>
+<!-- Bottom Actions -->
+<div class="flex items-center justify-end gap-stack-sm pt-stack-md border-t border-surface-variant mt-4">
+<button class="font-button-text text-on-surface-variant hover:text-error transition-colors px-6 py-3" type="button">Delete Question</button>
+<button class="isometric-btn bg-surface-container-high text-on-surface font-button-text px-8 py-3 rounded border-b-[4px] border-surface-variant shadow-sm hover:bg-surface-variant transition-colors" type="button">Preview</button>
+<button class="isometric-btn bg-primary text-on-primary font-button-text px-8 py-3 rounded border-b-[4px] border-on-primary-fixed-variant shadow-sm flex items-center gap-2" type="submit">
+                    Publish Changes
+                    <span class="material-symbols-outlined text-[20px]" data-icon="send">send</span>
+</button>
+</div>
+</form>
+</main>
+</body></html>

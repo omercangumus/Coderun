@@ -15,6 +15,7 @@ from app.models.base import BaseModel
 if TYPE_CHECKING:
     from app.models.module import Module
     from app.models.question import Question
+    from app.models.unit import Unit
 
 # Geçerli ders türleri
 LESSON_TYPES = ("quiz", "code_completion", "code_editor", "mini_project")
@@ -40,6 +41,9 @@ class Lesson(BaseModel):
     module_id: Mapped[UUID] = mapped_column(
         PgUUID(as_uuid=True), ForeignKey("modules.id"), index=True, nullable=False
     )
+    unit_id: Mapped[UUID | None] = mapped_column(
+        PgUUID(as_uuid=True), ForeignKey("units.id"), index=True, nullable=True
+    )
     title: Mapped[str] = mapped_column(String, nullable=False)
     lesson_type: Mapped[str] = mapped_column(String, nullable=False)
     content: Mapped[dict[str, object]] = mapped_column(JSON, nullable=False)
@@ -48,6 +52,7 @@ class Lesson(BaseModel):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     module: Mapped[Module] = relationship("Module", back_populates="lessons")
+    unit: Mapped[Unit | None] = relationship("Unit", back_populates="lessons")
     questions: Mapped[list[Question]] = relationship(
         "Question",
         back_populates="lesson",

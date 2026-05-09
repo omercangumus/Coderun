@@ -117,6 +117,18 @@ async def get_current_active_user(
     return current_user
 
 
+async def get_current_superuser(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    """Yalnızca superuser (admin) kullanıcıları kabul eder."""
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem için admin yetkisi gereklidir.",
+        )
+    return current_user
+
+
 def get_openrouter(
     client: AsyncOpenAI = Depends(get_openrouter_client),
 ) -> AsyncOpenAI:

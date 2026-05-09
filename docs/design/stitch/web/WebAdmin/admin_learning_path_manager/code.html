@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun Admin - Learning Paths</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#ebb2ff",
+                    "on-secondary-fixed-variant": "#005228",
+                    "outline": "#767686",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-container": "#00743a",
+                    "on-tertiary-container": "#fffdff",
+                    "primary-container": "#5865f2",
+                    "inverse-primary": "#bec2ff",
+                    "tertiary-fixed": "#f8d8ff",
+                    "surface-container": "#ebeef2",
+                    "on-primary-fixed": "#000569",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#3f4cda",
+                    "primary": "#3d4ad8",
+                    "surface-dim": "#d7dade",
+                    "on-tertiary-fixed": "#320047",
+                    "tertiary-container": "#9c5ab7",
+                    "outline-variant": "#c6c5d7",
+                    "on-background": "#181c1f",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#81419c",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "inverse-on-surface": "#eef1f5",
+                    "on-secondary-fixed": "#00210c",
+                    "surface-bright": "#f7fafd",
+                    "background": "#f7fafd",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#4ae183",
+                    "primary-fixed": "#e0e0ff",
+                    "on-surface-variant": "#454655",
+                    "secondary": "#006d37",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e0e3e7",
+                    "on-surface": "#181c1f",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e0e3e7",
+                    "on-primary-container": "#fffdff",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2d3134",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e5e8ec",
+                    "secondary-container": "#6bfe9c",
+                    "surface-container-low": "#f1f4f8",
+                    "surface": "#f7fafd",
+                    "primary-fixed-dim": "#bec2ff",
+                    "on-tertiary-fixed-variant": "#692984"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "stack-sm": "12px",
+                    "stack-lg": "48px",
+                    "stack-md": "24px",
+                    "margin-page": "32px"
+            },
+            "fontFamily": {
+                    "h1": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "h2": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Lexend"
+                    ],
+                    "body-md": [
+                            "Lexend"
+                    ],
+                    "label-caps": [
+                            "Space Grotesk"
+                    ],
+                    "button-text": [
+                            "Lexend"
+                    ]
+            },
+            "fontSize": {
+                    "h1": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "h2": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "button-text": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .tactile-button {
+            border-bottom-width: 4px;
+            transition: all 0.1s ease-in-out;
+        }
+        .tactile-button:active {
+            border-bottom-width: 0px;
+            transform: translateY(4px);
+        }
+        .tactile-card {
+            box-shadow: 0 12px 40px -10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component Adapted to Theme) -->
+<header class="bg-surface-container-lowest border-b-2 border-surface-variant px-gutter py-3 flex items-center justify-between sticky top-0 z-50 tactile-card">
+<div class="flex items-center gap-stack-sm text-on-background max-w-[1200px] w-full mx-auto justify-between">
+<div class="flex items-center gap-stack-sm">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-on-background font-h2 text-[20px] tracking-tight">Coderun Admin</h2>
+</div>
+<div class="flex items-center gap-stack-md">
+<div class="bg-surface-variant bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-surface-container-high" data-alt="A small, stylized avatar portrait of a friendly tech mascot, resembling a cute robot or ghost, rendered in flat, bright colors against a solid pastel background, suitable for a light-mode modern SaaS UI profile picture." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDhxZdc_uLfsVZltLq9IAhmTmt2cm5VHS1gyfxFTqViVw36m-zgb2dqZntEz0-d6UULK4-I5cicRZ9NZFE78jtfz8V0v3qQBU7jkA8JJqjG1rLaMSU1lyBuBA3QO0-RRYlG_qqdS66Xt9LXs_2tYBOVp-SHJu6mTjZjustKMYmJoqNe8IpqQS5TtaNq_zyCLr4KjmeuhmTU8NCZKsZImdDbxRVvrKflMfse_g8CGE3o2ltb9XSwlX4pnVEt08Geuh4odjG5PdwaWnw");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-margin-page py-stack-lg flex flex-col gap-stack-md">
+<!-- Header Section -->
+<div class="flex flex-col gap-stack-sm">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap items-center gap-unit font-button-text text-sm">
+<a class="text-primary hover:text-on-primary-fixed-variant transition-colors" href="#">Admin</a>
+<span class="text-outline-variant material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-background">Learning Paths</span>
+</div>
+<div class="flex items-center justify-between mt-2">
+<h1 class="font-h1 text-h1 text-on-background">Learning Paths</h1>
+<button class="tactile-button bg-primary text-on-primary font-button-text text-button-text px-6 py-3 rounded-lg border-on-primary-fixed-variant flex items-center gap-2 hover:bg-surface-tint">
+<span class="material-symbols-outlined text-xl" data-icon="add">add</span>
+<span>Add New Path</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border-2 border-surface-variant overflow-hidden tactile-card mt-stack-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container border-b-2 border-surface-variant font-label-caps text-label-caps text-on-surface-variant">
+<th class="px-6 py-4 w-16 text-center"></th>
+<th class="px-6 py-4 font-semibold">Title</th>
+<th class="px-6 py-4 font-semibold w-48">Level</th>
+<th class="px-6 py-4 font-semibold w-48">Status</th>
+<th class="px-6 py-4 font-semibold w-64">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-on-background">
+<!-- Row 1: Python -->
+<tr class="border-b border-surface-variant hover:bg-surface-bright transition-colors group cursor-default">
+<td class="px-6 py-5 text-center text-outline group-hover:text-primary transition-colors cursor-grab active:cursor-grabbing">
+<span class="material-symbols-outlined" data-icon="drag_indicator">drag_indicator</span>
+</td>
+<td class="px-6 py-5 font-medium">Python Learning Path</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-primary-fixed text-on-primary-fixed font-button-text text-sm border-b-2 border-inverse-primary">
+                                    Beginner
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-secondary-container text-on-secondary-container font-button-text text-sm border-b-2 border-secondary-fixed-dim">
+                                    Active
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3 text-primary font-button-text text-sm">
+<button class="hover:text-surface-tint flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-tertiary flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span> Duplicate</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-error flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: DevOps -->
+<tr class="border-b border-surface-variant hover:bg-surface-bright transition-colors group cursor-default">
+<td class="px-6 py-5 text-center text-outline group-hover:text-primary transition-colors cursor-grab active:cursor-grabbing">
+<span class="material-symbols-outlined" data-icon="drag_indicator">drag_indicator</span>
+</td>
+<td class="px-6 py-5 font-medium">DevOps Engineering</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-button-text text-sm border-b-2 border-tertiary-fixed-dim">
+                                    Intermediate
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-secondary-container text-on-secondary-container font-button-text text-sm border-b-2 border-secondary-fixed-dim">
+                                    Active
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3 text-primary font-button-text text-sm">
+<button class="hover:text-surface-tint flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-tertiary flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span> Duplicate</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-error flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Cloud -->
+<tr class="border-b border-surface-variant hover:bg-surface-bright transition-colors group cursor-default">
+<td class="px-6 py-5 text-center text-outline group-hover:text-primary transition-colors cursor-grab active:cursor-grabbing">
+<span class="material-symbols-outlined" data-icon="drag_indicator">drag_indicator</span>
+</td>
+<td class="px-6 py-5 font-medium">Cloud Architecture</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-surface-variant text-on-surface-variant font-button-text text-sm border-b-2 border-outline-variant">
+                                    Advanced
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-surface-container-high text-on-surface-variant font-button-text text-sm border-b-2 border-outline-variant">
+                                    Coming Soon
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3 text-primary font-button-text text-sm">
+<button class="hover:text-surface-tint flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-tertiary flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span> Duplicate</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-error flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: IaC -->
+<tr class="hover:bg-surface-bright transition-colors group cursor-default">
+<td class="px-6 py-5 text-center text-outline group-hover:text-primary transition-colors cursor-grab active:cursor-grabbing">
+<span class="material-symbols-outlined" data-icon="drag_indicator">drag_indicator</span>
+</td>
+<td class="px-6 py-5 font-medium">Infrastructure as Code (IaC)</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-button-text text-sm border-b-2 border-tertiary-fixed-dim">
+                                    Intermediate
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="inline-flex items-center px-3 py-1.5 rounded-md bg-surface-container-high text-on-surface-variant font-button-text text-sm border-b-2 border-outline-variant">
+                                    Coming Soon
+                                </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3 text-primary font-button-text text-sm">
+<button class="hover:text-surface-tint flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-tertiary flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span> Duplicate</button>
+<span class="text-outline-variant">|</span>
+<button class="hover:text-error flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</body></html>

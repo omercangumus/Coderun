@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Web Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&amp;family=Lexend:wght@400;600&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ebeef2",
+                        "primary-fixed": "#e0e0ff",
+                        "primary-container": "#5865f2",
+                        "primary": "#3d4ad8",
+                        "outline-variant": "#c6c5d7",
+                        "on-secondary-container": "#00743a",
+                        "tertiary-fixed": "#f8d8ff",
+                        "surface-bright": "#f7fafd",
+                        "error-container": "#ffdad6",
+                        "on-background": "#181c1f",
+                        "on-primary-fixed": "#000569",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary-fixed": "#00210c",
+                        "inverse-surface": "#2d3134",
+                        "surface-container-highest": "#e0e3e7",
+                        "outline": "#767686",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-tertiary-fixed": "#320047",
+                        "inverse-primary": "#bec2ff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#fffdff",
+                        "on-surface-variant": "#454655",
+                        "on-error": "#ffffff",
+                        "background": "#f7fafd",
+                        "surface-variant": "#e0e3e7",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary-fixed-variant": "#692984",
+                        "surface-tint": "#3f4cda",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "surface-dim": "#d7dade",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "inverse-on-surface": "#eef1f5",
+                        "tertiary-container": "#9c5ab7",
+                        "on-surface": "#181c1f",
+                        "surface-container-high": "#e5e8ec",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-low": "#f1f4f8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#81419c",
+                        "surface": "#f7fafd",
+                        "secondary-container": "#6bfe9c",
+                        "secondary": "#006d37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "unit": "8px",
+                        "stack-lg": "48px",
+                        "margin-page": "32px",
+                        "gutter": "24px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "button-text": ["Lexend"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "body-md": ["Lexend"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "button-text": ["16px", {"lineHeight": "1.0", "fontWeight": "600"}],
+                        "h2": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "h1": ["40px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Lexend', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .label-caps { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* 3D Button Effect */
+        .btn-3d {
+            border-bottom-width: 4px;
+            transition: all 0.1s ease;
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            border-bottom-width: 0px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-hidden flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/80 backdrop-blur-md border-b-4 border-surface-container-high shadow-sm z-50 flex justify-between items-center px-8 transition-transform duration-200">
+<div class="flex items-center gap-4">
+<span class="text-xl font-h1 font-black text-primary uppercase tracking-tighter">Coderun</span>
+<span class="text-on-surface-variant font-label-caps text-label-caps ml-4 px-3 py-1 bg-surface-container rounded-full">Web Lab</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-button-text text-button-text btn-3d border-secondary">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                5 Day Streak
+            </button>
+<span class="font-button-text text-button-text text-tertiary">1,240 XP</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container p-2 rounded-lg">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1Gfih93c1JIIHLYA4XWN4j5VwOsXTp9NLZA8OinSx6vbHdxpVfnO78cU_kdiV85b8UI84rgywvzGB1x6SxZXBUHJnH8TWfGEAqgTGHXd1CMX4COD8BlT7WuELTtKjTXZnZqVhanjzlKMfXrVW1tgvkhmPvWEjIxaeZKeyzdNYZES_XIJLNvutpHUwehcNdlUzSd_REHUW5dEyf8gV1gwip5pzMhKY-oB4kYW2R-hbUew3KZ5fDIl00VOAblypvyw0juTLSWOBG88"/>
+</div>
+</div>
+</header>
+<!-- Main Lab Environment -->
+<main class="flex-1 flex mt-16 h-[calc(100vh-4rem)]">
+<!-- Left Panel: Mission & Objectives -->
+<aside class="w-80 bg-surface-container-lowest border-r-4 border-surface-container flex flex-col h-full overflow-y-auto z-40">
+<div class="p-6 flex flex-col gap-6">
+<!-- Mission Header -->
+<div>
+<h2 class="font-h2 text-h2 text-on-background mb-2">Mission: Contact Book</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Build a functional contact book to practice dictionary manipulation and list comprehension in Python.</p>
+</div>
+<!-- Concept Reminder -->
+<div class="bg-surface-container-low border-2 border-surface-container-highest rounded-xl p-4 cursor-pointer hover:border-primary transition-colors">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-button-text text-button-text text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+                            Concept Reminder
+                        </h3>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+<p class="font-body-md text-sm text-on-surface-variant line-clamp-2">Dictionaries use key-value pairs. Lists are ordered collections. Remember syntax `my_dict[key] = value`.</p>
+</div>
+<!-- Learning Objectives -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4">Learning Objectives</h3>
+<ul class="flex flex-col gap-3">
+<li class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 border-2 border-secondary">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-background line-through opacity-70">Initialize the data structure</span>
+</li>
+<li class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-container border-2 border-primary text-primary flex items-center justify-center shrink-0">
+<span class="font-label-caps text-xs">2</span>
+</div>
+<span class="font-body-md text-body-md text-on-background font-semibold">Create the add_contact function</span>
+</li>
+<li class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-surface border-2 border-outline text-outline flex items-center justify-center shrink-0">
+<span class="font-label-caps text-xs">3</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant">Implement search logic</span>
+</li>
+</ul>
+</div>
+</div>
+</aside>
+<!-- Center Panel: Editor & Terminal -->
+<section class="flex-1 bg-inverse-surface flex flex-col h-full overflow-hidden relative shadow-[inset_10px_0_20px_rgba(0,0,0,0.05)]">
+<!-- Editor Header / Progress -->
+<div class="h-14 bg-surface-container-highest border-b border-outline-variant flex items-center justify-between px-6 shrink-0">
+<div class="flex items-center gap-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Step 2 / 3</span>
+<h3 class="font-button-text text-button-text text-on-background">Create the add_contact function</h3>
+</div>
+<div class="flex gap-2">
+<div class="w-8 h-2 rounded-full bg-secondary-container"></div>
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-outline-variant"></div>
+</div>
+</div>
+<!-- File Tabs -->
+<div class="flex bg-[#1e1e1e] px-4 pt-2 shrink-0 border-b border-[#333]">
+<div class="px-4 py-2 bg-[#2d2d2d] text-primary-fixed border-t-2 border-primary rounded-t-md font-button-text text-sm flex items-center gap-2 cursor-pointer">
+<span class="material-symbols-outlined text-sm text-[#e3c750]">description</span>
+                    main.py
+                </div>
+<div class="px-4 py-2 text-[#858585] hover:bg-[#252525] hover:text-surface rounded-t-md font-button-text text-sm flex items-center gap-2 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-sm text-[#5daaf0]">description</span>
+                    utils.py
+                </div>
+</div>
+<!-- Code Editor Area -->
+<div class="flex-1 bg-[#1e1e1e] p-4 overflow-y-auto font-mono text-sm leading-relaxed text-[#d4d4d4]">
+<div class="flex">
+<div class="text-[#858585] pr-4 select-none text-right border-r border-[#333] mr-4 min-w-[2rem]">
+                        1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11
+                    </div>
+<div>
+<span class="text-[#569cd6]">def</span> <span class="text-[#dcdcaa]">init_contacts</span>():<br/>
+                            <span class="text-[#6a9955]"># Step 1: Initialize an empty list of contacts</span><br/>
+                            <span class="text-[#c586c0]">return</span> []<br/>
+<br/>
+<span class="text-[#569cd6]">def</span> <span class="text-[#dcdcaa]">add_contact</span>(contacts, name, phone, email):<br/>
+                            <span class="text-[#6a9955]"># Step 2: Implement this function</span><br/>
+                            <span class="text-[#6a9955]"># It should append a dictionary to the contacts list</span><br/>
+                            <span class="text-[#c586c0]">pass</span><br/>
+<br/>
+<span class="text-[#4ec9b0]">contacts</span> = <span class="text-[#dcdcaa]">init_contacts</span>()<br/>
+<span class="text-[#dcdcaa]">add_contact</span>(contacts, <span class="text-[#ce9178]">"Alice"</span>, <span class="text-[#ce9178]">"555-0101"</span>, <span class="text-[#ce9178]">"alice@email.com"</span>)<br/>
+</div>
+</div>
+</div>
+<!-- Terminal output -->
+<div class="h-48 bg-[#0d0d0d] border-t border-[#333] flex flex-col shrink-0">
+<div class="flex justify-between items-center px-4 py-2 bg-[#1a1a1a] border-b border-[#333]">
+<span class="font-label-caps text-xs text-[#858585] uppercase">Terminal Output</span>
+<button class="text-[#858585] hover:text-[#d4d4d4]">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<div class="p-4 font-mono text-sm text-[#d4d4d4] overflow-y-auto">
+<span class="text-secondary-fixed">coderun@lab:~$</span> python main.py<br/>
+<span class="text-error">AssertionError: add_contact function returned None, expected a modified list.</span><br/>
+</div>
+</div>
+<!-- Floating Actions -->
+<div class="absolute bottom-48 right-6 flex gap-4 z-10">
+<button class="px-6 py-3 bg-surface-container text-on-surface rounded-xl font-button-text text-button-text btn-3d border-surface-container-high shadow-lg flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">play_arrow</span>
+                    Run Code
+                </button>
+<button class="px-6 py-3 bg-primary-container text-on-primary-container rounded-xl font-button-text text-button-text btn-3d border-primary shadow-lg flex items-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+                    Validate
+                </button>
+</div>
+</section>
+<!-- Right Panel: Ghostie AI Mentor -->
+<aside class="w-80 bg-surface-bright border-l-4 border-surface-container flex flex-col h-full z-40 shadow-[-4px_0_15px_rgba(0,0,0,0.03)]">
+<!-- AI Header & Avatar -->
+<div class="p-6 flex flex-col items-center border-b border-surface-container text-center">
+<div class="w-24 h-24 bg-tertiary-fixed rounded-full flex items-center justify-center mb-4 border-4 border-surface-container shadow-md relative">
+<!-- Mascot image placeholder -->
+<img alt="Ghostie AI Mentor mascot smiling" class="w-full h-full object-cover rounded-full" data-alt="A highly stylized, cute digital illustration of a friendly ghost mascot. The ghost is glowing softly against a bright, modern background. It has large, expressive eyes and a welcoming smile, perfectly embodying the approachable, tech-friendly vibe of a gamified coding mentor. Soft, ambient lighting and smooth vector-like curves enhance the premium, playful aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcykzbKYyoBC5KHIhB1KK1lIhlOR8UT1ew68x3WGdT_MRkebUry4l9mDL9SFY2TnduY34KjwJofInqdIm4N1bMyun4IvJj2KAU5yr18B5s0mI7gVmRE6vfcOqYz6r_9wohjoX5cvQGKpzWwwJhs4-KNkF7A2Go--AsnlmUDKOcB31FJSXrjqnGudOggYd04Kl_38OY0wp2f-V9TdpL9g-A5xpAcz0_ozuvGY1fpiaVNm9Vx072xX-WvGjVcORGC-RxhqRxo-o6mcY"/>
+<div class="absolute bottom-0 right-0 w-6 h-6 bg-secondary-container rounded-full border-2 border-surface flex items-center justify-center">
+<div class="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+</div>
+</div>
+<h3 class="font-h2 text-xl text-on-background">Ghostie AI</h3>
+<p class="font-body-md text-sm text-tertiary">Your Coding Mentor</p>
+</div>
+<!-- AI Chat / Context -->
+<div class="flex-1 p-6 overflow-y-auto flex flex-col gap-4">
+<div class="bg-surface-container-low rounded-2xl rounded-tl-none p-4 shadow-sm border border-surface-container">
+<p class="font-body-md text-body-md text-on-surface">It looks like `add_contact` isn't updating the list yet. Remember, you can use the `.append()` method to add an item to a list!</p>
+</div>
+<div class="mt-4 flex flex-col gap-3">
+<div class="bg-surface-container-lowest border-2 border-surface-container rounded-xl p-3 cursor-pointer hover:border-tertiary transition-colors flex justify-between items-center group">
+<span class="font-button-text text-sm text-on-surface group-hover:text-tertiary transition-colors">What concept does this practice?</span>
+<span class="material-symbols-outlined text-outline group-hover:text-tertiary transition-colors">chevron_right</span>
+</div>
+<div class="bg-surface-container-lowest border-2 border-surface-container rounded-xl p-3 cursor-pointer hover:border-error transition-colors flex justify-between items-center group">
+<span class="font-button-text text-sm text-on-surface group-hover:text-error transition-colors">Common mistakes</span>
+<span class="material-symbols-outlined text-outline group-hover:text-error transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- AI Input -->
+<div class="p-4 border-t border-surface-container bg-surface-container-lowest">
+<div class="relative">
+<input class="w-full bg-surface-container-low border border-surface-container rounded-xl py-3 pl-4 pr-12 font-body-md text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Ask Ghostie for a hint..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-primary hover:bg-primary-fixed rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">send</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

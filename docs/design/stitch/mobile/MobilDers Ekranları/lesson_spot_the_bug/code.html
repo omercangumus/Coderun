@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Spot the Bug</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#3f4cda",
+                    "surface-container-low": "#f1f4f8",
+                    "inverse-surface": "#2d3134",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#6bfe9c",
+                    "secondary": "#006d37",
+                    "on-secondary-container": "#00743a",
+                    "primary": "#3d4ad8",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "tertiary-fixed-dim": "#ebb2ff",
+                    "on-surface": "#181c1f",
+                    "tertiary-fixed": "#f8d8ff",
+                    "surface-bright": "#f7fafd",
+                    "on-surface-variant": "#454655",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00210c",
+                    "on-tertiary-container": "#fffdff",
+                    "tertiary-container": "#9c5ab7",
+                    "on-secondary-fixed-variant": "#005228",
+                    "primary-container": "#5865f2",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#4ae183",
+                    "background": "#f7fafd",
+                    "tertiary": "#81419c",
+                    "surface-container-highest": "#e0e3e7",
+                    "on-primary-container": "#fffdff",
+                    "surface-dim": "#d7dade",
+                    "surface-container": "#ebeef2",
+                    "secondary-fixed": "#6bfe9c",
+                    "outline-variant": "#c6c5d7",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#bec2ff",
+                    "on-tertiary-fixed": "#320047",
+                    "surface-container-high": "#e5e8ec",
+                    "surface": "#f7fafd",
+                    "on-primary-fixed": "#000569",
+                    "primary-fixed": "#e0e0ff",
+                    "inverse-on-surface": "#eef1f5",
+                    "on-tertiary-fixed-variant": "#692984",
+                    "on-error-container": "#93000a",
+                    "outline": "#767686",
+                    "error": "#ba1a1a",
+                    "on-background": "#181c1f",
+                    "surface-variant": "#e0e3e7",
+                    "inverse-primary": "#bec2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "12px",
+                    "stack-md": "24px",
+                    "gutter": "24px",
+                    "unit": "8px",
+                    "stack-lg": "48px",
+                    "margin-page": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Lexend"],
+                    "h2": ["Plus Jakarta Sans"],
+                    "button-text": ["Lexend"],
+                    "body-md": ["Lexend"],
+                    "h1": ["Plus Jakarta Sans"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h2": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "button-text": ["16px", {"lineHeight": "1.0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1": ["40px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                    "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md h-screen flex flex-col md:max-w-[480px] md:mx-auto md:border-x md:border-surface-container-highest">
+<!-- Task Header -->
+<header class="flex items-center justify-between p-4 bg-surface shrink-0">
+<button aria-label="Close lesson" class="text-outline hover:text-on-surface-variant p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+<!-- Progress Bar -->
+<div class="flex-1 mx-4 h-4 bg-surface-container-high rounded-full overflow-hidden border-b-2 border-surface-dim relative">
+<div class="absolute top-0 left-0 h-full bg-secondary w-[80%] rounded-full shadow-[inset_0_-2px_0_rgba(0,0,0,0.15)]"></div>
+</div>
+<!-- Lives Indicator -->
+<div class="flex items-center text-error font-button-text text-button-text bg-error-container/30 px-3 py-1.5 rounded-full border border-error-container">
+<span class="material-symbols-outlined mr-1 text-xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span>3</span>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Prompt & Mascot -->
+<div class="flex px-gutter py-stack-md items-end gap-stack-sm shrink-0">
+<div class="relative w-16 h-16 shrink-0">
+<img class="w-full h-full rounded-full object-cover border-2 border-surface-container-lowest shadow-sm" data-alt="A friendly, stylized 3D ghost mascot wearing oversized, thick black-rimmed magnifying glasses. The ghost is floating gently against a clean background. The aesthetic is playful, modern, and high-quality 3D illustration with soft, bright studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaTZsKCouZRp0Zpo4f0JerX9GSO2q7LRH9nui5Kz1pyXrWMgbHblHcj3pJCk19WIiFSuisL2xvEf5diVZzGRJJEVoa2XRpQsKFnrsYCf4WIGVXYR0hn-g0Z4_FL44NnD6ERkIHX2NL86y_9h5oSEdAs_bet3948Rh1k0NnGrw0fMSMJEUwncnT2e02CxJtRuyVJm-ZevzYDDEqM7nC-dEBhkoV0JULXb_OomW031pEe2M2g1_c1DBtB922SGHOLh4H8G0MhWR0FQI"/>
+</div>
+<div class="bg-inverse-surface text-on-tertiary p-4 rounded-2xl rounded-bl-none shadow-[0_10px_20px_-5px_rgba(0,0,0,0.1)] relative border-b-4 border-on-surface">
+<p class="font-body-md text-body-md text-inverse-on-surface leading-relaxed">
+                    Look closely! There's a missing character causing a syntax error. <strong class="text-tertiary-fixed-dim">Tap the buggy line.</strong>
+</p>
+<!-- Tooltip pointer -->
+<div class="absolute -bottom-2 left-0 w-4 h-4 bg-inverse-surface rotate-45 transform origin-top-left border-b-4 border-r-4 border-on-surface hidden"></div>
+</div>
+</div>
+<!-- Interactive Code Canvas -->
+<div class="px-gutter pb-stack-lg flex-1 flex flex-col w-full">
+<div class="bg-[#1e1e1e] rounded-xl overflow-hidden shadow-[0_20px_40px_-15px_rgba(61,74,216,0.15)] border-b-[6px] border-[#0f0f0f] flex flex-col font-mono text-[15px] leading-tight">
+<!-- Code Header -->
+<div class="bg-surface-container-low text-on-surface-variant px-4 py-3 flex items-center gap-2 border-b-2 border-outline-variant/30">
+<span class="material-symbols-outlined text-sm text-primary">terminal</span>
+<span class="font-label-caps text-label-caps tracking-wider text-xs">calculator.py</span>
+</div>
+<!-- Tappable Code Lines -->
+<div class="py-3 flex flex-col">
+<button class="flex items-center text-left px-2 py-2.5 hover:bg-white/5 active:bg-white/10 w-full group transition-all relative overflow-hidden">
+<span class="w-8 text-outline-variant/40 text-right pr-4 select-none font-mono text-sm">1</span>
+<span class="text-[#d4d4d4] flex-1">
+<span class="text-tertiary-fixed">def</span> <span class="text-primary-fixed">calculate_total</span>(prices):
+                        </span>
+</button>
+<button class="flex items-center text-left px-2 py-2.5 hover:bg-white/5 active:bg-white/10 w-full group transition-all relative overflow-hidden">
+<span class="w-8 text-outline-variant/40 text-right pr-4 select-none font-mono text-sm">2</span>
+<span class="text-[#d4d4d4] flex-1 pl-4">
+                            total = <span class="text-secondary-fixed">0</span>
+</span>
+</button>
+<!-- The Buggy Line -->
+<button class="flex items-center text-left px-2 py-2.5 hover:bg-white/5 active:bg-white/10 w-full group transition-all relative overflow-hidden cursor-pointer">
+<span class="w-8 text-outline-variant/40 text-right pr-4 select-none font-mono text-sm group-active:text-error-container">3</span>
+<span class="text-[#d4d4d4] flex-1 pl-4 group-active:translate-x-1 transition-transform">
+<span class="text-tertiary-fixed">for</span> price <span class="text-tertiary-fixed">in</span> prices <span class="inline-block w-2 h-4 bg-white/20 animate-pulse ml-1 opacity-0 group-hover:opacity-100"></span>
+</span>
+<!-- Subtle active state overlay -->
+<div class="absolute inset-0 bg-primary/0 group-active:bg-primary/20 pointer-events-none transition-colors"></div>
+</button>
+<button class="flex items-center text-left px-2 py-2.5 hover:bg-white/5 active:bg-white/10 w-full group transition-all relative overflow-hidden">
+<span class="w-8 text-outline-variant/40 text-right pr-4 select-none font-mono text-sm">4</span>
+<span class="text-[#d4d4d4] flex-1 pl-8">
+                            total += price
+                        </span>
+</button>
+<button class="flex items-center text-left px-2 py-2.5 hover:bg-white/5 active:bg-white/10 w-full group transition-all relative overflow-hidden">
+<span class="w-8 text-outline-variant/40 text-right pr-4 select-none font-mono text-sm">5</span>
+<span class="text-[#d4d4d4] flex-1 pl-4">
+<span class="text-tertiary-fixed">return</span> total
+                        </span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Action -->
+<footer class="px-gutter pb-8 pt-4 bg-surface shrink-0">
+<button class="w-full bg-surface-container-low text-on-surface font-button-text text-button-text py-4 rounded-xl border-b-4 border-surface-variant hover:bg-surface-container active:border-b-0 active:translate-y-[4px] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-tertiary">lightbulb</span>
+            Need a hint?
+        </button>
+</footer>
+</body></html>

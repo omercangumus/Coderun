@@ -2,6 +2,7 @@
 
 import json
 import logging
+from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
@@ -84,7 +85,8 @@ async def chat_with_mentor_stream(
             detail="Çok fazla istek. Lütfen bekle.",
         )
 
-    async def event_generator():
+    async def event_generator() -> AsyncGenerator[str, None]:
+        """Server-Sent Events formatında mentor yanıtlarını stream eder."""
         try:
             async for chunk in get_mentor_reply_stream(request, client):
                 data = json.dumps({"chunk": chunk, "is_done": False})

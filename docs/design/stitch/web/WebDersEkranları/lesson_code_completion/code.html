@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Lesson: List Appending</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Lexend:wght@400;600&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#ebeef2",
+                      "primary-fixed": "#e0e0ff",
+                      "primary-container": "#5865f2",
+                      "primary": "#3d4ad8",
+                      "outline-variant": "#c6c5d7",
+                      "on-secondary-container": "#00743a",
+                      "tertiary-fixed": "#f8d8ff",
+                      "surface-bright": "#f7fafd",
+                      "error-container": "#ffdad6",
+                      "on-background": "#181c1f",
+                      "on-primary-fixed": "#000569",
+                      "secondary-fixed": "#6bfe9c",
+                      "on-secondary-fixed": "#00210c",
+                      "inverse-surface": "#2d3134",
+                      "surface-container-highest": "#e0e3e7",
+                      "outline": "#767686",
+                      "error": "#ba1a1a",
+                      "primary-fixed-dim": "#bec2ff",
+                      "on-tertiary-fixed": "#320047",
+                      "inverse-primary": "#bec2ff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-container": "#fffdff",
+                      "on-surface-variant": "#454655",
+                      "on-error": "#ffffff",
+                      "background": "#f7fafd",
+                      "surface-variant": "#e0e3e7",
+                      "on-primary-container": "#fffdff",
+                      "on-tertiary-fixed-variant": "#692984",
+                      "surface-tint": "#3f4cda",
+                      "tertiary-fixed-dim": "#ebb2ff",
+                      "surface-dim": "#d7dade",
+                      "on-primary-fixed-variant": "#222fc2",
+                      "inverse-on-surface": "#eef1f5",
+                      "tertiary-container": "#9c5ab7",
+                      "on-surface": "#181c1f",
+                      "surface-container-high": "#e5e8ec",
+                      "on-secondary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#005228",
+                      "surface-container-low": "#f1f4f8",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed-dim": "#4ae183",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#81419c",
+                      "surface": "#f7fafd",
+                      "secondary-container": "#6bfe9c",
+                      "secondary": "#006d37"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "12px",
+                      "unit": "8px",
+                      "stack-lg": "48px",
+                      "margin-page": "32px",
+                      "gutter": "24px",
+                      "stack-md": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Lexend", "sans-serif"],
+                      "button-text": ["Lexend", "sans-serif"],
+                      "h2": ["Plus Jakarta Sans", "sans-serif"],
+                      "h1": ["Plus Jakarta Sans", "sans-serif"],
+                      "body-md": ["Lexend", "sans-serif"],
+                      "label-caps": ["Space Grotesk", "sans-serif"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "button-text": ["16px", {"lineHeight": "1.0", "fontWeight": "600"}],
+                      "h2": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                      "h1": ["40px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .code-font { font-family: 'Space Grotesk', monospace; }
+        .isometric-depth { border-bottom: 4px solid var(--tw-border-opacity, 1); }
+        .isometric-card { border-bottom: 3px solid var(--tw-border-opacity, 1); }
+        .soft-ambient-shadow { box-shadow: 0 20px 40px -5px rgba(61, 74, 216, 0.08); }
+        /* Custom scrollbar to keep it neat */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #c6c5d7; border-radius: 20px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-30 max-w-[1200px] mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b-4 border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-4">
+<div class="hidden md:block text-xl font-black text-indigo-600 dark:text-indigo-400 font-h1 tracking-tighter">Coderun</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Progress/Streak -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-container-high">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
+<span class="font-button-text text-on-surface">1,240 XP</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-container-high">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-button-text text-on-surface">5 Day Streak</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border-2 border-surface-container-high active:scale-95 transition-transform">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close-up studio portrait of a friendly young professional smiling warmly. The lighting is bright and clean, typical of a modern corporate headshot. The background is a soft, neutral studio backdrop. High quality, crisp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoxh7etWvXlcpZdAbnb45MwVFSVlAqhGRvqW6kG2qe-j98B4NQKX97t05VXQBCigDv0hXa2qvtVi6JtOv7HRAxoCoNyBcSQ4Md85IomMnzbfXsmrp-5RY52UZP7vjbrUdbGjL4-XqWQYqxPhf4WqNBCb6TCqF4cZc5j2CFV-Q-nG5tEGUb7LAvp-TdOZYNHb6DgICbX0fCmY4WBYB21NfRonhuMLhSvHwXCOTk_a9aNuMROhtImc-l43zd1ccmJUl9umz8hKg2Ick"/>
+</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 flex flex-col h-full z-40 h-screen w-64 border-r-4 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[4px_0px_0px_0px_#E5E9F0] dark:shadow-none">
+<!-- Logo Area -->
+<div class="p-6 border-b border-surface-container flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-on-primary isometric-card border-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div>
+<h1 class="font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight text-indigo-600 dark:text-indigo-400 uppercase text-2xl font-black tracking-tighter">Coderun</h1>
+<p class="font-label-caps text-on-surface-variant text-[10px]">Level 12 Developer</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Learning Paths</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border-r-4 border-indigo-600 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span>Labs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">rate_review</span>
+<span>Review</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+<span>Achievements</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span>Ghostie AI</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] transition-transform duration-200 active:translate-y-0.5 active:shadow-inner transition-all font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+</div>
+<!-- CTA Bottom -->
+<div class="p-4 border-t border-surface-container">
+<button class="w-full bg-primary-container text-on-primary font-button-text py-3 px-4 rounded-xl isometric-depth border-primary hover:bg-primary transition-colors active:border-b-0 active:translate-y-[4px]">
+                Start Daily Lab
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen bg-surface flex flex-col">
+<!-- Lesson Header Area -->
+<div class="w-full max-w-[1200px] mx-auto px-gutter py-stack-md flex justify-between items-end">
+<div>
+<p class="font-label-caps text-primary tracking-widest uppercase mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span> Python Basics
+                </p>
+<h1 class="font-h1 text-h1 text-on-surface">Adding to a List</h1>
+</div>
+<div class="flex items-center gap-4">
+<!-- Progress Bar -->
+<div class="flex flex-col gap-1 w-48">
+<div class="flex justify-between text-sm font-button-text text-on-surface-variant">
+<span>Progress</span>
+<span>75%</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden isometric-card border-surface-container-highest">
+<div class="h-full bg-secondary-container w-3/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- 3-Column Layout -->
+<div class="flex-1 w-full max-w-[1200px] mx-auto px-gutter pb-margin-page grid grid-cols-1 lg:grid-cols-12 gap-gutter h-full">
+<!-- Left Panel: Theory Recap (3 cols) -->
+<div class="lg:col-span-3 flex flex-col gap-stack-sm h-full">
+<div class="bg-surface-container-lowest rounded-2xl p-6 border-2 border-surface-container-high hover:border-primary-fixed transition-colors h-full flex flex-col">
+<div class="flex items-center gap-3 mb-4 text-primary">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">book</span>
+</div>
+<h3 class="font-button-text text-on-surface">Theory Recap</h3>
+</div>
+<p class="font-body-md text-on-surface-variant mb-4">
+                        Lists in Python are dynamic. This means you can add new items to them even after they are created.
+                    </p>
+<p class="font-body-md text-on-surface-variant mb-6">
+                        The most common way to add a single item to the <em>end</em> of a list is by using a specific built-in method. Think of it like attaching a new car to the end of a train.
+                    </p>
+<div class="mt-auto bg-surface-container-low p-4 rounded-xl border border-surface-container-highest">
+<p class="font-label-caps text-on-surface-variant mb-2">Remember:</p>
+<code class="code-font text-sm text-on-background bg-white px-2 py-1 rounded">my_list.method(item)</code>
+</div>
+</div>
+</div>
+<!-- Center Panel: The Exercise (6 cols) -->
+<div class="lg:col-span-6 flex flex-col h-full gap-stack-sm">
+<!-- Instruction -->
+<div class="bg-primary-fixed/30 rounded-2xl p-4 border-2 border-primary-fixed flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">psychology</span>
+<p class="font-button-text text-on-surface">Complete the code to add "green" to the end of the colors list.</p>
+</div>
+<!-- Code Editor Area -->
+<div class="bg-inverse-surface rounded-2xl border-b-4 border-[#1a1d20] flex-1 flex flex-col overflow-hidden shadow-xl">
+<!-- Editor Header -->
+<div class="bg-[#202326] px-4 py-2 border-b border-[#3a3e42] flex items-center gap-2">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-error/80"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary/80"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+</div>
+<span class="code-font text-xs text-outline ml-4">main.py</span>
+</div>
+<!-- Code Content -->
+<div class="p-8 flex-1 flex flex-col justify-center font-body-lg code-font text-[#e0e3e7] leading-relaxed text-lg">
+<div class="mb-4">
+<span class="text-[#c6c5d7]">colors</span> <span class="text-[#ebb2ff]">=</span> <span class="text-[#bec2ff]">["red", "blue"]</span>
+</div>
+<div class="flex items-center flex-wrap gap-y-4">
+<span class="text-[#c6c5d7]">colors.</span>
+<!-- The Blank -->
+<div class="mx-2 min-w-[120px] h-10 border-2 border-dashed border-primary-fixed/50 bg-[#202326] rounded-lg flex items-center justify-center">
+<span class="text-outline-variant text-sm font-label-caps">Drop here</span>
+</div>
+<span class="text-[#bec2ff]">("green")</span>
+</div>
+</div>
+</div>
+<!-- Word Bank -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 border-2 border-surface-container-high">
+<h4 class="font-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">drag_indicator</span> Word Bank
+                    </h4>
+<div class="flex flex-wrap gap-4">
+<!-- Draggable Chips -->
+<div class="bg-white border-2 border-surface-container-highest px-6 py-3 rounded-xl font-button-text text-primary cursor-grab isometric-card hover:border-primary-fixed hover:-translate-y-1 transition-all active:cursor-grabbing code-font">
+                            append
+                        </div>
+<div class="bg-white border-2 border-surface-container-highest px-6 py-3 rounded-xl font-button-text text-on-surface cursor-grab isometric-card hover:border-outline-variant hover:-translate-y-1 transition-all active:cursor-grabbing code-font">
+                            add
+                        </div>
+<div class="bg-white border-2 border-surface-container-highest px-6 py-3 rounded-xl font-button-text text-on-surface cursor-grab isometric-card hover:border-outline-variant hover:-translate-y-1 transition-all active:cursor-grabbing code-font">
+                            push
+                        </div>
+<div class="bg-white border-2 border-surface-container-highest px-6 py-3 rounded-xl font-button-text text-on-surface cursor-grab isometric-card hover:border-outline-variant hover:-translate-y-1 transition-all active:cursor-grabbing code-font">
+                            insert
+                        </div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-end gap-4 mt-2">
+<button class="px-6 py-3 rounded-xl font-button-text text-on-surface-variant hover:bg-surface-container transition-colors">
+                        Skip
+                    </button>
+<button class="bg-surface-container text-on-surface font-button-text px-8 py-3 rounded-xl isometric-depth border-surface-container-high opacity-50 cursor-not-allowed">
+                        Check Answer
+                    </button>
+</div>
+</div>
+<!-- Right Panel: Ghostie AI Mentor (3 cols) -->
+<div class="lg:col-span-3 flex flex-col h-full justify-end pb-12 relative">
+<!-- Tooltip / Dialogue Bubble -->
+<div class="bg-inverse-surface text-on-error rounded-2xl p-5 mb-6 relative soft-ambient-shadow z-10 backdrop-blur-md">
+<!-- Tail -->
+<div class="absolute -bottom-3 right-8 w-6 h-6 bg-inverse-surface rotate-45 transform origin-center"></div>
+<p class="font-body-md leading-relaxed">
+                        "Think about what you do when you add a page to the very back of a book. What's the technical term for that?"
+                    </p>
+</div>
+<!-- Ghostie Mascot Illustration (CSS/HTML construct) -->
+<div class="w-full flex justify-center items-end relative z-0 mt-4">
+<!-- Soft shadow under Ghostie -->
+<div class="absolute -bottom-4 w-32 h-8 bg-black/10 rounded-[100%] blur-md"></div>
+<!-- Ghostie Body -->
+<div class="relative w-48 h-56 bg-gradient-to-b from-white to-[#f0f4f8] rounded-t-full rounded-b-3xl border-4 border-surface-container-high flex flex-col items-center pt-12 shadow-xl">
+<!-- Eyes -->
+<div class="flex gap-6 mb-4">
+<div class="w-6 h-8 bg-[#181c1f] rounded-full relative">
+<div class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+</div>
+<div class="w-6 h-8 bg-[#181c1f] rounded-full relative">
+<div class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+</div>
+</div>
+<!-- Smile -->
+<div class="w-8 h-4 border-b-4 border-[#181c1f] rounded-b-full"></div>
+<!-- Little arms -->
+<div class="absolute top-24 -left-4 w-10 h-12 bg-white rounded-full border-4 border-surface-container-high -rotate-12"></div>
+<div class="absolute top-24 -right-4 w-10 h-12 bg-white rounded-full border-4 border-surface-container-high rotate-12"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

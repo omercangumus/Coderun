@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun Admin - Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#767686",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#00743a",
+                        "on-tertiary-container": "#fffdff",
+                        "primary-container": "#5865f2",
+                        "inverse-primary": "#bec2ff",
+                        "tertiary-fixed": "#f8d8ff",
+                        "surface-container": "#ebeef2",
+                        "on-primary-fixed": "#000569",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#3f4cda",
+                        "primary": "#3d4ad8",
+                        "surface-dim": "#d7dade",
+                        "on-tertiary-fixed": "#320047",
+                        "tertiary-container": "#9c5ab7",
+                        "outline-variant": "#c6c5d7",
+                        "on-background": "#181c1f",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#81419c",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "inverse-on-surface": "#eef1f5",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-bright": "#f7fafd",
+                        "background": "#f7fafd",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "primary-fixed": "#e0e0ff",
+                        "on-surface-variant": "#454655",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e7",
+                        "on-surface": "#181c1f",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e7",
+                        "on-primary-container": "#fffdff",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2d3134",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e5e8ec",
+                        "secondary-container": "#6bfe9c",
+                        "surface-container-low": "#f1f4f8",
+                        "surface": "#f7fafd",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-tertiary-fixed-variant": "#692984"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "margin-page": "32px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Plus Jakarta Sans"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "body-lg": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "label-caps": ["Space Grotesk"],
+                        "button-text": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "button-text": ["16px", { "lineHeight": "1.0", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Lexend', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Shared Component Base Start -->
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#f8f8fc] group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7e8f3] px-10 py-3">
+<div class="flex items-center gap-4 text-[#0d0f1b]">
+<div class="size-4">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-[#0d0f1b] text-lg font-bold leading-tight tracking-[-0.015em]">Coderun Admin</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="A close-up digital portrait of a friendly, professional administrator avatar in a modern tech style. The character has a welcoming expression, set against a clean, vibrant gradient background blending primary blue and soft purple. The lighting is bright and evenly distributed, creating a premium light-mode UI aesthetic. The overall mood is approachable and competent, matching a modern SaaS platform." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgAnWJ7WDvOLMHVR5mulp-z4qYyCWpiRJbuPQ6CkTLhlFPdkxknt6aIudg-G3dNg6AwiXD6hgPcIE8rPw3xjpYJqbe-KY6or_ac8UUAPShDxbYq2m8pU_tuASPgDiny5eKOSC5bdclibeuPMa07o1tobU7e8cjldlf-X2TPP7Nw40w7UO650BOBA1tK3Br42IazAflTFneEcvuen8HowtQqI78RMWHSG8VNYJ2uC2J-hdnBAgNhXUmkoWvTBa0OMMN3DJinIfyQ7c");'></div>
+</div>
+</header>
+<div class="flex flex-wrap gap-2 p-4">
+<a class="text-[#4c529a] text-base font-medium leading-normal" href="#">Admin</a>
+<span class="text-[#4c529a] text-base font-medium leading-normal">/</span>
+<span class="text-[#0d0f1b] text-base font-medium leading-normal">Dashboard</span>
+</div>
+<div class="flex flex-wrap justify-between gap-3 p-4">
+<div class="flex min-w-72 flex-col gap-3">
+<p class="text-[#0d0f1b] tracking-light text-[32px] font-bold leading-tight">Overview</p>
+<p class="text-[#4c529a] text-sm font-normal leading-normal">High-level statistics and quick insights</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 p-4">
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#cfd1e7]">
+<p class="text-[#0d0f1b] text-base font-medium leading-normal">Total Users</p>
+<p class="text-[#0d0f1b] tracking-light text-2xl font-bold leading-tight">12,450</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#cfd1e7]">
+<p class="text-[#0d0f1b] text-base font-medium leading-normal">Active Users Today</p>
+<p class="text-[#0d0f1b] tracking-light text-2xl font-bold leading-tight">1,204</p>
+</div>
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#cfd1e7]">
+<p class="text-[#0d0f1b] text-base font-medium leading-normal">Lessons Completed Today</p>
+<p class="text-[#0d0f1b] tracking-light text-2xl font-bold leading-tight">3,892</p>
+</div>
+</div>
+<h2 class="text-[#0d0f1b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Problem Areas</h2>
+<!-- New Content Starts Here (Applying Tactile Modernism & Theme Colors) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter px-4 pb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-b-[4px] border-b-error flex flex-col md:flex-row items-start gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.02)] transition-all hover:border-error">
+<div class="bg-error-container p-3 rounded-full flex-shrink-0">
+<span class="material-symbols-outlined text-error text-2xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-h2 text-[18px] text-on-surface leading-tight">Most Failed Question</h3>
+<p class="font-body-md text-on-surface-variant">Unit 2, Question 4</p>
+<div class="inline-flex items-center self-start mt-1">
+<span class="bg-error-container text-on-error-container font-label-caps px-3 py-1.5 rounded-full text-xs border border-error/20">
+                    42% Wrong Rate
+                </span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant border-b-[4px] border-b-tertiary flex flex-col md:flex-row items-start gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.02)] transition-all hover:border-tertiary">
+<div class="bg-tertiary-container/30 p-3 rounded-full flex-shrink-0">
+<span class="material-symbols-outlined text-tertiary text-2xl" style="font-variation-settings: 'FILL' 1;">running_with_errors</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="font-h2 text-[18px] text-on-surface leading-tight">Most Skipped Lesson</h3>
+<p class="font-body-md text-on-surface-variant">Docker Networking</p>
+</div>
+</div>
+</div>
+<h2 class="text-on-surface font-h2 text-[22px] font-bold leading-tight px-4 pb-3 pt-2">Growth</h2>
+<div class="px-4 pb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h3 class="font-body-md text-on-surface-variant font-medium">New Users This Week</h3>
+<span class="text-primary font-label-caps text-sm bg-primary/10 px-3 py-1 rounded-full">+12% vs last week</span>
+</div>
+<div class="w-full h-48 relative border-b border-l border-outline-variant flex items-end pb-1 pl-1">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-primary drop-shadow-md" d="M 0,90 C 10,90 15,75 20,70 C 25,65 35,85 40,80 C 45,75 55,45 60,40 C 65,35 75,55 80,50 C 85,45 95,25 100,20" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary/10" d="M 0,90 C 10,90 15,75 20,70 C 25,65 35,85 40,80 C 45,75 55,45 60,40 C 65,35 75,55 80,50 C 85,45 95,25 100,20 L 100,100 L 0,100 Z" fill="currentColor"></path>
+</svg>
+<div class="absolute bottom-[-24px] left-0 text-xs text-outline font-label-caps">Mon</div>
+<div class="absolute bottom-[-24px] right-0 text-xs text-outline font-label-caps">Sun</div>
+</div>
+</div>
+</div>
+<h2 class="text-on-surface font-h2 text-[22px] font-bold leading-tight px-4 pb-3 pt-2">Quick Actions</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 pb-12">
+<button class="bg-primary text-on-primary p-5 rounded-xl border-b-[4px] border-b-on-primary-fixed-variant hover:translate-y-[2px] hover:border-b-[2px] hover:mb-[2px] transition-all flex flex-col items-center gap-3 justify-center shadow-[0_15px_35px_rgba(61,74,216,0.2)]">
+<span class="material-symbols-outlined text-3xl">route</span>
+<span class="font-button-text">Manage Paths</span>
+</button>
+<button class="bg-surface-container-lowest text-primary p-5 rounded-xl border border-outline-variant border-b-[4px] border-b-primary/20 hover:border-primary hover:bg-primary/5 hover:translate-y-[2px] hover:border-b-[2px] hover:mb-[2px] transition-all flex flex-col items-center gap-3 justify-center">
+<span class="material-symbols-outlined text-3xl">menu_book</span>
+<span class="font-button-text">Edit Lessons</span>
+</button>
+<button class="bg-surface-container-lowest text-primary p-5 rounded-xl border border-outline-variant border-b-[4px] border-b-primary/20 hover:border-primary hover:bg-primary/5 hover:translate-y-[2px] hover:border-b-[2px] hover:mb-[2px] transition-all flex flex-col items-center gap-3 justify-center">
+<span class="material-symbols-outlined text-3xl">quiz</span>
+<span class="font-button-text">Questions</span>
+</button>
+<button class="bg-surface-container-lowest text-primary p-5 rounded-xl border border-outline-variant border-b-[4px] border-b-primary/20 hover:border-primary hover:bg-primary/5 hover:translate-y-[2px] hover:border-b-[2px] hover:mb-[2px] transition-all flex flex-col items-center gap-3 justify-center">
+<span class="material-symbols-outlined text-3xl">group</span>
+<span class="font-button-text">Users</span>
+</button>
+</div>
+<!-- Shared Component Base End -->
+</div>
+</div>
+</div>
+</div>
+</body></html>

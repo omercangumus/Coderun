@@ -16,7 +16,16 @@ if TYPE_CHECKING:
     from app.models.lesson import Lesson
 
 # Geçerli soru türleri
-QUESTION_TYPES = ("multiple_choice", "code_completion", "code_editor")
+QUESTION_TYPES = (
+    "multiple_choice",
+    "code_completion",
+    "code_editor",
+    "fill_in_blank",
+    "reorder",
+    "true_false_reason",
+    "spot_the_bug",
+    "multi_select",
+)
 
 
 class Question(BaseModel):
@@ -24,13 +33,20 @@ class Question(BaseModel):
 
     Attributes:
         lesson_id: Sorunun bağlı olduğu dersin UUID'si.
-        question_type: Soru türü — multiple_choice, code_completion veya code_editor.
+        question_type: Soru türü — multiple_choice, fill_in_blank, reorder, vb.
         question_text: Sorunun metni.
-        options: Çoktan seçmeli sorular için seçenekler (JSON); diğer türler için None.
+        options: Çoktan seçmeli / multi_select / true_false_reason seçenekleri (JSON).
         correct_answer: Doğru cevap metni veya kodu.
         hint: Kullanıcıya gösterilecek ipucu (opsiyonel).
+        explanation: Yanlış cevap sonrası gösterilen açıklama (opsiyonel).
+        code_block: Kod tabanlı sorular için kod snippet'i (opsiyonel).
+        word_bank: fill_in_blank / code_completion için kelime bankası (JSON).
+        correct_line_index: spot_the_bug için hatalı satır indeksi (opsiyonel).
         order: Ders içindeki sıralama indeksi.
+        reinforcement_question_id: Bu soru yanlış cevaplanınca gösterilecek
+            pekiştirme sorusunun UUID'si (self-referential, opsiyonel).
         lesson: Sorunun ait olduğu ders (back_populates).
+        reinforcement_question: Pekiştirme sorusu ilişkisi.
     """
 
     __tablename__ = "questions"
@@ -43,6 +59,22 @@ class Question(BaseModel):
     options: Mapped[dict[str, object] | None] = mapped_column(JSON, nullable=True)
     correct_answer: Mapped[str] = mapped_column(String, nullable=False)
     hint: Mapped[str | None] = mapped_column(String, nullable=True)
+    explanation: Mapped[str | None] = mapped_column(String, nullable=True)
+    code_block: Mapped[str | None] = mapped_column(String, nullable=True)
+    word_bank: Mapped[dict[str, object] | None] = mapped_column(JSON, nullable=True)
+    correct_line_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
     order: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    reinforcement_question_id: Mapped[UUID | None] = mapped_column(
+        PgUUID(as_uuid=True),
+        ForeignKey("questions.id"),
+        nullable=True,
+    )
+
     lesson: Mapped[Lesson] = relationship("Lesson", back_populates="questions")
+    reinforcement_question: Mapped[Question | None] = relationship(
+        "Question",
+        remote_side="Question.id",
+        foreign_keys=[reinforcement_question_id],
+        lazy="joined",
+    )

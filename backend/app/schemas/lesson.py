@@ -80,6 +80,7 @@ class LessonResultResponse(BaseModel):
         new_streak: Güncel streak değeri.
         badges_earned: Bu işlemde kazanılan rozetler.
         message: Kullanıcıya gösterilecek mesaj.
+        reinforcement_question: Yanlış cevaplanan sorunun pekiştirme sorusu (opsiyonel).
     """
 
     lesson_id: uuid.UUID
@@ -93,5 +94,6 @@ class LessonResultResponse(BaseModel):
     new_streak: int = 0
     badges_earned: list[BadgeResponse] = []
     message: str
+    reinforcement_question: QuestionResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -583,6 +583,83 @@ SEED_DATA: list[dict[str, object]] = [
     },
 ]
 
+# İnteraktif soru türleri örnek seed verisi — Python modülüne ek ders
+INTERACTIVE_LESSON_SEED: dict[str, object] = {
+    "title": "İnteraktif Sorular",
+    "lesson_type": "quiz",
+    "order": 6,
+    "xp_reward": 25,
+    "questions": [
+        {
+            "question_text": "Aşağıdaki kodda boşlukları doldurun:",
+            "question_type": "fill_in_blank",
+            "code_block": "for ___ in range(___):    print(i)",
+            "word_bank": {"words": ["i", "5", "x", "10", "range"]},
+            "correct_answer": "i,5",
+            "hint": "for döngüsünde iterasyon değişkeni ve kaç kez döneceğini belirleyin.",
+            "explanation": "for i in range(5) ifadesi 0'dan 4'e kadar döner.",
+            "order": 1,
+        },
+        {
+            "question_text": "Aşağıdaki adımları doğru sıraya koyun: Python'da dosya okuma",
+            "question_type": "reorder",
+            "options": {
+                "items": [
+                    "Dosyayı open() ile aç",
+                    "read() veya readlines() ile oku",
+                    "Veriyi işle",
+                    "Dosyayı close() ile kapat",
+                ]
+            },
+            "correct_answer": '["0","1","2","3"]',
+            "hint": "Dosya işlemleri sırasını düşünün.",
+            "explanation": "Dosya önce açılır, okunur, veri işlenir ve son olarak kapatılır.",
+            "order": 2,
+        },
+        {
+            "question_text": "Bu koddaki hatayı bulun:",
+            "question_type": "spot_the_bug",
+            "code_block": "def topla(sayilar):\n    toplam = 0\n    for s in sayilar:\n        toplam -= s\n    return toplam",
+            "correct_answer": "3|toplam += s",
+            "correct_line_index": 3,
+            "options": {
+                "fix_options": [
+                    "toplam += s",
+                    "toplam = toplam * s",
+                ]
+            },
+            "hint": "Toplama işlemi yapılıyor ama operatör doğru mu?",
+            "explanation": "Satır 4'te -= yerine += kullanılmalı. -= çıkarma yapar, toplama için += gerekir.",
+            "order": 3,
+        },
+        {
+            "question_text": "Python'da listeler değiştirilemez (immutable) veri tipleridir.",
+            "question_type": "true_false_reason",
+            "options": {
+                "reasons": [
+                    "Listeler mutable'dır çünkü elemanları değiştirilebilir.",
+                    "Listeler immutable'dır çünkü oluşturulduktan sonra değiştirilemezler.",
+                ]
+            },
+            "correct_answer": "false|0",
+            "hint": "Bir listeye append() ile eleman eklenebilir mi?",
+            "explanation": "Python'da listeler mutable (değiştirilebilir) veri tipleridir. Tuple'lar immutable'dır.",
+            "order": 4,
+        },
+        {
+            "question_text": "Aşağıdakilerden hangileri Python'da geçerli veri tipleridir? (Birden fazla seçin)",
+            "question_type": "multi_select",
+            "options": {
+                "choices": ["int", "float", "string", "char", "bool", "array"]
+            },
+            "correct_answer": "int,float,bool",
+            "hint": "Python'un yerleşik (built-in) veri tiplerini düşünün.",
+            "explanation": "int, float ve bool Python'un yerleşik veri tipleridir. Python'da string 'str' olarak kullanılır, 'char' ve 'array' yerleşik tip değildir.",
+            "order": 5,
+        },
+    ],
+}
+
 
 # ---------------------------------------------------------------------------
 # Seed fonksiyonu
@@ -624,7 +701,12 @@ async def seed_database(db: AsyncSession) -> None:
             db.add(module)
             await db.flush()
 
-            for lesson_data in lessons_data:  # type: ignore[attr-defined]
+            # Python modülüne interaktif soru dersi ekle
+            all_lessons = list(lessons_data)  # type: ignore[arg-type]
+            if module_data["slug"] == "python":
+                all_lessons.append(INTERACTIVE_LESSON_SEED)
+
+            for lesson_data in all_lessons:
                 questions_data = lesson_data.get("questions", [])
                 lesson_id = uuid4()
 
@@ -649,6 +731,11 @@ async def seed_database(db: AsyncSession) -> None:
                         question_text=question_data["question_text"],
                         options=question_data.get("options"),
                         correct_answer=question_data["correct_answer"],
+                        hint=question_data.get("hint"),
+                        explanation=question_data.get("explanation"),
+                        code_block=question_data.get("code_block"),
+                        word_bank=question_data.get("word_bank"),
+                        correct_line_index=question_data.get("correct_line_index"),
                         order=question_data["order"],
                     )
                     db.add(question)
@@ -660,3 +747,4 @@ async def seed_database(db: AsyncSession) -> None:
         await db.rollback()
         logger.error("Seed verisi eklenirken hata oluştu: %s", exc)
         raise
+

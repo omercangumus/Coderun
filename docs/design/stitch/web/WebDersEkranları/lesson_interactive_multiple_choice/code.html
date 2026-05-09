@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Lesson: Python Lists</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Lexend:wght@400;600&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ebeef2",
+                        "primary-fixed": "#e0e0ff",
+                        "primary-container": "#5865f2",
+                        "primary": "#3d4ad8",
+                        "outline-variant": "#c6c5d7",
+                        "on-secondary-container": "#00743a",
+                        "tertiary-fixed": "#f8d8ff",
+                        "surface-bright": "#f7fafd",
+                        "error-container": "#ffdad6",
+                        "on-background": "#181c1f",
+                        "on-primary-fixed": "#000569",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary-fixed": "#00210c",
+                        "inverse-surface": "#2d3134",
+                        "surface-container-highest": "#e0e3e7",
+                        "outline": "#767686",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-tertiary-fixed": "#320047",
+                        "inverse-primary": "#bec2ff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#fffdff",
+                        "on-surface-variant": "#454655",
+                        "on-error": "#ffffff",
+                        "background": "#f7fafd",
+                        "surface-variant": "#e0e3e7",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary-fixed-variant": "#692984",
+                        "surface-tint": "#3f4cda",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "surface-dim": "#d7dade",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "inverse-on-surface": "#eef1f5",
+                        "tertiary-container": "#9c5ab7",
+                        "on-surface": "#181c1f",
+                        "surface-container-high": "#e5e8ec",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-low": "#f1f4f8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#81419c",
+                        "surface": "#f7fafd",
+                        "secondary-container": "#6bfe9c",
+                        "secondary": "#006d37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "unit": "8px",
+                        "stack-lg": "48px",
+                        "margin-page": "32px",
+                        "gutter": "24px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "button-text": ["Lexend"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "body-md": ["Lexend"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "button-text": ["16px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 flex justify-between items-center px-8 z-30 max-w-[1200px] mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-md font-['Plus_Jakarta_Sans'] font-bold text-indigo-600 dark:text-indigo-400 docked full-width border-b-4 border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="hidden md:block text-xl font-black text-indigo-600 dark:text-indigo-400">Coderun</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm font-semibold text-slate-500">1,240 XP</span>
+<div class="flex items-center gap-1 text-orange-500 font-bold bg-orange-50 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined fill-icon text-lg">local_fire_department</span>
+<span>5 Day Streak</span>
+</div>
+<button class="p-2 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border-2 border-primary-container" data-alt="A close up, well-lit studio portrait of a young professional with a friendly smile, serving as a user profile avatar. The lighting is soft and flattering, creating a warm, modern tech aesthetic consistent with a light-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr4E5gIxUBXbGEi-6fSiPlaO1xcB5ivlvjFiYVsyGF9QuD2bvx8quTkY9F3wFYH8shU-EcUThMsSim918WSpt19MCdmeOuggrPCl_2CKQDMM328I5Cxkn18o03r52FjRcsoqaAQSrbFEeWShHc3aRYOjvMnWxcaAaMOR5k4Mxxk-6zGuA7f_VQvNwn4m3KYW7gjwo7RzBt4hfHqf8uXBDSBRzinZMsdpnPOINlIip9ssYcgiumCeZrxIs6YOwoLg7ceEP90QYUNIE"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 flex flex-col h-full z-40 bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-['Plus_Jakarta_Sans'] text-sm font-semibold tracking-tight h-screen w-64 border-r-4 border-slate-100 dark:border-slate-800 shadow-[4px_0px_0px_0px_#E5E9F0] dark:shadow-none p-4">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shadow-sm border-b-2 border-primary">
+<span class="material-symbols-outlined fill-icon">smart_toy</span>
+</div>
+<div>
+<h2 class="text-2xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400 uppercase leading-none">Coderun</h2>
+<span class="text-xs text-slate-500 font-medium">Level 12 Developer</span>
+</div>
+</div>
+<ul class="flex flex-col gap-1 flex-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-50 text-indigo-600 border-r-4 border-indigo-600 shadow-inner group" href="#">
+<span class="material-symbols-outlined fill-icon text-lg group-hover:scale-110 transition-transform">map</span>
+                    Learning Paths
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">terminal</span>
+                    Labs
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">rate_review</span>
+                    Review
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">emoji_events</span>
+                    Achievements
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">smart_toy</span>
+                    Ghostie AI
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">person</span>
+                    Profile
+                </a>
+</li>
+</ul>
+<div class="mt-auto">
+<button class="w-full bg-primary-container text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 border-b-4 border-primary hover:translate-y-0.5 hover:border-b-2 active:translate-y-1 active:border-b-0 transition-all">
+<span class="material-symbols-outlined">play_arrow</span>
+                Start Daily Lab
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 px-8 pb-12 max-w-[1400px] mx-auto min-h-screen flex gap-6">
+<!-- Left Panel: Context & Concept -->
+<div class="w-1/4 flex flex-col gap-6">
+<!-- Progress & Title -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Lesson 3 of 10</span>
+<span class="font-label-caps text-label-caps text-primary-container">30%</span>
+</div>
+<div class="h-3 bg-surface-variant rounded-full overflow-hidden border border-surface-dim">
+<div class="h-full bg-secondary-container w-[30%] rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
+</div>
+</div>
+<h1 class="font-h1 text-h1 text-on-background mt-6">Python Lists</h1>
+</div>
+<!-- Concept Card -->
+<div class="bg-surface-container-lowest rounded-xl border-2 border-surface-variant shadow-sm hover:border-primary-container transition-colors duration-300 p-5 flex-1 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary-container">menu_book</span>
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface">List Indexing</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                    Lists in Python are ordered. You access items using their index, starting at <strong class="text-primary-container bg-primary-fixed/30 px-1 rounded">0</strong> for the first item.
+                </p>
+<div class="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm shadow-inner border-b-2 border-black">
+<div class="text-[#ce9178]">fruits = ['apple', 'banana', 'cherry']</div>
+<div class="mt-2 text-[#569cd6]">print<span class="text-[#d4d4d4]">(fruits[</span><span class="text-[#b5cea8]">0</span><span class="text-[#d4d4d4]">])</span></div>
+<div class="mt-1 text-[#6a9955]"># Output: 'apple'</div>
+</div>
+</div>
+</div>
+<!-- Center Panel: Interactive Challenge -->
+<div class="w-2/4 flex flex-col">
+<div class="bg-surface-container-lowest rounded-2xl border-2 border-surface-variant shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 flex-1 flex flex-col relative">
+<div class="flex items-center justify-between mb-8">
+<div class="inline-flex items-center gap-2 bg-tertiary-fixed px-3 py-1.5 rounded-full text-on-tertiary-fixed font-label-caps text-label-caps border border-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-sm">quiz</span>
+                        Multiple Choice
+                    </div>
+<button class="text-on-surface-variant hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined">flag</span>
+</button>
+</div>
+<h2 class="font-h2 text-h2 text-on-surface mb-8">How do you access the first item in a list named <code class="bg-surface-container px-2 py-1 rounded text-primary text-2xl border border-surface-dim">fruits</code>?</h2>
+<!-- 2x2 Grid Options -->
+<div class="grid grid-cols-2 gap-4 mb-auto">
+<!-- Option 1: Selected -->
+<button class="bg-primary-fixed border-2 border-primary-container rounded-xl p-6 text-left relative overflow-hidden group shadow-[0_2px_0px_0px_#5865f2] transform translate-y-[2px]">
+<div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+<code class="font-mono text-xl text-on-primary-fixed font-bold group-hover:text-primary-container transition-colors">fruits[0]</code>
+</button>
+<!-- Option 2: Default -->
+<button class="bg-surface border-2 border-surface-variant hover:border-primary/50 rounded-xl p-6 text-left relative group shadow-[0_4px_0px_0px_#e0e3e7] hover:shadow-[0_4px_0px_0px_#bec2ff] transition-all hover:-translate-y-[1px]">
+<div class="absolute top-3 right-3 w-6 h-6 rounded-full border-2 border-outline-variant group-hover:border-primary/50 transition-colors"></div>
+<code class="font-mono text-xl text-on-surface-variant font-bold group-hover:text-primary transition-colors">fruits[1]</code>
+</button>
+<!-- Option 3: Default -->
+<button class="bg-surface border-2 border-surface-variant hover:border-primary/50 rounded-xl p-6 text-left relative group shadow-[0_4px_0px_0px_#e0e3e7] hover:shadow-[0_4px_0px_0px_#bec2ff] transition-all hover:-translate-y-[1px]">
+<div class="absolute top-3 right-3 w-6 h-6 rounded-full border-2 border-outline-variant group-hover:border-primary/50 transition-colors"></div>
+<code class="font-mono text-xl text-on-surface-variant font-bold group-hover:text-primary transition-colors">fruits.first()</code>
+</button>
+<!-- Option 4: Default -->
+<button class="bg-surface border-2 border-surface-variant hover:border-primary/50 rounded-xl p-6 text-left relative group shadow-[0_4px_0px_0px_#e0e3e7] hover:shadow-[0_4px_0px_0px_#bec2ff] transition-all hover:-translate-y-[1px]">
+<div class="absolute top-3 right-3 w-6 h-6 rounded-full border-2 border-outline-variant group-hover:border-primary/50 transition-colors"></div>
+<code class="font-mono text-xl text-on-surface-variant font-bold group-hover:text-primary transition-colors">fruits.get(0)</code>
+</button>
+</div>
+<!-- Action Area -->
+<div class="mt-8 pt-6 border-t border-surface-variant flex justify-end">
+<button class="bg-secondary-container text-on-secondary-container font-button-text text-button-text py-4 px-8 rounded-xl border-b-4 border-secondary hover:translate-y-[2px] hover:border-b-2 active:translate-y-[4px] active:border-b-0 transition-all flex items-center gap-2 shadow-sm">
+                        Check Answer
+                        <span class="material-symbols-outlined font-bold">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Panel: AI Mentor -->
+<div class="w-1/4 flex flex-col">
+<div class="bg-surface-container-low rounded-xl border-2 border-surface-variant p-5 flex flex-col gap-4 relative overflow-hidden h-full">
+<!-- Background Decoration -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary-fixed rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+<!-- Header -->
+<div class="flex items-center gap-3 mb-2 z-10">
+<div class="w-12 h-12 bg-white rounded-full p-1 shadow-sm border border-surface-variant flex items-center justify-center relative">
+<span class="material-symbols-outlined text-3xl text-primary-container fill-icon animate-bounce" style="animation-duration: 3s;">smart_toy</span>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-secondary-container rounded-full border-2 border-white"></div>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface">Ghostie</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant text-xs">AI Mentor</p>
+</div>
+</div>
+<!-- Dialogue Bubble -->
+<div class="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm border border-surface-variant relative z-10">
+<p class="font-body-md text-body-md text-on-surface">
+                        Stuck on indexing? Remember that computer scientists love to start counting from zero!
+                    </p>
+</div>
+<!-- Quick Actions -->
+<div class="mt-auto flex flex-col gap-2 z-10">
+<button class="flex items-center justify-between w-full p-3 rounded-lg bg-surface border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/20 text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold group">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg group-hover:fill-icon">lightbulb</span>
+                            Give me a hint
+                        </span>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full p-3 rounded-lg bg-surface border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/20 text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold group">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg group-hover:fill-icon">psychology</span>
+                            Explain simply
+                        </span>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full p-3 rounded-lg bg-surface border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/20 text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold group">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg group-hover:fill-icon">code_blocks</span>
+                            Show a tiny example
+                        </span>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

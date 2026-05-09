@@ -7,6 +7,7 @@ import type {
   LessonDetailResponse,
   AnswerSubmit,
   LessonResultResponse,
+  QuestionResponse,
   PlacementTestResponse,
   PlacementResultResponse,
 } from '@/lib/types/module.types';
@@ -72,6 +73,9 @@ export const moduleApi = {
       newLevel: raw.new_level,
       newStreak: raw.new_streak,
       badgesEarned: (raw.badges_earned ?? []).map(mapBadge),
+      reinforcementQuestion: raw.reinforcement_question
+        ? mapQuestion(raw.reinforcement_question)
+        : null,
     };
   },
 
@@ -138,14 +142,20 @@ function mapLesson(raw: any): LessonResponse {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapQuestion(raw: any) {
+function mapQuestion(raw: any): QuestionResponse {
   return {
     id: raw.id,
     lessonId: raw.lesson_id,
     questionType: raw.question_type,
     questionText: raw.question_text,
     options: raw.options ?? null,
+    hint: raw.hint ?? null,
+    codeBlock: raw.code_block ?? null,
+    wordBank: raw.word_bank ?? null,
     order: raw.order,
+    reinforcementQuestion: raw.reinforcement_question
+      ? mapQuestion(raw.reinforcement_question)
+      : null,
   };
 }
 
