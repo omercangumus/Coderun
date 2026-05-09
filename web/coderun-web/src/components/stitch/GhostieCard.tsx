@@ -3,24 +3,26 @@
 import React from 'react';
 import { cn } from '@/lib/utils/cn';
 import { ReactNode } from 'react';
+import { GhostieState } from '@/lib/ghostie-assets';
+import { GhostieAvatar as NewGhostieAvatar } from '../ghostie/GhostieAvatar';
 
 type GhostieSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type GhostieMood = 'happy' | 'thinking' | 'celebrating' | 'helping' | 'neutral';
 
-const sizeMap: Record<GhostieSize, string> = {
-  xs: 'w-6 h-6 text-sm',
-  sm: 'w-8 h-8 text-base',
-  md: 'w-12 h-12 text-2xl',
-  lg: 'w-16 h-16 text-3xl',
-  xl: 'w-24 h-24 text-5xl',
+const sizeMap: Record<GhostieSize, number> = {
+  xs: 24,
+  sm: 32,
+  md: 48,
+  lg: 64,
+  xl: 96,
 };
 
-const moodEmoji: Record<GhostieMood, string> = {
-  happy: '👻',
-  thinking: '🤔',
-  celebrating: '🎉',
-  helping: '💡',
-  neutral: '👻',
+const moodToState: Record<GhostieMood, GhostieState> = {
+  happy: 'success',
+  thinking: 'thinking',
+  celebrating: 'very_happy',
+  helping: 'idle',
+  neutral: 'idle',
 };
 
 interface GhostieAvatarProps {
@@ -37,17 +39,8 @@ export function GhostieAvatar({
   className,
 }: GhostieAvatarProps) {
   return (
-    <div
-      className={cn(
-        'rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0',
-        sizeMap[size],
-        glow && 'shadow-glow animate-pulse-glow',
-        className
-      )}
-    >
-      <span role="img" aria-label="Ghostie mascot">
-        {moodEmoji[mood]}
-      </span>
+    <div className={cn('flex-shrink-0', glow && 'shadow-glow animate-pulse-glow', className)}>
+      <NewGhostieAvatar state={moodToState[mood]} size={sizeMap[size]} />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 // Yanlış cevap sonrası gösterilen basit takip sorusu.
 
 import 'package:flutter/material.dart';
+import '../../../../core/assets/ghostie_assets.dart';
+import '../../../widgets/ghostie_reaction.dart';
 
 class ReinforcementCardWidget extends StatefulWidget {
   final String questionText;
@@ -56,34 +58,11 @@ class _ReinforcementCardWidgetState extends State<ReinforcementCardWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            children: [
-              const Text('🔄', style: TextStyle(fontSize: 20)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pekiştirme Sorusu',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.secondary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Bu basit soruyu cevaplayarak konuyu pekiştirin',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Header with Ghostie
+          const GhostieReaction(
+            state: GhostieState.reinforcement,
+            message: 'Hadi bunu küçük bir tekrar ile güçlendirelim.',
+            size: 64,
           ),
           const SizedBox(height: 16),
 

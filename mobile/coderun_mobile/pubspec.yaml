@@ -27,6 +27,7 @@ dependencies:
   shared_preferences: ^2.3.1
   cached_network_image: ^3.4.1
   lottie: ^3.1.2
+  video_player: ^2.11.1
 
 dev_dependencies:
   flutter_test:
@@ -63,3 +64,5 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/ghostie/
+    - assets/animations/ghostie/
