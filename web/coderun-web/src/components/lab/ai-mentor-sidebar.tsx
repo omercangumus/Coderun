@@ -6,6 +6,8 @@ import { useRef, useEffect } from 'react';
 import { X, Send, Bot, Trash2 } from 'lucide-react';
 
 import { useMentor } from '@/lib/hooks/use-mentor';
+import { GhostieAvatar } from '../ghostie/GhostieAvatar';
+import { GhostieReaction } from '../ghostie/GhostieReaction';
 
 interface Props {
   isOpen: boolean;
@@ -57,9 +59,9 @@ export function AiMentorSidebar({
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-gray-50">
         <div className="flex items-center gap-2">
-          <Bot className="w-5 h-5 text-purple-600" />
-          <span className="font-semibold text-gray-800">AI Mentor</span>
-          <span className="text-xs text-gray-500">(Phantom)</span>
+          <GhostieAvatar state="idle" size={24} />
+          <span className="font-semibold text-gray-800">Ghostie AI</span>
+          <span className="text-xs text-gray-500">(Mentor)</span>
         </div>
         <div className="flex items-center gap-1">
           {/* Attempt count göstergesi */}
@@ -84,6 +86,11 @@ export function AiMentorSidebar({
 
       {/* Mesaj listesi */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.length === 0 && (
+           <div className="flex justify-center mb-6">
+             <GhostieReaction state="idle" message="Merhaba! Ben Ghostie AI. Herhangi bir konuda yardıma ihtiyacın olursa buradayım! 👋" size={80} />
+           </div>
+        )}
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -92,8 +99,8 @@ export function AiMentorSidebar({
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
                 msg.role === 'user'
-                  ? 'bg-purple-600 text-white rounded-br-sm'
-                  : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                  ? 'bg-primary text-white rounded-br-sm'
+                  : 'bg-surface-container text-on-surface rounded-bl-sm border border-outline/10'
               }`}
             >
               {msg.content}
@@ -103,9 +110,10 @@ export function AiMentorSidebar({
 
         {/* Yükleniyor göstergesi */}
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-2 text-sm text-gray-500 italic">
-              Phantom düşünüyor...
+          <div className="flex justify-start items-center gap-2">
+            <GhostieAvatar state="thinking" size={24} />
+            <div className="bg-surface-container rounded-2xl rounded-bl-sm px-4 py-2 text-sm text-on-surface-variant italic">
+              Ghostie düşünüyor...
             </div>
           </div>
         )}

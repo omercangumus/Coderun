@@ -1,7 +1,10 @@
-// Coderun mobile — Ghostie reaction widget.
-// Basit, yeniden kullanılabilir, statik emoji/durum gösterimi.
-
 import 'package:flutter/material.dart';
+import '../../../../core/assets/ghostie_assets.dart' as assets;
+import '../../../widgets/ghostie_reaction.dart';
+
+// Aliasing the state for backward compatibility if needed, 
+// but it's better to use the new GhostieReaction directly.
+// We'll wrap the new GhostieReaction here.
 
 enum GhostieState {
   happy,
@@ -21,82 +24,33 @@ class GhostieReactionWidget extends StatelessWidget {
     super.key,
     required this.state,
     this.message,
-    this.size = 48,
+    this.size = 120,
   });
 
-  String get _emoji {
+  assets.GhostieState _mapState() {
     switch (state) {
       case GhostieState.happy:
-        return '😊';
-      case GhostieState.sad:
-        return '😔';
-      case GhostieState.thinking:
-        return '🤔';
-      case GhostieState.celebrating:
-        return '🎉';
       case GhostieState.encouraging:
-        return '💪';
-      case GhostieState.neutral:
-        return '👻';
-    }
-  }
-
-  Color _bgColor(ThemeData theme) {
-    switch (state) {
-      case GhostieState.happy:
-      case GhostieState.celebrating:
-        return theme.colorScheme.secondaryContainer;
+        return assets.GhostieState.success;
       case GhostieState.sad:
-        return theme.colorScheme.errorContainer;
+        return assets.GhostieState.wrong;
       case GhostieState.thinking:
-        return theme.colorScheme.tertiaryContainer;
-      case GhostieState.encouraging:
-        return theme.colorScheme.primaryContainer;
+        return assets.GhostieState.thinking;
+      case GhostieState.celebrating:
+        return assets.GhostieState.veryHappy;
       case GhostieState.neutral:
-        return theme.colorScheme.surfaceContainerHighest;
+        return assets.GhostieState.idle;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: _bgColor(theme),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              _emoji,
-              style: TextStyle(fontSize: size * 0.5),
-            ),
-          ),
-        ),
-        if (message != null) ...[
-          const SizedBox(width: 12),
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _bgColor(theme).withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                message!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
+    return GhostieReaction(
+      state: _mapState(),
+      message: message,
+      size: size,
+      preferAnimation: true,
     );
   }
 }
+
