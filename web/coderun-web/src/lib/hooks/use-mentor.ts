@@ -28,7 +28,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
     {
       role: 'assistant',
       content:
-        'Merhaba! Ben Phantom 👻 Takıldığın bir yer mi var? Yardımcı olmaya hazırım!',
+        'Merhaba! Ben Ghostie 👻 Takıldığın bir yer mi var? Yardımcı olmaya hazırım!',
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +100,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
     setMessages([
       {
         role: 'assistant',
-        content: 'Merhaba! Ben Phantom 👻 Takıldığın bir yer mi var?',
+        content: 'Merhaba! Ben Ghostie 👻 Takıldığın bir yer mi var?',
       },
     ]);
   }, []);

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { QUERY_KEYS } from '@/lib/constants/api.constants';
 import type { LessonResultResponse } from '@/lib/types/module.types';
+import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 
 export default function ResultPage({
   params,
@@ -45,12 +46,12 @@ export default function ResultPage({
 
   return (
     <div className="flex flex-col items-center gap-6 max-w-md mx-auto py-8">
-      {/* İkon animasyonu */}
+      {/* Ghostie Reaksiyonu */}
       <div className="animate-bounce-once">
-        {success
-          ? <CheckCircle className="w-24 h-24 text-green-400" />
-          : <XCircle className="w-24 h-24 text-red-400" />
-        }
+        <GhostieReaction 
+          state={success ? 'success' : 'sad_wrong'} 
+          size={180} 
+        />
       </div>
 
       {/* Başlık */}

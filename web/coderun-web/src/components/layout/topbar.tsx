@@ -5,6 +5,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useUserStats } from '@/lib/hooks/use-gamification';
 import { formatXP } from '@/lib/utils/format';
+import { GhostieAvatar } from '../ghostie/GhostieAvatar';
 
 export function Topbar() {
   const { user } = useAuth();
@@ -14,8 +15,8 @@ export function Topbar() {
     <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur border-b border-outline-variant">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2">
-        <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-sm">
-          👻
+        <div className="w-7 h-7 flex items-center justify-center">
+          <GhostieAvatar state="idle" size={28} />
         </div>
         <span className="font-heading text-base font-bold text-on-surface">Coderun</span>
       </Link>

@@ -13,6 +13,7 @@ import {
 import { cn } from '@/lib/utils/cn';
 import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { GhostieAvatar } from '../ghostie/GhostieAvatar';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Dashboard' },
@@ -30,8 +31,8 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-sidebar min-h-screen bg-white border-r border-outline-variant">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-outline-variant">
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-base">
-          👻
+        <div className="w-8 h-8 flex items-center justify-center">
+          <GhostieAvatar state="very_happy" size={32} />
         </div>
         <span className="font-heading text-lg font-bold text-on-surface">Coderun</span>
       </div>
@@ -68,7 +69,7 @@ export function Sidebar() {
             'transition-all duration-150 hover:shadow-primary cursor-pointer'
           )}
         >
-          <span className="text-xl">👻</span>
+          <GhostieAvatar state="idle" size={32} />
           <div className="min-w-0">
             <p className="font-sans text-xs font-semibold text-primary">Ghostie AI</p>
             <p className="font-sans text-[11px] text-on-surface-variant truncate">
