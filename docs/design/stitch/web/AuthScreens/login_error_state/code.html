@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coderun - Giriş Hatası</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#faf8ff",
+                        "background": "#faf8ff",
+                        "primary": "#3d4ad8",
+                        "inverse-on-surface": "#eef0ff",
+                        "secondary-fixed-dim": "#4ae176",
+                        "on-secondary-fixed": "#002109",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "inverse-primary": "#bec2ff",
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed-variant": "#222fc2",
+                        "primary-fixed-dim": "#bec2ff",
+                        "inverse-surface": "#283044",
+                        "primary-container": "#5865f2",
+                        "outline-variant": "#c6c5d7",
+                        "secondary-container": "#6bff8f",
+                        "on-tertiary-container": "#fffdff",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dae2fd",
+                        "on-tertiary-fixed": "#2a1700",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#6bff8f",
+                        "on-surface-variant": "#454655",
+                        "on-secondary-fixed-variant": "#005321",
+                        "on-primary-fixed": "#000569",
+                        "primary-fixed": "#e0e0ff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary": "#006e2f",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary": "#835200",
+                        "on-primary-container": "#fffdff",
+                        "surface-container": "#eaedff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "surface": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-background": "#131b2e",
+                        "tertiary-container": "#a46800",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#767686",
+                        "on-secondary-container": "#007432",
+                        "surface-tint": "#3f4cda"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "64px",
+                        "xl": "40px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "code-sm": ["jetbrainsMono"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "code-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Placeholder (Hidden for Transactional Screen as per rules) -->
+<!-- Main Layout -->
+<main class="flex-1 flex flex-col md:flex-row w-full h-screen">
+<!-- Left Panel: Brand & Mascot -->
+<div class="hidden md:flex md:w-1/2 lg:w-5/12 bg-surface-container-low flex-col justify-center items-center p-xl relative overflow-hidden">
+<!-- Background Decorative Elements -->
+<div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20" style="background-image: radial-gradient(circle at 20% 30%, var(--tw-colors-primary-fixed) 0%, transparent 50%);"></div>
+<div class="z-10 flex flex-col items-center max-w-sm text-center">
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-[40px] text-primary" data-icon="rocket_launch">rocket_launch</span>
+<h1 class="font-display-lg text-display-lg tracking-tight text-primary">Coderun</h1>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">
+                    Master the craft. Kodlama serüvenine kaldığın yerden devam et.
+                </p>
+<!-- Mascot Area (Error State) -->
+<div class="relative w-64 h-64 rounded-full bg-error-container/20 flex items-center justify-center shadow-[0_12px_40px_rgba(186,26,26,0.15)] mb-lg border-2 border-error/20">
+<img alt="Ghostie Angry" class="w-56 h-56 object-cover rounded-full mix-blend-multiply" src="https://lh3.googleusercontent.com/aida/ADBb0ugXyXyASNYWwYNQlu7TM2aVyiPeEcHiKgVgJsinDIzt51H4WqArs2rNd_GP8VJ42fTwRcjAIJudzLdp2gjl2HtMUwa1lHWsvhREAdAY9k332IMOb2HxuOjprhiczHx6XbNAWjZyMLNmsvdVFGuYk1VHXf_2CEEapx3d5Qz4nRfDTBOpXQa__Q08G4TAo6Xpxpz12kNB1sly0ZVaJ0Aa5oHXb-UK7-dSC-Q9ZigueypdWI3Xg1UKtu2ADpo"/>
+</div>
+</div>
+</div>
+<!-- Right Panel: Login Form -->
+<div class="w-full md:w-1/2 lg:w-7/12 flex flex-col justify-center items-center p-md md:p-xl lg:p-xxl bg-surface-bright relative">
+<!-- Mobile Header (Visible only on mobile) -->
+<div class="md:hidden flex items-center gap-sm mb-xl w-full max-w-md">
+<span class="material-symbols-outlined text-[32px] text-primary" data-icon="rocket_launch">rocket_launch</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-primary">Coderun</h1>
+</div>
+<div class="w-full max-w-md">
+<h2 class="font-headline-lg text-headline-lg mb-sm text-on-surface">Tekrar Hoş Geldin</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-xl">Devam etmek için giriş yap.</p>
+<!-- Error Banner -->
+<div class="bg-error-container border border-error/30 rounded-lg p-md mb-lg flex items-start gap-sm shadow-[0_4px_20px_rgba(186,26,26,0.05)]">
+<span class="material-symbols-outlined text-error fill mt-[2px]" data-icon="error" data-weight="fill">error</span>
+<div>
+<h3 class="font-label-md text-label-md text-on-error-container mb-xs">Giriş başarısız!</h3>
+<p class="font-body-md text-body-md text-on-error-container/80 text-[14px]">E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.</p>
+</div>
+</div>
+<form class="space-y-lg">
+<!-- Email Input -->
+<div class="space-y-sm">
+<label class="block font-label-md text-label-md text-on-surface" for="email">E-posta Adresi</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50" data-icon="mail">mail</span>
+</div>
+<input class="block w-full pl-[40px] pr-sm py-sm bg-surface-bright border border-error text-on-surface focus:ring-2 focus:ring-error focus:border-error rounded-DEFAULT shadow-[0_0_0_4px_rgba(186,26,26,0.1)] transition-all font-body-md text-body-md" id="email" name="email" placeholder="ornek@email.com" type="email" value="developer@example.com"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Şifre</label>
+<a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="#">Şifremi unuttum</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant/50" data-icon="lock">lock</span>
+</div>
+<input class="block w-full pl-[40px] pr-sm py-sm bg-surface-bright border border-error text-on-surface focus:ring-2 focus:ring-error focus:border-error rounded-DEFAULT shadow-[0_0_0_4px_rgba(186,26,26,0.1)] transition-all font-body-md text-body-md" id="password" name="password" placeholder="••••••••" type="password" value="wrongpassword"/>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-md bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-md text-label-md rounded-DEFAULT hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(88,101,242,0.4)] active:scale-[0.98] active:translate-y-[2px] transition-all duration-200 flex justify-center items-center gap-sm" type="submit">
+<span>Giriş Yap</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="relative my-xl">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-surface-dim"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-sm bg-surface-bright text-on-surface-variant font-label-md text-label-md text-[12px]">veya şununla devam et</span>
+</div>
+</div>
+<!-- Social Login (Secondary Buttons) -->
+<div class="grid grid-cols-2 gap-sm">
+<button class="flex justify-center items-center gap-sm py-sm px-md bg-surface-dim text-primary font-label-md text-label-md rounded-DEFAULT hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+                        Github
+                    </button>
+<button class="flex justify-center items-center gap-sm py-sm px-md bg-surface-dim text-primary font-label-md text-label-md rounded-DEFAULT hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+                        Google
+                    </button>
+</div>
+<p class="mt-xl text-center font-body-md text-body-md text-on-surface-variant text-[14px]">
+                    Hesabın yok mu? <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors ml-1" href="#">Hemen Kaydol</a>
+</p>
+</div>
+</div>
+</main>
+</body></html>

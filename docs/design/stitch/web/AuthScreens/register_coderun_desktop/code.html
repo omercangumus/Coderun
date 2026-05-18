@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kayıt Ol - Coderun</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#faf8ff",
+                    "background": "#faf8ff",
+                    "primary": "#3d4ad8",
+                    "inverse-on-surface": "#eef0ff",
+                    "secondary-fixed-dim": "#4ae176",
+                    "on-secondary-fixed": "#002109",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "inverse-primary": "#bec2ff",
+                    "on-surface": "#131b2e",
+                    "on-primary-fixed-variant": "#222fc2",
+                    "primary-fixed-dim": "#bec2ff",
+                    "inverse-surface": "#283044",
+                    "primary-container": "#5865f2",
+                    "outline-variant": "#c6c5d7",
+                    "secondary-container": "#6bff8f",
+                    "on-tertiary-container": "#fffdff",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#dae2fd",
+                    "on-tertiary-fixed": "#2a1700",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#6bff8f",
+                    "on-surface-variant": "#454655",
+                    "on-secondary-fixed-variant": "#005321",
+                    "on-primary-fixed": "#000569",
+                    "primary-fixed": "#e0e0ff",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#d2d9f4",
+                    "surface-container-highest": "#dae2fd",
+                    "secondary": "#006e2f",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-low": "#f2f3ff",
+                    "tertiary": "#835200",
+                    "on-primary-container": "#fffdff",
+                    "surface-container": "#eaedff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface": "#faf8ff",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-background": "#131b2e",
+                    "tertiary-container": "#a46800",
+                    "surface-container-high": "#e2e7ff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#767686",
+                    "on-secondary-container": "#007432",
+                    "surface-tint": "#3f4cda"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xxl": "64px",
+                    "xl": "40px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "gutter": "24px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "code-sm": [
+                            "jetbrainsMono"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "code-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased">
+<!-- Left Panel: Branding & Mascot -->
+<div class="hidden lg:flex w-1/2 flex-col justify-between p-xxl relative overflow-hidden bg-gradient-to-br from-primary to-primary-container text-on-primary">
+<!-- Abstract Glass Orbs for Depth -->
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-white opacity-5 rounded-full blur-[80px]"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-secondary opacity-10 rounded-full blur-[100px]"></div>
+<!-- Top: Logo -->
+<div class="relative z-10 flex items-center gap-sm">
+<span class="material-symbols-outlined text-display-lg" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+<span class="font-display-lg text-display-lg tracking-tight">Coderun</span>
+</div>
+<!-- Middle: Mascot & Guide Card -->
+<div class="relative z-10 flex flex-col items-center justify-center flex-grow">
+<div class="relative">
+<img alt="Ghostie mascot" class="w-[320px] h-[320px] object-cover rounded-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]" src="https://lh3.googleusercontent.com/aida/ADBb0uhn0bQWywINxEqLuBjJOwOJC4jtsiSMHSCstjafYObzdToRNQl0Y0HI_ZFLOAf5DoSmT2_wa7nuMMlxvkKfTJx_uypo9kcotSFNYgWX4kpJF63S-d3gA0B-lf2-Xvg08m8dBb4wA2zqq-ERMl9RIrohShiaCJso7D4wbZoSVtLKo3P_TCMw8ikpiJRgW_Wd1qVv7pF1MF_XO7cLa_UV1izZltb5s-fJ5YOY0xSt3yt6ENgEIanhCabYuQ"/>
+<!-- Guide Card next to Ghostie -->
+<div class="absolute top-10 -right-10 bg-surface-bright/10 backdrop-blur-md border border-white/20 p-md rounded-xl shadow-[0_12px_40px_rgba(88,101,242,0.15)] max-w-[200px] transform hover:scale-105 transition-transform duration-300">
+<p class="font-body-md text-body-md text-on-primary leading-snug">
+                        İlk yolculuğuna Python ile başlayabilirsin!
+                    </p>
+<div class="absolute -left-2 top-4 w-4 h-4 bg-surface-bright/10 backdrop-blur-md border-l border-t border-white/20 rotate-[-45deg]"></div>
+</div>
+</div>
+</div>
+<!-- Bottom: Feature Cards -->
+<div class="relative z-10 grid grid-cols-3 gap-md mt-auto">
+<!-- Feature 1 -->
+<div class="bg-surface-bright/10 backdrop-blur-md border border-white/20 rounded-lg p-md shadow-[0_4px_20px_rgba(15,23,42,0.05)] hover:-translate-y-1 transition-transform duration-200">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-white">code</span>
+</div>
+<h3 class="font-label-md text-label-md text-white mb-xs">Python</h3>
+<p class="font-body-md text-code-sm text-white/80 line-clamp-2">Temellerden ileri seviyeye.</p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface-bright/10 backdrop-blur-md border border-white/20 rounded-lg p-md shadow-[0_4px_20px_rgba(15,23,42,0.05)] hover:-translate-y-1 transition-transform duration-200">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-white">terminal</span>
+</div>
+<h3 class="font-label-md text-label-md text-white mb-xs">DevOps</h3>
+<p class="font-body-md text-code-sm text-white/80 line-clamp-2">Süreçleri otomatikleştir.</p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface-bright/10 backdrop-blur-md border border-white/20 rounded-lg p-md shadow-[0_4px_20px_rgba(15,23,42,0.05)] hover:-translate-y-1 transition-transform duration-200">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-white">cloud</span>
+</div>
+<h3 class="font-label-md text-label-md text-white mb-xs">AWS</h3>
+<p class="font-body-md text-code-sm text-white/80 line-clamp-2">Bulut mimarisini öğren.</p>
+</div>
+</div>
+</div>
+<!-- Right Panel: Registration Form -->
+<div class="w-full lg:w-1/2 flex items-center justify-center p-xl sm:p-xxl bg-background">
+<div class="w-full max-w-md bg-surface-bright border border-surface-dim rounded-xl p-xl shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
+<div class="text-center mb-xl">
+<h1 class="font-display-lg text-headline-lg lg:text-display-lg text-on-background mb-sm">Maceraya Başla!</h1>
+<p class="font-body-md text-body-lg text-on-surface-variant">Yazılım dünyasına ilk adımını at</p>
+</div>
+<form class="space-y-lg">
+<!-- Full Name -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="fullName">Ad Soyad</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<input class="w-full pl-xl pr-md py-sm bg-surface-bright border border-surface-dim rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all shadow-sm" id="fullName" placeholder="John Doe" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="email">E-posta</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">mail</span>
+</div>
+<input class="w-full pl-xl pr-md py-sm bg-surface-bright border border-surface-dim rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all shadow-sm" id="email" placeholder="john@example.com" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="password">Şifre</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+<input class="w-full pl-xl pr-md py-sm bg-surface-bright border border-surface-dim rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all shadow-sm" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Confirm Password -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="confirmPassword">Şifre Tekrar</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">lock_reset</span>
+</div>
+<input class="w-full pl-xl pr-md py-sm bg-surface-bright border border-surface-dim rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all shadow-sm" id="confirmPassword" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-md px-lg bg-gradient-to-r from-primary to-primary-container text-white font-label-md text-label-md rounded-lg shadow-[0_4px_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_20px_rgba(88,101,242,0.4)] hover:scale-[1.02] active:scale-[0.98] active:translate-y-[2px] transition-all flex justify-center items-center gap-sm" type="submit">
+<span>Kayıt Ol</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<div class="mt-lg text-center">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">
+                    Zaten hesabın var mı? <span class="font-bold">Giriş yap</span>
+</a>
+</div>
+</div>
+</div>
+</body></html>

@@ -156,12 +156,23 @@ const config: Config = {
           '60%': { transform: 'scale(1.05)' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        'shake': {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '20%, 60%': { transform: 'translateX(-4px)' },
+          '40%, 80%': { transform: 'translateX(4px)' },
+        },
+        'shimmer': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
         'bounce-in': 'bounce-in 0.4s ease-out',
+        'shake': 'shake 0.4s ease-in-out',
+        'shimmer': 'shimmer 1.5s infinite',
       },
     },
   },

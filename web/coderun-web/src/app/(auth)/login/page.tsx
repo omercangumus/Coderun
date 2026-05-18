@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { LoginForm } from '@/components/auth/login-form';
 
@@ -18,6 +20,11 @@ export default function LoginPage() {
         <Link href="/register" className="text-primary hover:underline font-semibold">
           Ücretsiz kayıt ol
         </Link>
+      </p>
+
+      {/* Motivation text */}
+      <p className="mt-8 text-center text-xs text-outline font-mono">
+        &quot;Günlük serini kaybetme, kaldığın yerden devam et.&quot;
       </p>
     </div>
   );
