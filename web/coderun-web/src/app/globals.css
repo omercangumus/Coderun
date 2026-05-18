@@ -232,4 +232,46 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Auth brand panel — dot-grid pattern */
+  .auth-bg-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Auth glass panel */
+  .auth-glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Forgot-password glass card */
+  .auth-glass-card-light {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  /* Gradient hero text */
+  .auth-gradient-text {
+    background: linear-gradient(135deg, #bec2ff, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Auth shimmer progress bar */
+  .auth-shimmer-bar {
+    @apply w-full h-1 bg-primary-fixed rounded-full overflow-hidden relative;
+  }
+  .auth-shimmer-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    animation: shimmer 1.5s infinite;
+  }
 }
