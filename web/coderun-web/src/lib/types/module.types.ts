@@ -31,23 +31,28 @@ export interface ModuleProgressResponse {
   totalLessons: number;
 }
 
+export type QuestionType =
+  | 'multiple_choice'
+  | 'code_completion'
+  | 'code_editor'
+  | 'fill_in_blank'
+  | 'reorder'
+  | 'true_false_reason'
+  | 'spot_the_bug'
+  | 'multi_select';
+
 export interface QuestionResponse {
   id: string;
   lessonId: string;
-  questionType:
-    | 'multiple_choice'
-    | 'code_completion'
-    | 'code_editor'
-    | 'fill_in_blank'
-    | 'reorder'
-    | 'true_false_reason'
-    | 'spot_the_bug'
-    | 'multi_select';
+  questionType: QuestionType;
   questionText: string;
   options: Record<string, unknown> | null;
   hint: string | null;
+  explanation: string | null;
   codeBlock: string | null;
   wordBank: { words: string[] } | null;
+  correctLineIndex: number | null;
+  isReinforcement: boolean;
   order: number;
   reinforcementQuestion: QuestionResponse | null;
 }

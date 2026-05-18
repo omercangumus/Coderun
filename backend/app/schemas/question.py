@@ -16,9 +16,11 @@ class QuestionResponse(BaseModel):
         question_text: Sorunun metni.
         options: Seçenekler (JSON); geçerli olmayan türler için None.
         hint: İpucu metni (opsiyonel).
+        explanation: Yanlış cevap sonrası açıklama (opsiyonel).
         code_block: Kod snippet'i (opsiyonel).
         word_bank: Kelime bankası (opsiyonel).
         correct_line_index: Hatalı satır indeksi — sadece spot_the_bug (opsiyonel).
+        is_reinforcement: Bu sorunun pekiştirme sorusu olup olmadığı.
         order: Ders içindeki sıralama indeksi.
         reinforcement_question: Pekiştirme sorusu (opsiyonel, sadece cevap sonrası).
 
@@ -32,8 +34,11 @@ class QuestionResponse(BaseModel):
     question_text: str
     options: dict[str, object] | None = None
     hint: str | None = None
+    explanation: str | None = None
     code_block: str | None = None
     word_bank: dict[str, object] | None = None
+    correct_line_index: int | None = None
+    is_reinforcement: bool = False
     order: int
     reinforcement_question: Optional["QuestionResponse"] = None
 
@@ -76,6 +81,7 @@ class QuestionCreateSchema(BaseModel):
     code_block: str | None = None
     word_bank: dict[str, object] | None = None
     correct_line_index: int | None = None
+    is_reinforcement: bool = False
     order: int = 0
     reinforcement_question_id: uuid.UUID | None = None
 
@@ -92,5 +98,6 @@ class QuestionUpdateSchema(BaseModel):
     code_block: str | None = None
     word_bank: dict[str, object] | None = None
     correct_line_index: int | None = None
+    is_reinforcement: bool | None = None
     order: int | None = None
     reinforcement_question_id: uuid.UUID | None = None

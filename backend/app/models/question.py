@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import ForeignKey, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import JSON, UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -69,6 +69,11 @@ class Question(BaseModel):
         PgUUID(as_uuid=True),
         ForeignKey("questions.id"),
         nullable=True,
+    )
+    is_reinforcement: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
     )
 
     lesson: Mapped[Lesson] = relationship("Lesson", back_populates="questions")

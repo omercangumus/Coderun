@@ -150,8 +150,11 @@ function mapQuestion(raw: any): QuestionResponse {
     questionText: raw.question_text,
     options: raw.options ?? null,
     hint: raw.hint ?? null,
+    explanation: raw.explanation ?? null,
     codeBlock: raw.code_block ?? null,
     wordBank: raw.word_bank ?? null,
+    correctLineIndex: raw.correct_line_index ?? null,
+    isReinforcement: raw.is_reinforcement ?? false,
     order: raw.order,
     reinforcementQuestion: raw.reinforcement_question
       ? mapQuestion(raw.reinforcement_question)
