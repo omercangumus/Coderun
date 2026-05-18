@@ -63,3 +63,13 @@ class UserProgress(BaseModel):
         DateTime(timezone=True),
         nullable=True,
     )
+    reinforcement_triggered: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+    reinforcement_passed: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )

@@ -8,6 +8,7 @@ export interface UserResponse {
   lastActiveDate: string | null;
   isActive: boolean;
   isVerified: boolean;
+  isSuperuser: boolean;
   createdAt: string;
 }
 

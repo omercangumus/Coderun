@@ -90,6 +90,7 @@ function mapUserResponse(raw: Record<string, unknown>): UserResponse {
     lastActiveDate: (raw.last_active_date ?? null) as string | null,
     isActive: raw.is_active as boolean,
     isVerified: (raw.is_verified ?? false) as boolean,
+    isSuperuser: (raw.is_superuser ?? false) as boolean,
     createdAt: raw.created_at as string,
   };
 }

@@ -14,12 +14,15 @@ class QuestionModel {
   final String questionText;
   final Map<String, dynamic>? options;
   final String? hint;
+  final String? explanation;
   @JsonKey(name: 'code_block')
   final String? codeBlock;
   @JsonKey(name: 'word_bank')
   final Map<String, dynamic>? wordBank;
   @JsonKey(name: 'correct_line_index')
   final int? correctLineIndex;
+  @JsonKey(name: 'is_reinforcement', defaultValue: false)
+  final bool isReinforcement;
   final int order;
   @JsonKey(name: 'reinforcement_question')
   final QuestionModel? reinforcementQuestion;
@@ -31,9 +34,11 @@ class QuestionModel {
     required this.questionText,
     this.options,
     this.hint,
+    this.explanation,
     this.codeBlock,
     this.wordBank,
     this.correctLineIndex,
+    this.isReinforcement = false,
     required this.order,
     this.reinforcementQuestion,
   });

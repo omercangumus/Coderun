@@ -3,6 +3,7 @@ import '../core/network/api_exception.dart';
 import '../data/models/answer_model.dart';
 import '../data/models/lesson_detail_model.dart';
 import '../data/models/lesson_result_model.dart';
+import '../data/models/question_model.dart';
 import '../data/repositories/module_repository.dart';
 import 'providers.dart';
 
@@ -26,6 +27,8 @@ class LessonState {
   final bool isSubmitting;
   final LessonResultModel? result;
   final String? errorMessage;
+  final QuestionModel? reinforcementQuestion;
+  final bool reinforcementDone;
 
   const LessonState({
     this.currentQuestionIndex = 0,
@@ -33,6 +36,8 @@ class LessonState {
     this.isSubmitting = false,
     this.result,
     this.errorMessage,
+    this.reinforcementQuestion,
+    this.reinforcementDone = false,
   });
 
   LessonState copyWith({
@@ -43,6 +48,9 @@ class LessonState {
     String? errorMessage,
     bool clearResult = false,
     bool clearError = false,
+    QuestionModel? reinforcementQuestion,
+    bool clearReinforcement = false,
+    bool? reinforcementDone,
   }) {
     return LessonState(
       currentQuestionIndex:
@@ -52,6 +60,10 @@ class LessonState {
       result: clearResult ? null : (result ?? this.result),
       errorMessage:
           clearError ? null : (errorMessage ?? this.errorMessage),
+      reinforcementQuestion: clearReinforcement
+          ? null
+          : (reinforcementQuestion ?? this.reinforcementQuestion),
+      reinforcementDone: reinforcementDone ?? this.reinforcementDone,
     );
   }
 }
@@ -85,6 +97,13 @@ class LessonNotifier extends StateNotifier<LessonState> {
     }
   }
 
+  void dismissReinforcement() {
+    state = state.copyWith(
+      clearReinforcement: true,
+      reinforcementDone: true,
+    );
+  }
+
   Future<void> submitLesson() async {
     state = state.copyWith(isSubmitting: true, clearError: true);
 
@@ -96,7 +115,15 @@ class LessonNotifier extends StateNotifier<LessonState> {
 
     response.when(
       success: (result) {
-        state = state.copyWith(isSubmitting: false, result: result);
+        // Pekiştirme sorusu varsa state'e ekle
+        if (result.reinforcementQuestion != null && !state.reinforcementDone) {
+          state = state.copyWith(
+            isSubmitting: false,
+            reinforcementQuestion: result.reinforcementQuestion,
+          );
+        } else {
+          state = state.copyWith(isSubmitting: false, result: result);
+        }
       },
       error: (message, _) {
         state = state.copyWith(

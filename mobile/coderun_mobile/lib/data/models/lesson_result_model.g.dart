@@ -22,6 +22,10 @@ LessonResultModel _$LessonResultModelFromJson(Map<String, dynamic> json) =>
               ?.map((e) => BadgeModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      reinforcementQuestion: json['reinforcement_question'] == null
+          ? null
+          : QuestionModel.fromJson(
+              json['reinforcement_question'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$LessonResultModelToJson(LessonResultModel instance) =>
@@ -37,4 +41,5 @@ Map<String, dynamic> _$LessonResultModelToJson(LessonResultModel instance) =>
       'new_level': instance.newLevel,
       'new_streak': instance.newStreak,
       'badges_earned': instance.badgesEarned,
+      'reinforcement_question': instance.reinforcementQuestion,
     };

@@ -599,6 +599,17 @@ INTERACTIVE_LESSON_SEED: dict[str, object] = {
             "hint": "for döngüsünde iterasyon değişkeni ve kaç kez döneceğini belirleyin.",
             "explanation": "for i in range(5) ifadesi 0'dan 4'e kadar döner.",
             "order": 1,
+            "has_reinforcement": True,  # Bu sorunun pekiştirme sorusu var
+        },
+        {
+            "question_text": "range(5) hangi sayıları üretir?",
+            "question_type": "multiple_choice",
+            "options": {"choices": ["0,1,2,3,4", "1,2,3,4,5", "0,1,2,3,4,5", "1,2,3,4"]},
+            "correct_answer": "0,1,2,3,4",
+            "hint": "Python'da range() 0'dan başlar ve son sayıyı içermez.",
+            "explanation": "range(5) ifadesi 0'dan başlar ve 5'e kadar (5 dahil değil) sayılar üretir: 0,1,2,3,4",
+            "order": 1,
+            "is_reinforcement": True,  # Bu bir pekiştirme sorusu
         },
         {
             "question_text": "Aşağıdaki adımları doğru sıraya koyun: Python'da dosya okuma",
@@ -723,9 +734,14 @@ async def seed_database(db: AsyncSession) -> None:
                 db.add(lesson)
                 await db.flush()
 
+                # İki geçişli ekleme: önce tüm soruları ekle, sonra reinforcement bağlantılarını kur
+                question_map = {}  # order -> question_id mapping
+                
+                # İlk geçiş: Tüm soruları oluştur
                 for question_data in questions_data:
+                    question_id = uuid4()
                     question = Question(
-                        id=uuid4(),
+                        id=question_id,
                         lesson_id=lesson_id,
                         question_type=question_data["question_type"],
                         question_text=question_data["question_text"],
@@ -736,9 +752,29 @@ async def seed_database(db: AsyncSession) -> None:
                         code_block=question_data.get("code_block"),
                         word_bank=question_data.get("word_bank"),
                         correct_line_index=question_data.get("correct_line_index"),
+                        is_reinforcement=question_data.get("is_reinforcement", False),
                         order=question_data["order"],
                     )
                     db.add(question)
+                    question_map[question_data["order"]] = (question_id, question_data.get("has_reinforcement", False))
+                
+                await db.flush()
+                
+                # İkinci geçiş: Reinforcement bağlantılarını kur
+                for order, (q_id, has_reinforcement) in question_map.items():
+                    if has_reinforcement:
+                        # Bir sonraki soru reinforcement sorusu olmalı
+                        next_order = order + 1
+                        if next_order in question_map:
+                            reinforcement_id, _ = question_map[next_order]
+                            # Ana soruyu güncelle
+                            result = await db.execute(
+                                select(Question).where(Question.id == q_id)
+                            )
+                            main_question = result.scalar_one()
+                            main_question.reinforcement_question_id = reinforcement_id
+                
+                await db.flush()
 
         await db.commit()
         logger.info("Seed verisi başarıyla eklendi.")

@@ -9,6 +9,7 @@ import {
   User,
   LogOut,
   Medal,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Avatar } from '@/components/ui/avatar';
@@ -56,6 +57,20 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Admin linki — sadece superuser için */}
+        {user?.isSuperuser && (
+          <Link
+            href="/admin"
+            className={cn(
+              'cr-sidebar-item mt-2 border-t border-outline-variant pt-2',
+              pathname.startsWith('/admin') && 'cr-sidebar-item-active'
+            )}
+          >
+            <ShieldCheck className="h-4 w-4 flex-shrink-0 text-primary" />
+            <span className="text-primary font-semibold">Admin Panel</span>
+          </Link>
+        )}
       </nav>
 
       {/* Ghostie AI shortcut */}

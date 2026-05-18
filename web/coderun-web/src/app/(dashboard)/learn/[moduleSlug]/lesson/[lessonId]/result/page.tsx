@@ -49,7 +49,7 @@ export default function ResultPage({
       {/* Ghostie Reaksiyonu */}
       <div className="animate-bounce-once">
         <GhostieReaction 
-          state={success ? 'success' : 'sad_wrong'} 
+          state={success ? 'success' : 'wrong'} 
           size={180} 
         />
       </div>

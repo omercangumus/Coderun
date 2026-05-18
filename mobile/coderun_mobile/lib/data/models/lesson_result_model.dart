@@ -1,6 +1,7 @@
 // Ders sonuç modeli — XP, rozet, seviye bilgisi.
 import 'package:json_annotation/json_annotation.dart';
 import 'badge_model.dart';
+import 'question_model.dart';
 
 part 'lesson_result_model.g.dart';
 
@@ -26,6 +27,8 @@ class LessonResultModel {
   final int newStreak;
   @JsonKey(name: 'badges_earned', defaultValue: [])
   final List<BadgeModel> badgesEarned;
+  @JsonKey(name: 'reinforcement_question')
+  final QuestionModel? reinforcementQuestion;
 
   const LessonResultModel({
     required this.lessonId,
@@ -39,6 +42,7 @@ class LessonResultModel {
     this.newLevel = 1,
     this.newStreak = 0,
     this.badgesEarned = const [],
+    this.reinforcementQuestion,
   });
 
   factory LessonResultModel.fromJson(Map<String, dynamic> json) =>
