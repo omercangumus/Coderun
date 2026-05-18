@@ -608,7 +608,7 @@ INTERACTIVE_LESSON_SEED: dict[str, object] = {
             "correct_answer": "0,1,2,3,4",
             "hint": "Python'da range() 0'dan başlar ve son sayıyı içermez.",
             "explanation": "range(5) ifadesi 0'dan başlar ve 5'e kadar (5 dahil değil) sayılar üretir: 0,1,2,3,4",
-            "order": 1,
+            "order": 0,  # Pekiştirme sorusu — normal ders akışında görünmez (order=0)
             "is_reinforcement": True,  # Bu bir pekiştirme sorusu
         },
         {
@@ -735,10 +735,13 @@ async def seed_database(db: AsyncSession) -> None:
                 await db.flush()
 
                 # İki geçişli ekleme: önce tüm soruları ekle, sonra reinforcement bağlantılarını kur
-                question_map = {}  # order -> question_id mapping
-                
+                # NOT: question_map key olarak sequential index kullanır (order değil!).
+                # Hem fill_in_blank hem reinforcement sorusu order=1 olabilir;
+                # order key'i kullanmak overwrite'a yol açar.
+                question_map: dict[int, tuple] = {}  # sequential_index -> (question_id, has_reinforcement)
+
                 # İlk geçiş: Tüm soruları oluştur
-                for question_data in questions_data:
+                for seq_idx, question_data in enumerate(questions_data):
                     question_id = uuid4()
                     question = Question(
                         id=question_id,
@@ -756,24 +759,25 @@ async def seed_database(db: AsyncSession) -> None:
                         order=question_data["order"],
                     )
                     db.add(question)
-                    question_map[question_data["order"]] = (question_id, question_data.get("has_reinforcement", False))
-                
+                    question_map[seq_idx] = (question_id, question_data.get("has_reinforcement", False))
+
                 await db.flush()
-                
+
                 # İkinci geçiş: Reinforcement bağlantılarını kur
-                for order, (q_id, has_reinforcement) in question_map.items():
+                # has_reinforcement=True olan sorunun bir sonraki (seq_idx+1) sorusu
+                # reinforcement sorusu olarak bağlanır.
+                for seq_idx, (q_id, has_reinforcement) in question_map.items():
                     if has_reinforcement:
-                        # Bir sonraki soru reinforcement sorusu olmalı
-                        next_order = order + 1
-                        if next_order in question_map:
-                            reinforcement_id, _ = question_map[next_order]
-                            # Ana soruyu güncelle
+                        next_idx = seq_idx + 1
+                        if next_idx in question_map:
+                            reinforcement_id, _ = question_map[next_idx]
+                            # Ana soruyu güncelle — reinforcement_question_id set et
                             result = await db.execute(
                                 select(Question).where(Question.id == q_id)
                             )
                             main_question = result.scalar_one()
                             main_question.reinforcement_question_id = reinforcement_id
-                
+
                 await db.flush()
 
         await db.commit()

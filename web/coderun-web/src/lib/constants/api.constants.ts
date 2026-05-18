@@ -1,5 +1,15 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Production'da NEXT_PUBLIC_API_URL zorunludur.
+// Development'ta localhost fallback kullanılır.
+const _configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (process.env.NODE_ENV === 'production' && !_configuredApiUrl) {
+  throw new Error(
+    '[Coderun] NEXT_PUBLIC_API_URL is required in production. ' +
+    'Set it in your deployment environment variables.'
+  );
+}
+
+export const API_BASE_URL = _configuredApiUrl || 'http://localhost:8000/api/v1';
 
 export const AUTH_ENDPOINTS = {
   register: '/auth/register',

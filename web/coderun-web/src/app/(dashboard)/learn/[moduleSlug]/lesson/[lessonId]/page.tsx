@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ArrowLeft, ArrowRight, X, Lightbulb, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,8 @@ export default function LessonPage({
   const [reinforcementQuestion, setReinforcementQuestion] = useState<QuestionResponse | null>(null);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
   const [reinforcementDone, setReinforcementDone] = useState(false);
+  // Ref to avoid React state batching race condition on reinforcement completion
+  const reinforcementDoneRef = useRef(false);
 
   const {
     currentQuestionIndex,
@@ -67,12 +69,12 @@ export default function LessonPage({
       : 'Soruyu dikkatlice oku ve en iyi cevabı seç!';
   })();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (skipReinforcement = false) => {
     if (!lesson) return;
     const result = await submitLesson(lesson.questions);
     if (result) {
-      // Check for reinforcement
-      if (result.reinforcementQuestion && !reinforcementDone) {
+      // Check for reinforcement — use skipReinforcement flag to avoid race condition
+      if (result.reinforcementQuestion && !skipReinforcement && !reinforcementDoneRef.current) {
         setReinforcementQuestion(result.reinforcementQuestion);
         setLastAnswerCorrect(false);
         setPhase('reinforcement');
@@ -84,13 +86,15 @@ export default function LessonPage({
     }
   };
 
-  const handleReinforcementAnswer = (answer: string) => {
+  const handleReinforcementAnswer = (_answer: string) => {
+    // Mark reinforcement as done via ref immediately (avoids React batching race)
+    reinforcementDoneRef.current = true;
     setReinforcementDone(true);
     setReinforcementQuestion(null);
     setPhase('answering');
-    // Continue to next question or submit
+    // Continue to next question or submit — pass skipReinforcement=true to avoid re-triggering
     if (isLastQuestion) {
-      handleSubmit();
+      handleSubmit(true);
     } else {
       nextQuestion(total);
     }
@@ -197,13 +201,8 @@ export default function LessonPage({
           <Card className="flex-1 p-6">
             {phase === 'reinforcement' && reinforcementQuestion ? (
               <ReinforcementQuestion
-                questionText={reinforcementQuestion.questionText}
-                questionType={reinforcementQuestion.questionType}
-                options={reinforcementQuestion.options}
-                codeBlock={reinforcementQuestion.codeBlock}
-                wordBank={reinforcementQuestion.wordBank}
+                question={reinforcementQuestion}
                 onAnswer={handleReinforcementAnswer}
-                hint={reinforcementQuestion.hint ?? undefined}
               />
             ) : (
               <QuestionRouter
@@ -227,7 +226,7 @@ export default function LessonPage({
               <div className="flex-1" />
               {isLastQuestion ? (
                 <Button
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit()}
                   isLoading={isSubmitting}
                   disabled={!currentAnswer}
                   size="lg"
