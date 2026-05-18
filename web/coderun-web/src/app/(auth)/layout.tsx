@@ -33,7 +33,6 @@ export default function AuthLayout({
                 alt="Ghostie"
                 fill
                 className="object-contain drop-shadow-2xl"
-                onError={() => {}}
               />
             </div>
           </div>
