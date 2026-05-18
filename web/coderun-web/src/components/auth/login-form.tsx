@@ -16,7 +16,6 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [hasShake, setHasShake] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   // React to auth error changes
   useEffect(() => {
@@ -129,7 +128,7 @@ export function LoginForm() {
               autoComplete="current-password"
               className="pl-10 pr-12"
             />
-            <Lock className="absolute left-3 top-[12px] w-4 h-4 text-outline pointer-events-none" />
+            <Lock className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
