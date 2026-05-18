@@ -4,18 +4,19 @@ import { LoginForm } from '@/components/auth/login-form';
 export default function LoginPage() {
   return (
     <div>
-      <div className="mb-8 text-center">
-        <div className="text-4xl mb-3 lg:hidden">🚀</div>
-        <h1 className="text-2xl font-bold text-white">Tekrar hoş geldin!</h1>
-        <p className="text-slate-400 mt-1">Hesabına giriş yap</p>
+      <div className="mb-8">
+        <h1 className="text-h3 font-heading font-bold text-on-surface">Tekrar hoş geldin!</h1>
+        <p className="text-body-sm text-on-surface-variant mt-1">
+          Hesabına giriş yap ve öğrenmeye devam et
+        </p>
       </div>
 
       <LoginForm />
 
-      <p className="mt-6 text-center text-sm text-slate-400">
+      <p className="mt-6 text-center text-body-sm text-on-surface-variant">
         Hesabın yok mu?{' '}
-        <Link href="/register" className="text-accent hover:underline font-medium">
-          Kayıt ol
+        <Link href="/register" className="text-primary hover:underline font-semibold">
+          Ücretsiz kayıt ol
         </Link>
       </p>
     </div>

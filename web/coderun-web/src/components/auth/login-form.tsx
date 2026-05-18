@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -9,6 +10,7 @@ export function LoginForm() {
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,19 +48,33 @@ export function LoginForm() {
         error={errors.email}
         autoComplete="email"
       />
-      <Input
-        id="password"
-        type="password"
-        label="Şifre"
-        placeholder="••••••••"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
-        }}
-        error={errors.password}
-        autoComplete="current-password"
-      />
+
+      <div className="relative">
+        <Input
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          label="Şifre"
+          placeholder="••••••••"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+          }}
+          error={errors.password}
+          autoComplete="current-password"
+          className="pr-12"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword((v) => !v)}
+          className="absolute right-3 top-[38px] text-outline hover:text-on-surface transition-colors"
+          tabIndex={-1}
+          aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+        >
+          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+        </button>
+      </div>
+
       <Button type="submit" size="lg" isLoading={isLoading} className="w-full mt-2">
         Giriş Yap
       </Button>

@@ -10,23 +10,29 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-slate-300">
+        <label htmlFor={id} className="text-body-sm font-semibold text-on-surface">
           {label}
         </label>
       )}
       <input
         id={id}
         className={cn(
-          'w-full rounded-lg border bg-slate-800/50 px-3 py-2.5 text-sm text-slate-200',
-          'placeholder:text-slate-500',
-          'focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent',
-          'transition-colors',
-          error ? 'border-red-500' : 'border-slate-600',
+          'w-full rounded-xl border bg-surface-container-lowest px-4 py-3 text-body-sm text-on-surface',
+          'placeholder:text-outline',
+          'focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
+          'transition-all duration-150',
+          error
+            ? 'border-error ring-1 ring-error'
+            : 'border-outline-variant hover:border-outline',
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && (
+        <p className="text-label-sm text-error flex items-center gap-1">
+          <span>⚠</span> {error}
+        </p>
+      )}
     </div>
   );
 }

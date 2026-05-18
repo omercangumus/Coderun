@@ -43,8 +43,6 @@ export function useAuth() {
       setLoading(true);
       try {
         await authApi.register(data);
-        // Otomatik login — login kendi loading/error state'ini yönetir
-        await login({ email: data.email, password: data.password });
       } catch (err: unknown) {
         const errData = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
         const message = Array.isArray(errData)
@@ -53,7 +51,10 @@ export function useAuth() {
         setError(message);
         toast.error(message);
         setLoading(false);
+        return;
       }
+      // Kayıt başarılı — otomatik login
+      await login({ email: data.email, password: data.password });
     },
     [login, setError, setLoading]
   );
