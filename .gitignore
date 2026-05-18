@@ -149,3 +149,11 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# ========================
+# Leftover dev/build artifacts
+# ========================
+*.apk
+reset.py
+backend/reset.py
+backend/reset2.py

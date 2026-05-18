@@ -5,6 +5,15 @@ import { useRouter } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { useAuth } from '@/lib/hooks/use-auth';
 
+/**
+ * Admin Layout — three-layer security:
+ * 1. middleware.ts: blocks unauthenticated users (no token → /login)
+ * 2. This layout: blocks non-superusers (token exists but isSuperuser=false → /login)
+ * 3. Backend: all /admin/* API endpoints enforce get_current_superuser (HTTP 403)
+ *
+ * No admin content renders until isSuperuser is confirmed.
+ * The spinner prevents any flash of admin UI for non-superusers.
+ */
 export default function AdminLayout({
   children,
 }: {
@@ -14,17 +23,21 @@ export default function AdminLayout({
   const router = useRouter();
 
   useEffect(() => {
-    // Kullanıcı yüklendi ama superuser değil → login'e yönlendir
-    if (!isLoading && user && !user.isSuperuser) {
-      router.replace('/login?reason=admin_required');
-    }
-    // Kullanıcı yok → login'e yönlendir
-    if (!isLoading && !user) {
+    if (isLoading) return; // Wait for auth store to hydrate
+
+    if (!user) {
+      // No user — redirect to login
       router.replace('/login?from=/admin');
+      return;
+    }
+
+    if (!user.isSuperuser) {
+      // Authenticated but not superuser — redirect with reason
+      router.replace('/login?reason=admin_required');
     }
   }, [user, isLoading, router]);
 
-  // Yükleniyor veya yetkisiz → boş göster
+  // Block rendering until auth is confirmed — prevents any flash of admin content
   if (isLoading || !user || !user.isSuperuser) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">

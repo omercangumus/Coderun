@@ -24,8 +24,17 @@ const PREFIX = '/admin';
 // ---------------------------------------------------------------------------
 
 export async function getAdminStats(): Promise<AdminStats> {
-  const { data } = await axiosClient.get<AdminStats>(`${PREFIX}/stats`);
-  return data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await axiosClient.get<any>(`${PREFIX}/stats`);
+  // Backend returns snake_case — map to camelCase for frontend
+  return {
+    totalUsers: data.total_users ?? 0,
+    activeToday: data.active_today ?? 0,
+    lessonsCompletedToday: data.lessons_completed_today ?? 0,
+    mostFailedQuestion: data.most_failed_question ?? null,
+    mostSkippedLesson: data.most_skipped_lesson ?? null,
+    growthData: data.growth_data ?? [],
+  };
 }
 
 // ---------------------------------------------------------------------------

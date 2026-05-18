@@ -377,9 +377,14 @@ async def submit_lesson_answer(
             question_text=reinforcement_q.question_text,
             options=reinforcement_q.options,
             hint=reinforcement_q.hint,
+            explanation=reinforcement_q.explanation,
             code_block=reinforcement_q.code_block,
             word_bank=reinforcement_q.word_bank,
+            correct_line_index=reinforcement_q.correct_line_index,
+            is_reinforcement=reinforcement_q.is_reinforcement,
             order=reinforcement_q.order,
+            # correct_answer intentionally excluded — never sent to client
+            # reinforcement_question intentionally None — no nested reinforcement (loop prevention)
         )
 
     return LessonResultResponse(
