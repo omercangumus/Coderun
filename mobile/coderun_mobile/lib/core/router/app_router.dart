@@ -11,6 +11,7 @@ import '../../presentation/screens/onboarding/welcome_screen.dart';
 import '../../presentation/screens/onboarding/choose_path_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
+import '../../presentation/screens/auth/forgot_password_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/learn/learning_path_screen.dart';
 import '../../presentation/screens/lesson/lesson_screen.dart';
@@ -42,7 +43,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authState = notifier.authState;
       final loc = state.matchedLocation;
       final isOnSplash = loc == '/';
-      final isOnAuth = loc == '/login' || loc == '/register';
+      final isOnAuth = loc == '/login' || loc == '/register' || loc == '/forgot-password';
       final isOnOnboarding = loc == '/welcome' || loc == '/choose-path';
 
       return authState.when(
@@ -75,6 +76,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (_, __) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (_, __) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: '/mentor',
