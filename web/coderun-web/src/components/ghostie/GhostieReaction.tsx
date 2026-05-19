@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { GhostieState, ghostieAnimationByState, ghostieImageByState } from '@/lib/ghostie-assets';
 import { cn } from '@/lib/utils/cn';
@@ -21,17 +21,25 @@ export function GhostieReaction({
   className,
 }: GhostieReactionProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
   
   const animationSrc = ghostieAnimationByState[state];
   const imageSrc = ghostieImageByState[state];
 
+  // Reset videoFailed when state changes so we try loading the new state's video
   useEffect(() => {
-    if (videoRef.current && preferAnimation) {
+    setVideoFailed(false);
+  }, [state]);
+
+  useEffect(() => {
+    if (videoRef.current && preferAnimation && !videoFailed) {
       videoRef.current.play().catch(e => {
         console.warn("Auto-play prevented for Ghostie animation", e);
       });
     }
-  }, [state, preferAnimation]);
+  }, [state, preferAnimation, videoFailed]);
+
+  const showVideo = preferAnimation && !videoFailed;
 
   const Visual = () => (
     <div
@@ -39,7 +47,7 @@ export function GhostieReaction({
       style={{ width: size, height: size }}
     >
       <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl" />
-      {preferAnimation ? (
+      {showVideo ? (
         <video
           ref={videoRef}
           src={animationSrc}
@@ -48,24 +56,20 @@ export function GhostieReaction({
           loop
           muted
           playsInline
-          onError={(e) => {
-            // Fallback strategy if video fails to load
-            e.currentTarget.style.display = 'none';
-            if (e.currentTarget.nextElementSibling) {
-              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
-            }
+          onError={() => {
+            console.warn(`Ghostie video failed to load for state: ${state}. Falling back to PNG.`);
+            setVideoFailed(true);
           }}
         />
-      ) : null}
-      
-      {/* Fallback image (or primary image if preferAnimation is false) */}
-      <Image
-        src={imageSrc}
-        alt={`Ghostie ${state}`}
-        width={size}
-        height={size}
-        className={cn("relative z-10 w-full h-full object-contain", preferAnimation && "hidden")}
-      />
+      ) : (
+        <Image
+          src={imageSrc}
+          alt={`Ghostie ${state}`}
+          width={size}
+          height={size}
+          className="relative z-10 w-full h-full object-contain"
+        />
+      )}
     </div>
   );
 
