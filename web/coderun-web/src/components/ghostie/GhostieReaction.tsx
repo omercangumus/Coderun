@@ -35,7 +35,7 @@ export function GhostieReaction({
 
   const Visual = () => (
     <div
-      className="relative rounded-full"
+      className="relative rounded-full overflow-hidden"
       style={{ width: size, height: size }}
     >
       <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl" />
