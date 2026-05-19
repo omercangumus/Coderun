@@ -19,8 +19,8 @@ function AuthLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">
-            🚀
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <GhostieReaction state="idle" size={24} preferAnimation={false} />
           </div>
           <span className="text-2xl font-heading font-bold text-white tracking-tight">
             Coderun
@@ -79,7 +79,9 @@ function AuthLayoutInner({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col items-center gap-4 mb-6 lg:hidden">
             {/* Mobile logo */}
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🚀</span>
+              <div className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center">
+                <GhostieReaction state="idle" size={20} preferAnimation={false} />
+              </div>
               <span className="text-2xl font-heading font-bold text-on-surface">Coderun</span>
             </div>
             {/* Mobile Ghostie — compact */}
