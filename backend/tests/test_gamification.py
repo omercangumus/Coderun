@@ -319,7 +319,7 @@ class TestLeaderboard:
         mock_redis.zincrby = AsyncMock()
         mock_redis.expire = AsyncMock()
         mock_redis.hset = AsyncMock()
-        mock_redis.zrevrange = AsyncMock(return_value=[(str(uuid.uuid4()), 50.0)])
+        mock_redis.zrange = AsyncMock(return_value=[(str(uuid.uuid4()), 50.0)])
         mock_redis.zcard = AsyncMock(return_value=1)
         mock_redis.hgetall = AsyncMock(return_value={"username": "testuser", "level": "1", "streak": "3"})
         mock_redis.zrevrank = AsyncMock(return_value=0)
@@ -336,7 +336,7 @@ class TestLeaderboard:
 
         uid1, uid2 = str(uuid.uuid4()), str(uuid.uuid4())
         mock_redis = AsyncMock()
-        mock_redis.zrevrange = AsyncMock(return_value=[
+        mock_redis.zrange = AsyncMock(return_value=[
             (uid1, 100.0),
             (uid2, 50.0),
         ])

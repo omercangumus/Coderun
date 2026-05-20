@@ -64,8 +64,8 @@ class TestGetWeeklyLeaderboard:
         user_id = uuid4()
         user_id_str = str(user_id)
 
-        # Mock zrevrange response: [(member, score), ...]
-        mock_redis.zrevrange = AsyncMock(return_value=[
+        # Mock zrange response: [(member, score), ...]
+        mock_redis.zrange = AsyncMock(return_value=[
             (user_id_str, 100.0),
         ])
         mock_redis.zcard = AsyncMock(return_value=1)
@@ -95,7 +95,7 @@ class TestGetWeeklyLeaderboard:
     async def test_get_leaderboard_empty_list(self) -> None:
         """Redis'te veri yoksa boş liste döndürmeli."""
         mock_redis = AsyncMock()
-        mock_redis.zrevrange = AsyncMock(return_value=[])
+        mock_redis.zrange = AsyncMock(return_value=[])
         mock_redis.zcard = AsyncMock(return_value=0)
 
         result = await get_weekly_leaderboard(mock_redis, user_id=None, limit=10)
@@ -106,7 +106,7 @@ class TestGetWeeklyLeaderboard:
     async def test_get_leaderboard_redis_error_handling(self) -> None:
         """Redis hatası durumunda boş yanıt döndürmeli."""
         mock_redis = AsyncMock()
-        mock_redis.zrevrange = AsyncMock(side_effect=Exception("Redis error"))
+        mock_redis.zrange = AsyncMock(side_effect=Exception("Redis error"))
 
         result = await get_weekly_leaderboard(mock_redis, user_id=None, limit=10)
 
@@ -118,7 +118,7 @@ class TestGetWeeklyLeaderboard:
         mock_redis = AsyncMock()
         user_id = uuid4()
 
-        mock_redis.zrevrange = AsyncMock(return_value=[])
+        mock_redis.zrange = AsyncMock(return_value=[])
         mock_redis.zcard = AsyncMock(return_value=0)
         mock_redis.zrevrank = AsyncMock(return_value=None)
 

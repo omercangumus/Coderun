@@ -2,14 +2,45 @@
 
 from __future__ import annotations
 
-# CRITICAL: sys.path'i import'lardan ÖNCE düzelt
+# CRITICAL: sys.path ve import yönlendirmelerini import'lardan ÖNCE düzelt
 import sys
 import os
+import importlib.abc
+import importlib.util
+
+# backend/ klasörünü sys.path'e ekle
+backend_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
 
 # /app'i sys.path'in en başına ekle
 _app_path = "/app"
 if _app_path not in sys.path:
     sys.path.insert(0, _app_path)
+
+
+class AliasLoader:
+    def __init__(self, real_module):
+        self.real_module = real_module
+
+    def create_module(self, spec):
+        return self.real_module
+
+    def exec_module(self, module):
+        pass
+
+
+class AliasFinder(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path, target=None):
+        if fullname.startswith("backend.app"):
+            real_name = fullname[8:]  # 'backend.' kısmını kırp -> 'app...'
+            real_module = importlib.import_module(real_name)
+            return importlib.util.spec_from_loader(fullname, AliasLoader(real_module))
+        return None
+
+
+# Finder'ı meta_path'e ekle
+sys.meta_path.insert(0, AliasFinder())
 
 from collections.abc import AsyncGenerator
 from pathlib import Path

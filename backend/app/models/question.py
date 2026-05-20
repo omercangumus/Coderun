@@ -82,4 +82,5 @@ class Question(BaseModel):
         remote_side="Question.id",
         foreign_keys=[reinforcement_question_id],
         lazy="joined",
+        join_depth=1,
     )

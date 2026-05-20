@@ -67,15 +67,21 @@ async def test_seed_database_rollback_on_error(db_session: AsyncSession) -> None
     await db_session.execute(select(Module).limit(1))
     
     # Mock to cause an error during seed
-    with patch("backend.app.core.seed.Module") as mock_module:
+    with patch("app.core.seed.Module") as mock_module:
         mock_module.side_effect = Exception("Test error")
         
         with pytest.raises(Exception):
-            # Create a new session for this test
-            from app.core.database import AsyncSessionLocal
-            async with AsyncSessionLocal() as new_session:
-                # Delete all modules to trigger seed
-                await new_session.execute(select(Module).limit(0))
+            # Create a new session for this test using the test database
+            from tests.conftest import TestingSessionLocal
+            async with TestingSessionLocal() as new_session:
+                # Delete all existing data to trigger seed
+                from sqlalchemy import delete, text
+                from app.models.question import Question
+                from app.models.lesson import Lesson
+                await new_session.execute(text("UPDATE questions SET reinforcement_question_id = NULL"))
+                await new_session.execute(delete(Question))
+                await new_session.execute(delete(Lesson))
+                await new_session.execute(delete(Module))
                 await new_session.commit()
                 
                 await seed_database(new_session)
