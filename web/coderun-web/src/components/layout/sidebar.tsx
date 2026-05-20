@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils/cn';
 import { Avatar } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { GhostieAvatar } from '../ghostie/GhostieAvatar';
+import { useMentorStore } from '@/store/mentor-store';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Dashboard' },
@@ -27,6 +28,8 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+
+  const { toggleMentor } = useMentorStore();
 
   return (
     <aside className="hidden lg:flex flex-col w-sidebar min-h-screen bg-white border-r border-outline-variant">
@@ -75,10 +78,10 @@ export function Sidebar() {
 
       {/* Ghostie AI shortcut */}
       <div className="px-3 pb-3">
-        <Link
-          href="/learn"
+        <button
+          onClick={toggleMentor}
           className={cn(
-            'flex items-center gap-3 px-4 py-3 rounded-xl',
+            'flex items-center gap-3 px-4 py-3 rounded-xl w-full text-left',
             'bg-gradient-to-r from-primary-fixed to-white',
             'border border-primary/20',
             'transition-all duration-150 hover:shadow-primary cursor-pointer'
@@ -91,7 +94,7 @@ export function Sidebar() {
               AI Mentor
             </p>
           </div>
-        </Link>
+        </button>
       </div>
 
       {/* User */}
