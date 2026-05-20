@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 
 interface TrueFalseReasonQuestionProps {
   questionText: string;
@@ -19,13 +20,16 @@ export function TrueFalseReasonQuestion({
   const [tfAnswer, setTfAnswer] = useState<'true' | 'false' | null>(null);
   const [selectedReason, setSelectedReason] = useState<number | null>(null);
   const [showHint, setShowHint] = useState(false);
+  const { vibrateTap } = useHaptics();
 
   const handleTfSelect = (answer: 'true' | 'false') => {
+    vibrateTap();
     setTfAnswer(answer);
     setStep('reason');
   };
 
   const handleReasonSelect = (index: number) => {
+    vibrateTap();
     setSelectedReason(index);
     if (tfAnswer) {
       onAnswer(`${tfAnswer}|${index}`);

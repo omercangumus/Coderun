@@ -1,8 +1,9 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
+import { LogOut, Smartphone, Bell } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useUserStats, useBadges } from '@/lib/hooks/use-gamification';
+import { useSettingsStore } from '@/store/settings-store';
 import { Avatar } from '@/components/ui/avatar';
 import { BadgeChip } from '@/components/dashboard/badge-chip';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,6 +25,7 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const { data: stats, isLoading } = useUserStats();
   const { data: earnedBadges } = useBadges();
+  const { hapticsEnabled, toggleHaptics } = useSettingsStore();
 
   const earnedTypes = new Set(earnedBadges?.map((b) => b.badgeType) ?? []);
 
@@ -167,6 +169,65 @@ export default function ProfilePage() {
               );
             })}
           </div>
+        </div>
+
+        {/* Ayarlar */}
+        <div>
+          <SectionHeader title="Ayarlar" className="mb-4" />
+          <CoderunCard>
+            <div className="flex flex-col gap-1 divide-y divide-outline-variant">
+              {/* Titreşim toggle */}
+              <div className="flex items-center justify-between py-3 first:pt-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center">
+                    <Smartphone className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-sans text-body-sm font-semibold text-on-surface">
+                      Titreşim (Haptic Feedback)
+                    </p>
+                    <p className="font-sans text-xs text-on-surface-variant">
+                      Doğru/yanlış cevaplarda titreşim
+                    </p>
+                  </div>
+                </div>
+                {/* Toggle switch */}
+                <button
+                  onClick={toggleHaptics}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${
+                    hapticsEnabled ? 'bg-primary' : 'bg-outline-variant'
+                  }`}
+                  aria-checked={hapticsEnabled}
+                  role="switch"
+                  aria-label="Titreşimi aç/kapat"
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                      hapticsEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Bildirimler placeholder */}
+              <div className="flex items-center justify-between py-3 last:pb-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="font-sans text-body-sm font-semibold text-on-surface">
+                      Bildirimler
+                    </p>
+                    <p className="font-sans text-xs text-on-surface-variant">
+                      Streak hatırlatıcıları (yakında)
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">Yakında</span>
+              </div>
+            </div>
+          </CoderunCard>
         </div>
 
         {/* Logout */}

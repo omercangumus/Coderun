@@ -2,6 +2,7 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { Topbar } from '@/components/layout/topbar';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { GlobalMentor } from '@/components/layout/global-mentor';
+import { DailyStreakToast } from '@/components/common/DailyStreakToast';
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,7 @@ export default function DashboardLayout({
         <BottomNav />
       </div>
       <GlobalMentor />
+      <DailyStreakToast />
     </div>
   );
 }

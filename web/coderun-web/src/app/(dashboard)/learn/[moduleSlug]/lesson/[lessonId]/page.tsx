@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLessonDetail } from '@/lib/hooks/use-modules';
 import { useLessonState } from '@/lib/hooks/use-lesson';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 import { QuestionRouter } from '@/components/lesson/question-router';
 import { ReinforcementQuestion } from '@/components/lesson/reinforcement-question';
+import { LearningCard } from '@/components/lesson/learning-card';
 import { QuestionProgress } from '@/components/lesson/question-progress';
 import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { GhostieState } from '@/lib/ghostie-assets';
 import type { QuestionResponse } from '@/lib/types/module.types';
 
-type LessonPhase = 'answering' | 'reinforcement' | 'feedback';
+type LessonPhase = 'intro' | 'answering' | 'reinforcement' | 'feedback';
+
+/** Eğer ders 5+ sorudan oluşuyorsa, 3. sorudan önce bir kavram kartı göster. */
+function shouldShowLearningCard(lessonType: string, index: number, total: number): boolean {
+  // Quiz derslerinde ilk soru öncesi ve ortada bir kavram kartı
+  if (index === 0 && total >= 3) return true;
+  if (index === Math.floor(total / 2) && total >= 6) return true;
+  return false;
+}
 
 export default function LessonPage({
   params,
@@ -26,11 +36,14 @@ export default function LessonPage({
   const { moduleSlug, lessonId } = params;
   const router = useRouter();
   const { data: lesson, isLoading } = useLessonDetail(lessonId);
+  const { vibrateSuccess, vibrateError } = useHaptics();
   const [showExitDialog, setShowExitDialog] = useState(false);
-  const [phase, setPhase] = useState<LessonPhase>('answering');
+  const [phase, setPhase] = useState<LessonPhase>('intro');
   const [reinforcementQuestion, setReinforcementQuestion] = useState<QuestionResponse | null>(null);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
   const [reinforcementDone, setReinforcementDone] = useState(false);
+  const [shownLearningCards, setShownLearningCards] = useState<number[]>([]);
+  const [showingLearningCard, setShowingLearningCard] = useState(false);
   // Ref to avoid React state batching race condition on reinforcement completion
   const reinforcementDoneRef = useRef(false);
 
@@ -52,8 +65,23 @@ export default function LessonPage({
     .map((q, i) => (answers[q.id] ? i : -1))
     .filter((i) => i >= 0) ?? [];
 
+  // Check if we should show a learning card before the current question
+  const needsLearningCard =
+    lesson &&
+    phase === 'answering' &&
+    !showingLearningCard &&
+    !shownLearningCards.includes(currentQuestionIndex) &&
+    shouldShowLearningCard(lesson.lessonType, currentQuestionIndex, total);
+
+  // Show the learning card automatically
+  if (needsLearningCard) {
+    setShowingLearningCard(true);
+    setShownLearningCards((prev) => [...prev, currentQuestionIndex]);
+  }
+
   // Ghostie state mapping
   const ghostieState: GhostieState = (() => {
+    if (phase === 'intro') return 'idle';
     if (phase === 'reinforcement') return 'reinforcement';
     if (lastAnswerCorrect === true) return 'correct';
     if (lastAnswerCorrect === false) return 'wrong';
@@ -61,6 +89,7 @@ export default function LessonPage({
   })();
 
   const ghostieMessage = (() => {
+    if (phase === 'intro') return `Merhaba! "${lesson?.title}" dersine hoş geldin. Başlamaya hazır mısın? 🚀`;
     if (phase === 'reinforcement') return 'Endişelenme! Bu kavramı birlikte pekiştirelim. 💪';
     if (lastAnswerCorrect === true) return 'Harika! Doğru cevap! 🎉';
     if (lastAnswerCorrect === false) return 'Üzülme, bir dahaki sefere! Açıklamayı oku. 📖';
@@ -73,31 +102,44 @@ export default function LessonPage({
     if (!lesson) return;
     const result = await submitLesson(lesson.questions);
     if (result) {
-      // Check for reinforcement — use skipReinforcement flag to avoid race condition
       if (result.reinforcementQuestion && !skipReinforcement && !reinforcementDoneRef.current) {
         setReinforcementQuestion(result.reinforcementQuestion);
         setLastAnswerCorrect(false);
         setPhase('reinforcement');
+        vibrateError();
         return;
       }
-      setLastAnswerCorrect(result.wrongCount === 0);
+      const isCorrect = result.wrongCount === 0;
+      setLastAnswerCorrect(isCorrect);
+      if (isCorrect) vibrateSuccess(); else vibrateError();
       sessionStorage.setItem('lesson_result', JSON.stringify(result));
       router.push(`/learn/${moduleSlug}/lesson/${lessonId}/result`);
     }
   };
 
   const handleReinforcementAnswer = (_answer: string) => {
-    // Mark reinforcement as done via ref immediately (avoids React batching race)
     reinforcementDoneRef.current = true;
     setReinforcementDone(true);
     setReinforcementQuestion(null);
     setPhase('answering');
-    // Continue to next question or submit — pass skipReinforcement=true to avoid re-triggering
     if (isLastQuestion) {
       handleSubmit(true);
     } else {
       nextQuestion(total);
     }
+  };
+
+  const handleNextQuestion = () => {
+    const nextIdx = currentQuestionIndex + 1;
+    if (
+      lesson &&
+      shouldShowLearningCard(lesson.lessonType, nextIdx, total) &&
+      !shownLearningCards.includes(nextIdx)
+    ) {
+      setShowingLearningCard(true);
+      setShownLearningCards((prev) => [...prev, nextIdx]);
+    }
+    nextQuestion(total);
   };
 
   if (isLoading) {
@@ -119,7 +161,38 @@ export default function LessonPage({
     );
   }
 
-  if (!lesson || !currentQuestion) return null;
+  if (!lesson) return null;
+
+  // ──────────────── INTRO PHASE ────────────────
+  if (phase === 'intro') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-lg mx-auto gap-8 animate-fade-in">
+        <GhostieReaction state="idle" size={140} preferAnimation />
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-on-surface mb-2">{lesson.title}</h1>
+          <p className="text-on-surface-variant">
+            {total} soru · {lesson.lessonType === 'quiz' ? 'Quiz' : 'Pratik'}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 w-full">
+          <button
+            onClick={() => setPhase('answering')}
+            className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-lg hover:bg-primary/90 active:scale-[0.98] transition-all"
+          >
+            Başla 🚀
+          </button>
+          <button
+            onClick={() => router.back()}
+            className="w-full py-3 rounded-2xl border-2 border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+          >
+            Geri Dön
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) return null;
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)]">
@@ -146,7 +219,7 @@ export default function LessonPage({
       {/* 3-Column Layout */}
       <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
 
-        {/* LEFT COLUMN — Ders bilgisi ve kavram */}
+        {/* LEFT COLUMN */}
         <aside className="col-span-3 flex flex-col gap-4 overflow-y-auto">
           <Card className="p-4">
             <h2 className="text-sm font-bold text-on-surface mb-1">{lesson.title}</h2>
@@ -156,11 +229,13 @@ export default function LessonPage({
           </Card>
 
           {/* Soru tipi badge */}
-          <div className="px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-            <p className="text-xs font-semibold text-primary uppercase tracking-wider">
-              {questionTypeLabel(currentQuestion.questionType)}
-            </p>
-          </div>
+          {!showingLearningCard && (
+            <div className="px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider">
+                {questionTypeLabel(currentQuestion.questionType)}
+              </p>
+            </div>
+          )}
 
           {/* Explanation (yanlış cevap sonrası) */}
           {lastAnswerCorrect === false && currentQuestion.explanation && (
@@ -186,7 +261,7 @@ export default function LessonPage({
           )}
 
           {/* Hint */}
-          {currentQuestion.hint && phase === 'answering' && lastAnswerCorrect === null && (
+          {currentQuestion.hint && phase === 'answering' && lastAnswerCorrect === null && !showingLearningCard && (
             <Card className="p-4 border-primary/20">
               <div className="flex items-start gap-2">
                 <Lightbulb className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -196,10 +271,18 @@ export default function LessonPage({
           )}
         </aside>
 
-        {/* CENTER COLUMN — Soru içeriği */}
+        {/* CENTER COLUMN */}
         <main className="col-span-6 flex flex-col gap-4 overflow-y-auto">
           <Card className="flex-1 p-6">
-            {phase === 'reinforcement' && reinforcementQuestion ? (
+            {showingLearningCard ? (
+              <LearningCard
+                title={getLearningCardTitle(lesson.lessonType, currentQuestionIndex, lesson.title)}
+                body={getLearningCardBody(lesson.lessonType, currentQuestionIndex, lesson.title)}
+                codeSnippet={getLearningCardCode(lesson.lessonType, currentQuestionIndex)}
+                type={currentQuestionIndex === 0 ? 'concept' : 'tip'}
+                onContinue={() => setShowingLearningCard(false)}
+              />
+            ) : phase === 'reinforcement' && reinforcementQuestion ? (
               <ReinforcementQuestion
                 question={reinforcementQuestion}
                 onAnswer={handleReinforcementAnswer}
@@ -215,7 +298,7 @@ export default function LessonPage({
           </Card>
 
           {/* Alt butonlar */}
-          {phase === 'answering' && (
+          {phase === 'answering' && !showingLearningCard && (
             <div className="flex gap-3 flex-shrink-0">
               {currentQuestionIndex > 0 && (
                 <Button variant="outline" onClick={() => prevQuestion()} className="gap-2">
@@ -235,7 +318,7 @@ export default function LessonPage({
                 </Button>
               ) : (
                 <Button
-                  onClick={() => nextQuestion(total)}
+                  onClick={handleNextQuestion}
                   disabled={!currentAnswer}
                   className="gap-2"
                 >
@@ -265,7 +348,6 @@ export default function LessonPage({
             </div>
           </Card>
 
-          {/* Reinforcement tamamlandı mesajı */}
           {reinforcementDone && (
             <Card className="p-4 border-secondary/30 bg-secondary-container/10">
               <p className="text-xs text-secondary font-semibold">
@@ -311,4 +393,35 @@ function questionTypeLabel(type: string): string {
     multi_select: 'Çoklu Seçim',
   };
   return labels[type] ?? type;
+}
+
+/** Ders tipine ve soru indeksine göre kavram kartı başlığı */
+function getLearningCardTitle(lessonType: string, index: number, lessonTitle: string): string {
+  if (index === 0) return `${lessonTitle} — Temel Kavramlar`;
+  return `Yarı yola geldik! Bir adım geriye bakalım 🧠`;
+}
+
+/** Ders tipine ve indeksine göre açıklama metni */
+function getLearningCardBody(lessonType: string, index: number, lessonTitle: string): string {
+  if (index === 0) {
+    return `Bu derste "${lessonTitle}" konusunu işleyeceğiz.\n\n` +
+      `Sorulara geçmeden önce temel kavramları hatırlayalım:\n\n` +
+      `• Her soruyu dikkatlice oku\n` +
+      `• Emin olmadığın sorularda ipucuna bakabilirsin\n` +
+      `• Yanlış cevaplar için açıklama gösterilecek\n\n` +
+      `Hazır olduğunda "Anladım, Devam Et" butonuna bas!`;
+  }
+  return `Harika gidiyorsun! 🎉 Şimdiye kadar iyi bir ilerleme kaydettik.\n\n` +
+    `Kalan sorularda dikkat etmen gerekenler:\n\n` +
+    `• Kod sorularında her satırı dikkatle incele\n` +
+    `• Birden fazla doğru seçenek olabilir — hepsini işaretle\n` +
+    `• Hatırlamak için Ghostie'nin ipuçlarına bak\n\n` +
+    `Devam et, neredeyse bitti!`;
+}
+
+/** Ders tipine göre opsiyonel kod snippet */
+function getLearningCardCode(lessonType: string, index: number): string | undefined {
+  if (index !== 0) return undefined;
+  // Sadece Python ile alakalı içerikler için örnek snippet
+  return undefined;
 }
