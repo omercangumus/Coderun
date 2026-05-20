@@ -46,6 +46,14 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Login veya register isteklerinde token yenileme veya yönlendirme yapma, direkt hatayı dön
+      if (
+        originalRequest.url?.includes(AUTH_ENDPOINTS.login) ||
+        originalRequest.url?.includes(AUTH_ENDPOINTS.register)
+      ) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -78,8 +86,10 @@ axiosClient.interceptors.response.use(
         );
         const { access_token: accessToken } = response.data;
 
+        const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+
         Cookies.set(COOKIE_ACCESS_TOKEN, accessToken, {
-          secure: process.env.NODE_ENV === 'production',
+          secure: isSecure,
           sameSite: 'strict',
           expires: 1 / 48, // 30 dakika (access token ile uyumlu)
         });

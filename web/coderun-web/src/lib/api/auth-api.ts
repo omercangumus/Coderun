@@ -3,14 +3,16 @@ import Cookies from 'js-cookie';
 import { AUTH_ENDPOINTS } from '@/lib/constants/api.constants';
 import type { LoginRequest, RegisterRequest, TokenResponse, UserResponse } from '@/lib/types/auth.types';
 
+const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+
 const COOKIE_OPTIONS_ACCESS = {
-  secure: process.env.NODE_ENV === 'production',
+  secure: isSecure,
   sameSite: 'strict' as const,
   expires: 1 / 48, // 30 dakika — backend access token süresiyle uyumlu
 };
 
 const COOKIE_OPTIONS_REFRESH = {
-  secure: process.env.NODE_ENV === 'production',
+  secure: isSecure,
   sameSite: 'strict' as const,
   expires: 7, // 7 gün — backend refresh token süresiyle uyumlu
 };
