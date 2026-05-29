@@ -7,11 +7,11 @@ export default function NotFound() {
       <GhostieReaction state="wrong" size={120} />
       <div>
         <h1 className="text-3xl font-bold text-white">Sayfa Bulunamadı</h1>
-        <p className="text-slate-400 mt-2">Aradığın sayfa kaybolmuş gibi görünüyor.</p>
+        <p className="text-white/80 mt-2">Aradığın sayfa kaybolmuş gibi görünüyor.</p>
       </div>
       <Link
         href="/"
-        className="px-6 py-3 bg-accent text-white rounded-xl font-medium hover:bg-accent/90 transition-colors"
+        className="px-6 py-3 bg-surface-container-lowest text-primary rounded-xl font-semibold hover:bg-surface-container transition-colors shadow-card"
       >
         Ana Sayfaya Dön
       </Link>

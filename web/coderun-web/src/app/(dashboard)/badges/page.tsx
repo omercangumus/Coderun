@@ -5,9 +5,9 @@ import { gamificationApi } from '@/lib/api/gamification-api';
 import { QUERY_KEYS } from '@/lib/constants/api.constants';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
 import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { CoderunCard } from '@/components/stitch/CoderunCard';
 import { GhostieMotivationCard } from '@/components/stitch/GhostieCard';
 
 const ALL_BADGES = [
@@ -33,18 +33,23 @@ export default function BadgesPage() {
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       <div>
         <h1 className="font-heading text-h2 font-bold text-on-surface">Rozetlerim 🏆</h1>
-        <p className="font-sans text-body-sm text-on-surface-variant mt-1">{earnedCount} / {totalCount} rozet kazanıldı</p>
+        <p className="font-sans text-body-sm text-on-surface-variant mt-1">
+          {earnedCount} / {totalCount} rozet kazanıldı
+        </p>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant shadow-sm">
+      <CoderunCard>
         <Progress value={(earnedCount / totalCount) * 100} color="primary" showLabel />
-      </div>
+      </CoderunCard>
 
-      {/* Ghostie Başarı Koçu */}
       <GhostieMotivationCard
         title="Ghostie Başarı Koçu"
-        message="Rozetler seni motive etmek ve ilerlemelerini ödüllendirmek için tasarlandı. Yeni rozetler açmak için dersleri tamamla ve streak serini koru! 🚀"
-        mood="celebrating"
+        message={
+          earnedCount === 0
+            ? 'Henüz rozet kazanmadın ama yolculuk yeni başlıyor! İlk dersini tamamla ve İlk Adım rozetini aç. 🚀'
+            : 'Rozetler seni motive etmek ve ilerlemelerini ödüllendirmek için tasarlandı. Streak serini koru! 🚀'
+        }
+        mood={earnedCount > 0 ? 'celebrating' : 'helping'}
       />
 
       {isLoading ? (
@@ -53,50 +58,67 @@ export default function BadgesPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {/* Kazanılan rozetler */}
-          {earnedCount > 0 && (
+          {earnedCount > 0 ? (
             <div className="flex flex-col gap-3">
-              <h2 className="font-label text-label-caps text-primary uppercase tracking-wider">Kazanılan Rozetler</h2>
+              <h2 className="font-label text-label-caps text-primary uppercase tracking-wider">
+                Kazanılan Rozetler
+              </h2>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {ALL_BADGES.filter(b => earnedTypes.has(b.type)).map(badge => {
                   const earned = badges?.find(b => b.badgeType === badge.type);
                   return (
-                    <Card key={badge.type} className="border-amber-300 bg-gradient-to-br from-amber-500/10 to-surface-container-lowest text-center py-6 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                    <CoderunCard
+                      key={badge.type}
+                      className="text-center py-6 border-xp-gold/30 bg-gradient-to-br from-xp-gold/10 to-surface-container-lowest hover:shadow-card-hover hover:scale-[1.02] transition-all duration-200"
+                    >
                       <div className="text-5xl mb-3 animate-bounce-once">{badge.emoji}</div>
-                      <p className="text-on-surface font-bold text-base font-heading">{badge.title}</p>
-                      <p className="text-on-surface-variant text-xs mt-1.5 font-sans px-2">{badge.description}</p>
+                      <p className="font-heading text-base font-bold text-on-surface">{badge.title}</p>
+                      <p className="font-sans text-xs text-on-surface-variant mt-1.5 px-2">{badge.description}</p>
                       {earned && (
-                        <p className="text-amber-700/80 font-semibold text-[11px] font-label mt-3 bg-amber-100/50 inline-block px-2 py-0.5 rounded-full">
+                        <p className="font-label text-[11px] font-semibold mt-3 bg-xp-gold/15 text-xp-gold inline-block px-2 py-0.5 rounded-full">
                           {new Date(earned.earnedAt).toLocaleDateString('tr-TR')}
                         </p>
                       )}
-                    </Card>
+                    </CoderunCard>
                   );
                 })}
               </div>
             </div>
+          ) : (
+            <CoderunCard variant="ghost" className="text-center py-8">
+              <p className="font-sans text-body-sm text-on-surface-variant">
+                Henüz kazanılmış rozet yok. İlk dersini tamamlayarak başla!
+              </p>
+            </CoderunCard>
           )}
 
-          {/* Kazanılmayan rozetler */}
           <div className="flex flex-col gap-3">
-            <h2 className="font-label text-label-caps text-on-surface-variant uppercase tracking-wider">Kilitli Rozetler</h2>
+            <h2 className="font-label text-label-caps text-on-surface-variant uppercase tracking-wider">
+              Kilitli Rozetler
+            </h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {ALL_BADGES.filter(b => !earnedTypes.has(b.type)).map(badge => (
                 <div
                   key={badge.type}
                   className={cn(
-                    'group relative rounded-xl border border-outline-variant bg-surface-container-low/60 p-6 text-center shadow-sm overflow-hidden',
-                    'hover:shadow-md transition-all duration-200 cursor-help'
+                    'group relative rounded-xl border border-outline-variant',
+                    'bg-gradient-to-br from-surface-container-low/80 to-surface-container/40',
+                    'p-6 text-center shadow-sm overflow-hidden',
+                    'hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-help'
                   )}
                 >
-                  <div className="text-5xl mb-3 grayscale opacity-30">{badge.emoji}</div>
+                  <div className="text-5xl mb-3 grayscale opacity-40">{badge.emoji}</div>
                   <Lock className="w-5 h-5 text-outline mx-auto mb-2" />
-                  <p className="text-on-surface-variant/40 font-bold text-sm font-heading">???</p>
-                  <p className="text-on-surface-variant/30 text-xs mt-1 font-sans">Kilitli Rozet</p>
-                  
-                  {/* Hover tooltip */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-primary/95 p-4 rounded-xl shadow-primary-lg">
-                    <p className="text-sm font-semibold text-white text-center font-sans">{badge.condition}</p>
+                  <p className="font-heading text-sm font-bold text-on-surface-variant/50">???</p>
+                  <p className="font-sans text-xs text-on-surface-variant/40 mt-1">Gizemli Rozet</p>
+
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 bg-primary/95 p-4 rounded-xl">
+                    <p className="font-sans text-sm font-semibold text-white text-center">
+                      {badge.condition}
+                    </p>
+                    <span className="font-label text-[10px] uppercase tracking-wide text-white/70">
+                      Nasıl açılır?
+                    </span>
                   </div>
                 </div>
               ))}

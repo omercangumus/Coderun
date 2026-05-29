@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/assets/ghostie_assets.dart';
 import '../../../data/models/badge_model.dart';
 import '../../../providers/gamification_provider.dart';
 import '../../widgets/app_error_widget.dart';
+import '../../widgets/ghostie_reaction.dart';
 import '../../widgets/loading_widget.dart';
 import 'widgets/badge_card.dart';
 
@@ -21,8 +23,10 @@ class BadgesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(userStatsProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Rozetlerim'),
         centerTitle: true,
@@ -40,11 +44,21 @@ class BadgesScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _SummaryRow(earned: earned.length, total: _allBadgeTypes.length),
+                const SizedBox(height: 16),
+                GhostieReaction(
+                  state: earned.isNotEmpty ? GhostieState.celebrating : GhostieState.idle,
+                  message: earned.isNotEmpty
+                      ? 'Harika! Rozet koleksiyonun büyüyor. Devam et! 🚀'
+                      : 'İlk dersini tamamla ve İlk Adım rozetini aç! 🎯',
+                  size: 72,
+                ),
                 const SizedBox(height: 24),
                 if (earned.isNotEmpty) ...[
-                  const Text(
+                  Text(
                     'Kazanılan Rozetler',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 12),
                   _BadgeGrid(
@@ -53,11 +67,34 @@ class BadgesScreen extends ConsumerWidget {
                         .toList(),
                   ),
                   const SizedBox(height: 24),
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Text(
+                      'Henüz kazanılmış rozet yok. İlk dersini tamamlayarak başla!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Lexend',
+                        fontSize: 13,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                 ],
                 if (unearnedTypes.isNotEmpty) ...[
-                  const Text(
-                    'Henüz Kazanılmadı',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    'Kilitli Rozetler',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   const SizedBox(height: 12),
                   _BadgeGrid(
@@ -95,6 +132,8 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,21 +142,31 @@ class _SummaryRow extends StatelessWidget {
           children: [
             Text(
               '$earned / $total Rozet Kazanıldı',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
             ),
             Text(
               '%${(earned / total * 100).round()}',
-              style: const TextStyle(fontSize: 14, color: Colors.amber, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 14,
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        LinearProgressIndicator(
-          value: total > 0 ? earned / total : 0,
-          backgroundColor: Colors.grey[200],
-          valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
-          minHeight: 8,
+        ClipRRect(
           borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: total > 0 ? earned / total : 0,
+            backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+            minHeight: 8,
+          ),
         ),
       ],
     );
