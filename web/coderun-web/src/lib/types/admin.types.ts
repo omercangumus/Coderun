@@ -108,6 +108,13 @@ export interface QuestionAdminItem {
   correctLineIndex: number | null;
   order: number;
   reinforcementQuestionId: string | null;
+  // Code assignment fields (code_editor type)
+  language?: string | null;
+  starterCode?: string | null;
+  testCases?: Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }> | null;
+  assignmentInstructions?: string | null;
+  maxRuntimeMs?: number | null;
+  memoryLimitMb?: number | null;
 }
 
 export interface QuestionCreateData {
@@ -123,6 +130,35 @@ export interface QuestionCreateData {
   correctLineIndex?: number | null;
   order?: number;
   reinforcementQuestionId?: string | null;
+  // Code assignment fields (code_editor type)
+  language?: string | null;
+  starterCode?: string | null;
+  testCases?: Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }> | null;
+  assignmentInstructions?: string | null;
+  maxRuntimeMs?: number | null;
+  memoryLimitMb?: number | null;
+}
+
+export interface QuestionUpdateData {
+  lessonId?: string;
+  questionType?: string;
+  questionText?: string;
+  options?: Record<string, unknown> | null;
+  correctAnswer?: string;
+  hint?: string | null;
+  explanation?: string | null;
+  codeBlock?: string | null;
+  wordBank?: Record<string, unknown> | null;
+  correctLineIndex?: number | null;
+  order?: number;
+  reinforcementQuestionId?: string | null;
+  // Code assignment fields (code_editor type)
+  language?: string | null;
+  starterCode?: string | null;
+  testCases?: Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }> | null;
+  assignmentInstructions?: string | null;
+  maxRuntimeMs?: number | null;
+  memoryLimitMb?: number | null;
 }
 
 export interface UserAdminItem {

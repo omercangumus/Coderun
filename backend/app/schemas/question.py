@@ -72,6 +72,36 @@ class QuestionResponse(QuestionSimpleResponse):
 
     reinforcement_question: Optional[QuestionSimpleResponse] = None
 
+    @model_validator(mode="after")
+    def sanitize_test_cases(self) -> "QuestionResponse":
+        """Gizli test senaryolarının beklenen çıktılarını ve girdilerini sızdırmaz."""
+        if self.test_cases:
+            sanitized = []
+            for tc in self.test_cases:
+                if tc.get("hidden"):
+                    tc_copy = dict(tc)
+                    tc_copy["expected_stdout"] = None
+                    tc_copy["stdin"] = None
+                    sanitized.append(tc_copy)
+                else:
+                    sanitized.append(tc)
+            self.test_cases = sanitized
+
+        if self.reinforcement_question and self.reinforcement_question.test_cases:
+            sanitized_reinf = []
+            for tc in self.reinforcement_question.test_cases:
+                if tc.get("hidden"):
+                    tc_copy = dict(tc)
+                    tc_copy["expected_stdout"] = None
+                    tc_copy["stdin"] = None
+                    sanitized_reinf.append(tc_copy)
+                else:
+                    sanitized_reinf.append(tc)
+            # Set the list on the nested object
+            self.reinforcement_question.test_cases = sanitized_reinf
+
+        return self
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -90,6 +120,11 @@ class QuestionWithAnswerResponse(QuestionResponse):
     correct_answer: str
     explanation: str | None = None
     correct_line_index: int | None = None
+
+    @model_validator(mode="after")
+    def sanitize_test_cases(self) -> "QuestionWithAnswerResponse":
+        """Admin/iç kullanım için test senaryosu verilerini temizlemez."""
+        return self
 
     model_config = ConfigDict(from_attributes=True)
 
