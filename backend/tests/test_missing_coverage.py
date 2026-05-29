@@ -38,10 +38,10 @@ async def test_auth_register_logger_called_directly() -> None:
     mock_user.created_at = datetime.now(timezone.utc)
 
     # register_user servisini mock'la
-    with patch("backend.app.api.v1.endpoints.auth.register_user") as mock_register:
+    with patch("app.api.v1.endpoints.auth.register_user") as mock_register:
         mock_register.return_value = UserResponse.model_validate(mock_user)
 
-        with patch("backend.app.api.v1.endpoints.auth.logger") as mock_logger:
+        with patch("app.api.v1.endpoints.auth.logger") as mock_logger:
             user_create = UserCreate(
                 email="direct@example.com",
                 username="directuser",
@@ -276,7 +276,7 @@ async def test_main_app_wildcard_cors_middleware() -> None:
     import sys
 
     # Temporarily patch settings to use wildcard
-    with patch("backend.app.core.config.settings") as mock_settings:
+    with patch("app.core.config.settings") as mock_settings:
         mock_settings.ALLOWED_ORIGINS = ["*"]
         mock_settings.APP_TITLE = "Coderun"
         mock_settings.APP_VERSION = "0.1.0"
@@ -753,9 +753,9 @@ async def test_lifespan_database_error_raises_system_exit() -> None:
 
     test_app = FastAPI()
 
-    with patch("backend.app.main.AsyncSessionLocal") as mock_session_local:
-        with patch("backend.app.main.init_redis") as mock_init_redis:
-            with patch("backend.app.main.logger") as mock_logger:
+    with patch("app.main.AsyncSessionLocal") as mock_session_local:
+        with patch("app.main.init_redis") as mock_init_redis:
+            with patch("app.main.logger") as mock_logger:
                 # DB bağlantısı başarısız
                 mock_session = AsyncMock()
                 mock_session.execute = AsyncMock(side_effect=Exception("DB connection failed"))

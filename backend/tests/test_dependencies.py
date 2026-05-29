@@ -32,7 +32,7 @@ async def test_get_db_yields_session() -> None:
 @pytest.mark.asyncio
 async def test_get_db_handles_exception() -> None:
     """get_db exception durumunda rollback yapar."""
-    with patch("backend.app.api.v1.dependencies.AsyncSessionLocal") as mock_session_local:
+    with patch("app.api.v1.dependencies.AsyncSessionLocal") as mock_session_local:
         mock_session = AsyncMock()
         mock_session.rollback = AsyncMock()
         mock_session_local.return_value.__aenter__.return_value = mock_session
@@ -46,7 +46,7 @@ async def test_get_db_handles_exception() -> None:
 @pytest.mark.asyncio
 async def test_get_redis_returns_client() -> None:
     """get_redis Redis client döner."""
-    with patch("backend.app.core.redis.get_redis") as mock_get_redis:
+    with patch("app.core.redis.get_redis") as mock_get_redis:
         mock_client = MagicMock()
         
         async def mock_generator():
@@ -61,7 +61,7 @@ async def test_get_redis_returns_client() -> None:
 @pytest.mark.asyncio
 async def test_get_redis_returns_none_when_no_client() -> None:
     """get_redis client yoksa None döner."""
-    with patch("backend.app.core.redis.get_redis") as mock_get_redis:
+    with patch("app.core.redis.get_redis") as mock_get_redis:
         async def mock_generator():
             return
             yield  # noqa: RET503

@@ -205,7 +205,7 @@ async def test_register_logs_new_user(
     """Yeni kullanıcı kaydı loglanmalıdır."""
     from unittest.mock import patch
     
-    with patch("backend.app.api.v1.endpoints.auth.logger") as mock_logger:
+    with patch("app.api.v1.endpoints.auth.logger") as mock_logger:
         payload = {
             "email": "logtest@example.com",
             "username": "log_test_user",
@@ -235,7 +235,7 @@ async def test_logout_logs_user(
     )
     token = login_response.json()["access_token"]
     
-    with patch("backend.app.api.v1.endpoints.auth.logger") as mock_logger:
+    with patch("app.api.v1.endpoints.auth.logger") as mock_logger:
         response = await client.post(
             "/api/v1/auth/logout",
             headers={"Authorization": f"Bearer {token}"},

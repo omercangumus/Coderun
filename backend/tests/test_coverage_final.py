@@ -226,7 +226,7 @@ def test_main_wildcard_cors_branch() -> None:
     import sys
 
     # Patch settings to use wildcard
-    with patch("backend.app.core.config.settings") as mock_settings:
+    with patch("app.core.config.settings") as mock_settings:
         mock_settings.ALLOWED_ORIGINS = ["*"]
         mock_settings.APP_TITLE = "Coderun"
         mock_settings.APP_VERSION = "1.0.0"
@@ -286,7 +286,7 @@ async def test_seed_database_logs_success(db_session) -> None:
     from app.core.seed import seed_database
 
     # Seed already ran in conftest, run again to hit the "already exists" branch
-    with patch("backend.app.core.seed.logger") as mock_logger:
+    with patch("app.core.seed.logger") as mock_logger:
         await seed_database(db_session)
         # Should log "already exists" message
         mock_logger.info.assert_called()
@@ -404,7 +404,7 @@ async def test_health_redis_ping_awaitable() -> None:
     # Make ping return an awaitable
     mock_redis.ping = AsyncMock(return_value=True)
 
-    with patch("backend.app.api.v1.dependencies.get_redis", return_value=mock_redis):
+    with patch("app.api.v1.dependencies.get_redis", return_value=mock_redis):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             response = await ac.get("/health")
             # Should not crash

@@ -144,8 +144,15 @@ class TestIsStreakAlive:
         assert is_streak_alive(yesterday) is True
 
     def test_is_streak_alive_two_days_ago(self) -> None:
-        """2 gün önce aktif → False (36 saat geçmiş)."""
-        two_days_ago = date.today() - timedelta(days=2)
+        """2 gün önce aktif → False (36 saat geçmiş).
+
+        NOTE: is_streak_alive uses datetime.now(UTC).date() as reference.
+        We must compute two_days_ago from the same UTC date to avoid
+        false positives in UTC+N timezones where local date > UTC date.
+        """
+        from datetime import datetime, timezone
+        utc_today = datetime.now(timezone.utc).date()
+        two_days_ago = utc_today - timedelta(days=2)
         assert is_streak_alive(two_days_ago) is False
 
     def test_is_streak_alive_week_ago(self) -> None:

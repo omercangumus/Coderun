@@ -57,9 +57,9 @@ async def test_lifespan_startup() -> None:
     
     test_app = FastAPI()
     
-    with patch("backend.app.main.AsyncSessionLocal") as mock_session:
-        with patch("backend.app.main.init_redis") as mock_init_redis:
-            with patch("backend.app.main.seed_database") as mock_seed:
+    with patch("app.main.AsyncSessionLocal") as mock_session:
+        with patch("app.main.init_redis") as mock_init_redis:
+            with patch("app.main.seed_database") as mock_seed:
                 # Mock session context manager
                 mock_session_instance = AsyncMock()
                 mock_session_instance.execute = AsyncMock()
@@ -86,10 +86,10 @@ async def test_lifespan_shutdown() -> None:
     
     test_app = FastAPI()
     
-    with patch("backend.app.main.AsyncSessionLocal") as mock_session:
-        with patch("backend.app.main.init_redis") as mock_init_redis:
-            with patch("backend.app.main.close_redis") as mock_close_redis:
-                with patch("backend.app.main.seed_database") as mock_seed:
+    with patch("app.main.AsyncSessionLocal") as mock_session:
+        with patch("app.main.init_redis") as mock_init_redis:
+            with patch("app.main.close_redis") as mock_close_redis:
+                with patch("app.main.seed_database") as mock_seed:
                     # Mock session
                     mock_session_instance = AsyncMock()
                     mock_session_instance.execute = AsyncMock()
@@ -116,9 +116,9 @@ async def test_lifespan_database_error() -> None:
     
     test_app = FastAPI()
     
-    with patch("backend.app.main.AsyncSessionLocal") as mock_session:
-        with patch("backend.app.main.init_redis") as mock_init_redis:
-            with patch("backend.app.main.logger") as mock_logger:
+    with patch("app.main.AsyncSessionLocal") as mock_session:
+        with patch("app.main.init_redis") as mock_init_redis:
+            with patch("app.main.logger") as mock_logger:
                 # Mock database connection failure
                 mock_session_instance = AsyncMock()
                 mock_session_instance.execute = AsyncMock(side_effect=Exception("DB connection failed"))

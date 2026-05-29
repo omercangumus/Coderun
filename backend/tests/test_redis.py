@@ -9,7 +9,7 @@ async def test_init_redis_success() -> None:
     """init_redis should initialize Redis client successfully."""
     from app.core import redis as redis_module
     
-    with patch("backend.app.core.redis.aioredis.from_url") as mock_from_url:
+    with patch("app.core.redis.aioredis.from_url") as mock_from_url:
         mock_client = AsyncMock()
         mock_client.ping = AsyncMock(return_value=True)
         mock_from_url.return_value = mock_client
@@ -25,7 +25,7 @@ async def test_init_redis_connection_error() -> None:
     """init_redis should handle connection errors gracefully."""
     from app.core import redis as redis_module
     
-    with patch("backend.app.core.redis.aioredis.from_url") as mock_from_url:
+    with patch("app.core.redis.aioredis.from_url") as mock_from_url:
         mock_from_url.side_effect = Exception("Connection failed")
         
         # Should not raise exception
