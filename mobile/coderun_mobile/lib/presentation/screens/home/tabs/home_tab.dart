@@ -159,6 +159,14 @@ class HomeTab extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
+                  // Kod laboratuvarı teaser
+                  _SectionTitle(title: 'Kod Pratiği'),
+                  const SizedBox(height: AppSpacing.md),
+                  _CodingLabTeaser(
+                    onTap: () => context.push('/home/learn/python'),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+
                   // Stats row
                   statsAsync.when(
                     data: (stats) => _StatsRow(
@@ -688,6 +696,77 @@ class _EmptyCard extends StatelessWidget {
             fontFamily: 'Lexend',
             fontSize: 14,
             color: AppColors.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CodingLabTeaser extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _CodingLabTeaser({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.secondary.withValues(alpha: 0.12),
+                AppColors.primaryFixed.withValues(alpha: 0.8),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+            border: Border.all(color: AppColors.secondary.withValues(alpha: 0.25)),
+          ),
+          padding: const EdgeInsets.all(AppSpacing.cardPadding),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.secondary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                ),
+                child: const Icon(Icons.code_rounded, color: AppColors.secondary, size: 28),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Python Kodlama Ödevleri',
+                      style: TextStyle(
+                        fontFamily: 'PlusJakartaSans',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Split ekran kod laboratuvarı — soru, editör, test sonuçları',
+                      style: TextStyle(
+                        fontFamily: 'Lexend',
+                        fontSize: 12,
+                        color: AppColors.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: AppColors.primary),
+            ],
           ),
         ),
       ),

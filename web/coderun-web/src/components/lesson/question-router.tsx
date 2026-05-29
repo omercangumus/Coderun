@@ -16,6 +16,12 @@ interface QuestionRouterProps {
   currentAnswer: string;
   selectedAnswer?: string;
   onAnswer: (answer: string) => void;
+  questionIndex?: number;
+  totalQuestions?: number;
+  onPrevQuestion?: () => void;
+  onNextQuestion?: () => void;
+  canPrevQuestion?: boolean;
+  canNextQuestion?: boolean;
 }
 
 export function QuestionRouter({
@@ -23,6 +29,12 @@ export function QuestionRouter({
   currentAnswer,
   selectedAnswer,
   onAnswer,
+  questionIndex,
+  totalQuestions,
+  onPrevQuestion,
+  onNextQuestion,
+  canPrevQuestion,
+  canNextQuestion,
 }: QuestionRouterProps) {
   const { questionType, questionText, options, hint, codeBlock, wordBank } = question;
 
@@ -52,6 +64,12 @@ export function QuestionRouter({
           question={question}
           currentAnswer={currentAnswer}
           onChange={onAnswer}
+          questionIndex={questionIndex}
+          totalQuestions={totalQuestions}
+          onPrev={onPrevQuestion}
+          onNext={onNextQuestion}
+          canPrev={canPrevQuestion}
+          canNext={canNextQuestion}
         />
       );
 

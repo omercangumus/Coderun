@@ -27,13 +27,14 @@ export default function LearnPage() {
   const { data: modules, isLoading } = useModules();
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col gap-6">
-      <div>
+    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+      <section className="relative overflow-hidden rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/10 via-surface-container-lowest to-tertiary/10 p-6">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
         <h1 className="font-heading text-h2 font-bold text-on-surface">Öğrenme Yolları</h1>
-        <p className="font-sans text-body-sm text-on-surface-variant mt-1">
-          Kariyer hedefine göre bir yol seç
+        <p className="mt-1 max-w-2xl font-sans text-body-sm text-on-surface-variant">
+          Modül seç, ünite ünite ilerle ve kod laboratuvarında pratik yap.
         </p>
-      </div>
+      </section>
 
       <GhostieMotivationCard
         title="Ghostie Rehberi"
