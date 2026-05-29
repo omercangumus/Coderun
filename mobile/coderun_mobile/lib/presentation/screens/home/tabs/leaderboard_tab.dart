@@ -91,8 +91,25 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
 
     return leaderboardAsync.when(
       data: (lb) {
-        final top3 = lb.entries.take(3).toList();
-        final rest = lb.entries.skip(3).toList();
+        final top3 = List<LeaderboardEntryModel>.from(lb.entries.take(3));
+        final mockNames = ['GhostieBot 🤖', 'Gizemli Kodcu 👤', 'Sıradaki Sen 🫵'];
+        final mockXps = [500, 250, 0];
+        final mockLevels = [10, 5, 1];
+        final mockStreaks = [7, 3, 0];
+        
+        while (top3.length < 3) {
+          final nextRank = top3.length + 1;
+          top3.add(LeaderboardEntryModel(
+            rank: nextRank,
+            userId: 'mock_$nextRank',
+            username: mockNames[nextRank - 1],
+            weeklyXp: mockXps[nextRank - 1],
+            level: mockLevels[nextRank - 1],
+            streak: mockStreaks[nextRank - 1],
+          ));
+        }
+
+        final rest = lb.entries.length > 3 ? lb.entries.sublist(3) : <LeaderboardEntryModel>[];
 
         return RefreshIndicator(
           onRefresh: () async => ref.invalidate(leaderboardProvider),
@@ -139,64 +156,106 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                       const SizedBox(height: 20),
 
                       // Podium animasyonu
-                      if (top3.length >= 3)
-                        SizedBox(
-                          height: 180,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: SlideTransition(
-                                  position: _podiumAnims[1],
-                                  child: _PodiumItem(
-                                    entry: top3[1],
-                                    height: 80,
-                                    color: AppColors.grey,
-                                  ),
+                      SizedBox(
+                        height: 180,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: SlideTransition(
+                                position: _podiumAnims[1],
+                                child: _PodiumItem(
+                                  entry: top3[1],
+                                  height: 80,
+                                  color: AppColors.grey,
                                 ),
                               ),
-                              Expanded(
-                                child: SlideTransition(
-                                  position: _podiumAnims[0],
-                                  child: _PodiumItem(
-                                    entry: top3[0],
-                                    height: 110,
-                                    color: AppColors.xpGold,
-                                  ),
+                            ),
+                            Expanded(
+                              child: SlideTransition(
+                                position: _podiumAnims[0],
+                                child: _PodiumItem(
+                                  entry: top3[0],
+                                  height: 110,
+                                  color: AppColors.xpGold,
                                 ),
                               ),
-                              Expanded(
-                                child: SlideTransition(
-                                  position: _podiumAnims[2],
-                                  child: _PodiumItem(
-                                    entry: top3[2],
-                                    height: 60,
-                                    color: AppColors.streakOrange,
-                                  ),
+                            ),
+                            Expanded(
+                              child: SlideTransition(
+                                position: _podiumAnims[2],
+                                child: _PodiumItem(
+                                  entry: top3[2],
+                                  height: 60,
+                                  color: AppColors.streakOrange,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
               ),
 
-              // 4. sıra ve sonrası
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final entry = rest[index];
-                    final isCurrentUser = entry.username == currentUsername;
-                    return LeaderboardCard(
-                      entry: entry,
-                      isCurrentUser: isCurrentUser,
-                    );
-                  },
-                  childCount: rest.length,
+              // 4. sıra ve sonrası / boş durum
+              if (lb.entries.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLow.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.4)),
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '🚀',
+                            style: TextStyle(fontSize: 32),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Henüz sıralamada kimse yok.',
+                            style: TextStyle(
+                              fontFamily: 'PlusJakartaSans',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: AppColors.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'İlk dersini tamamla ve zirveye yerleş!',
+                            style: TextStyle(
+                              fontFamily: 'Lexend',
+                              fontSize: 12,
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final entry = rest[index];
+                      final isCurrentUser = entry.username == currentUsername;
+                      return LeaderboardCard(
+                        entry: entry,
+                        isCurrentUser: isCurrentUser,
+                      );
+                    },
+                    childCount: rest.length,
+                  ),
                 ),
-              ),
 
               const SliverPadding(padding: EdgeInsets.only(bottom: 8)),
 

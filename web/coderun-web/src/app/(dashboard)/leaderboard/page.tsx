@@ -23,8 +23,6 @@ export default function LeaderboardPage() {
   const [activeFilter, setActiveFilter] = useState<Filter>('weekly');
 
   const entries = leaderboard?.entries ?? [];
-  const top3 = entries.slice(0, 3);
-  const rest = entries.slice(3);
 
   const mappedEntries = entries.map((e) => ({
     rank: e.rank,
@@ -35,7 +33,25 @@ export default function LeaderboardPage() {
     isCurrentUser: e.userId === user?.id,
   }));
 
-  const top3Mapped = mappedEntries.slice(0, 3);
+  // Ensure we always have 3 podium entries
+  const mockNames = ['GhostieBot 🤖', 'Gizemli Kodcu 👤', 'Sıradaki Sen 🫵'];
+  const mockXps = [500, 250, 0];
+  const mockStreaks = [7, 3, 0];
+  const mockLevels = [10, 5, 1];
+
+  const top3Mapped = [...mappedEntries].slice(0, 3);
+  while (top3Mapped.length < 3) {
+    const nextRank = top3Mapped.length + 1;
+    top3Mapped.push({
+      rank: nextRank,
+      username: mockNames[nextRank - 1],
+      xpThisWeek: mockXps[nextRank - 1],
+      streak: mockStreaks[nextRank - 1],
+      level: mockLevels[nextRank - 1],
+      isCurrentUser: false,
+    });
+  }
+
   const restMapped = mappedEntries.slice(3);
 
   return (
@@ -80,11 +96,11 @@ export default function LeaderboardPage() {
         {/* Podium */}
         {isLoading ? (
           <Skeleton className="h-48" />
-        ) : top3Mapped.length >= 3 ? (
+        ) : (
           <CoderunCard>
             <LeaderboardPodium top3={top3Mapped} />
           </CoderunCard>
-        ) : null}
+        )}
 
         {/* Full list */}
         <div>
@@ -94,10 +110,16 @@ export default function LeaderboardPage() {
               Array.from({ length: 10 }).map((_, i) => (
                 <Skeleton key={i} className="h-14" />
               ))
-            ) : (
+            ) : mappedEntries.length > 0 ? (
               mappedEntries.map((entry) => (
                 <LeaderboardRow key={entry.username} entry={entry} />
               ))
+            ) : (
+              <div className="text-center py-8 px-4 border border-dashed border-outline-variant rounded-2xl bg-surface-container/50">
+                <p className="font-sans text-body-md text-on-surface-variant font-medium">
+                  Henüz sıralamada kimse yok. İlk dersini tamamla ve buradaki yerini al! 🚀
+                </p>
+              </div>
             )}
           </div>
         </div>

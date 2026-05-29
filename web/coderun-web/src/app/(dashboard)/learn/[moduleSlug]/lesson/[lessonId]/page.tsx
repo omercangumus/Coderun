@@ -360,23 +360,28 @@ export default function LessonPage({
         </aside>
       </div>
 
-      {/* Çıkış dialog */}
+      {/* Çıkış diyalog */}
       {showExitDialog && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-sm w-full">
-            <h3 className="text-lg font-bold text-white mb-2">Dersten çıkmak istiyor musun?</h3>
-            <p className="text-slate-400 text-sm mb-6">İlerlemeniz kaydedilmeyecek.</p>
+        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="max-w-sm w-full bg-white rounded-2xl border border-outline-variant shadow-primary-lg p-6 animate-bounce-in">
+            <h3 className="text-lg font-bold text-on-surface mb-2 font-heading">Dersten çıkmak istiyor musun?</h3>
+            <p className="text-on-surface-variant text-sm mb-6 font-sans">İlerlemeniz kaydedilmeyecek.</p>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowExitDialog(false)} className="flex-1">
+              <button
+                onClick={() => setShowExitDialog(false)}
+                className="flex-1 py-2.5 rounded-full border-2 border-outline-variant text-on-surface-variant font-semibold hover:bg-surface-container transition-all font-sans text-sm"
+              >
                 İptal
-              </Button>
+              </button>
               <Link href={`/learn/${moduleSlug}`} className="flex-1">
-                <Button variant="ghost" className="w-full text-red-400 hover:text-red-300">
+                <button
+                  className="w-full py-2.5 rounded-full bg-error text-white font-semibold hover:bg-error/90 transition-all font-sans text-sm"
+                >
                   Çık
-                </Button>
+                </button>
               </Link>
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>
