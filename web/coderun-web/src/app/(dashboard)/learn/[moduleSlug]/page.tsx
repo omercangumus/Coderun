@@ -21,6 +21,55 @@ export default function ModulePage({
   const { moduleSlug } = params;
   const { data: lessons, isLoading } = useLessons(moduleSlug);
   const { data: progress } = useModuleProgress(moduleSlug);
+  
+  const getUnits = () => {
+    if (!lessons) return [];
+    if (moduleSlug === 'python') {
+      const PYTHON_UNITS = [
+        {
+          title: "Ünite 1: Python Temelleri",
+          description: "Değişkenler, veri tipleri, sayılar, stringler, karşılaştırmalar ve basit I/O işlemleri.",
+          indices: [0, 1, 2, 3, 4]
+        },
+        {
+          title: "Ünite 2: Listeler",
+          description: "Liste tanımı, indeks erişimi, eleman işlemleri, listelerde for döngüsü ve pratik görevler.",
+          indices: [5, 6, 7, 8, 9]
+        },
+        {
+          title: "Ünite 3: Koşullar",
+          description: "if/elif/else blokları, karşılaştırma operatörleri ve iç içe mantıksal sorgulamalar.",
+          indices: [10, 11, 12, 13, 14]
+        },
+        {
+          title: "Ünite 4: Döngüler",
+          description: "for ve while döngüleri, range fonksiyonu, break ve continue komutları.",
+          indices: [15, 16, 17, 18, 19]
+        },
+        {
+          title: "Ünite 5: Fonksiyonlar",
+          description: "Fonksiyon tanımlama, parametreler, return anahtar kelimesi ve yerel/global scope.",
+          indices: [20, 21, 22, 23, 24]
+        },
+        {
+          title: "Ünite 6: Python Kodlama Ödevleri",
+          description: "Derleyici üzerinde çalışan gerçek zamanlı algoritmik kodlama projeleri.",
+          indices: [25]
+        }
+      ];
+      return PYTHON_UNITS.filter(u => u.indices[0] < lessons.length);
+    }
+    
+    return [
+      {
+        title: `Ünite 1: ${moduleSlug.replace(/-/g, ' ').toUpperCase()}`,
+        description: "Modüle ait tüm konu anlatımları ve pratik görevler.",
+        indices: lessons.map((_, i) => i)
+      }
+    ];
+  };
+
+  const units = getUnits();
 
   const emoji = MODULE_EMOJIS[moduleSlug] ?? '📚';
   const allCompleted =
@@ -73,16 +122,6 @@ export default function ModulePage({
             </div>
           </div>
 
-          {/* Unit header */}
-          {progress && (
-            <UnitHeader
-              title={moduleSlug.replace(/-/g, ' ')}
-              progress={Math.round(progress.completionRate)}
-              lessonCount={progress.totalLessons}
-              completedCount={progress.completedLessons}
-            />
-          )}
-
           {/* Placement test */}
           {noneCompleted && (
             <Link href={`/learn/${moduleSlug}/placement`}>
@@ -129,46 +168,84 @@ export default function ModulePage({
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center py-4">
-                {lessons?.map((lesson, i) => (
-                  <div key={lesson.id} className="w-full">
-                    {/* Ghostie helper near active node */}
-                    {i === activeIndex && (
-                      <div className="flex justify-center mb-4">
-                        <div className="max-w-xs">
-                          <GhostieBubble
-                            message="Devam et! Bir sonraki ders seni bekliyor 🚀"
-                            mood="helping"
-                          />
-                        </div>
+              <div className="flex flex-col gap-8 py-4">
+                {units.map((unit, unitIdx) => {
+                  const unitLessons = unit.indices.map(idx => lessons?.[idx]).filter((l): l is NonNullable<typeof l> => !!l);
+                  const completedInUnit = unitLessons.filter(l => l.isCompleted).length;
+                  const totalInUnit = unitLessons.length;
+                  const unitProgress = totalInUnit > 0 ? Math.round((completedInUnit / totalInUnit) * 100) : 0;
+                  
+                  return (
+                    <div key={unit.title} className="w-full flex flex-col gap-4 border-b border-dashed border-outline-variant/30 pb-8 last:border-0 last:pb-0">
+                      <UnitHeader
+                        title={unit.title}
+                        subtitle={unit.description}
+                        progress={unitProgress}
+                        lessonCount={totalInUnit}
+                        completedCount={completedInUnit}
+                      />
+                      <div className="flex flex-col items-center py-4">
+                        {unitLessons.map((lesson, idxWithinUnit) => {
+                          const i = unit.indices[idxWithinUnit];
+                          return (
+                            <div key={lesson.id} className="w-full">
+                              {/* Ghostie helper near active node */}
+                              {i === activeIndex && (
+                                <div className="flex justify-center mb-4">
+                                  <div className="max-w-xs">
+                                    <GhostieBubble
+                                      message="Devam et! Bir sonraki ders seni bekliyor 🚀"
+                                      mood="helping"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex justify-center">
+                                <Link href={`/learn/${moduleSlug}/lesson/${lesson.id}`}>
+                                  <ProgressNode
+                                    state={getNodeState(lesson, i)}
+                                    type={getNodeType(lesson, i)}
+                                    label={lesson.title}
+                                    side={i % 2 === 0 ? 'left' : 'right'}
+                                  />
+                                </Link>
+                              </div>
+                              {idxWithinUnit < unitLessons.length - 1 && (
+                                <NodeConnector isCompleted={lesson.isCompleted} height={40} />
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    )}
-                    <div className="flex justify-center">
-                      <Link href={`/learn/${moduleSlug}/lesson/${lesson.id}`}>
-                        <ProgressNode
-                          state={getNodeState(lesson, i)}
-                          type={getNodeType(lesson, i)}
-                          label={lesson.title}
-                          side={i % 2 === 0 ? 'left' : 'right'}
-                        />
-                      </Link>
                     </div>
-                    {i < (lessons?.length ?? 0) - 1 && (
-                      <NodeConnector isCompleted={lesson.isCompleted} height={40} />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
 
           {/* Mobile: List view */}
-          <div className="lg:hidden flex flex-col gap-2">
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16" />)
-              : lessons?.map((lesson) => (
-                  <LessonTile key={lesson.id} lesson={lesson} moduleSlug={moduleSlug} />
-                ))}
+          <div className="lg:hidden flex flex-col gap-6">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16" />)
+            ) : (
+              units.map((unit) => {
+                const unitLessons = unit.indices.map(idx => lessons?.[idx]).filter((l): l is NonNullable<typeof l> => !!l);
+                return (
+                  <div key={unit.title} className="flex flex-col gap-3">
+                    <div className="px-1">
+                      <h3 className="font-heading text-base font-bold text-on-surface">{unit.title}</h3>
+                      <p className="font-sans text-xs text-on-surface-variant mt-0.5">{unit.description}</p>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {unitLessons.map((lesson) => (
+                        <LessonTile key={lesson.id} lesson={lesson} moduleSlug={moduleSlug} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 // Coderun Stitch Design System — Learning Path Node
 
+import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 export type NodeState = 'completed' | 'active' | 'locked' | 'review' | 'checkpoint' | 'miniProject';
@@ -93,8 +94,8 @@ export function ProgressNode({
       )}
       aria-label={`${label} — ${state}`}
     >
-      <span className={cn(isLocked ? 'text-outline' : 'text-white')}>
-        {config.icon}
+      <span className={cn(isLocked ? 'text-outline-variant' : 'text-white')}>
+        {isLocked ? <Lock className="w-4.5 h-4.5 stroke-[2.5px]" /> : config.icon}
       </span>
     </button>
   );

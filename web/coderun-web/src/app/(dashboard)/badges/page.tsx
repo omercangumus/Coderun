@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { GhostieMotivationCard } from '@/components/stitch/GhostieCard';
 
 const ALL_BADGES = [
   { type: 'first_lesson', emoji: '🎯', title: 'İlk Adım', description: 'İlk dersini tamamla', condition: 'İlk dersi tamamla' },
@@ -29,34 +30,43 @@ export default function BadgesPage() {
   const totalCount = ALL_BADGES.length;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-white">Rozetlerim</h1>
-        <p className="text-slate-400 mt-1 text-sm">{earnedCount} / {totalCount} rozet kazanıldı</p>
+        <h1 className="font-heading text-h2 font-bold text-on-surface">Rozetlerim 🏆</h1>
+        <p className="font-sans text-body-sm text-on-surface-variant mt-1">{earnedCount} / {totalCount} rozet kazanıldı</p>
       </div>
 
-      <Progress value={(earnedCount / totalCount) * 100} color="primary" showLabel />
+      <div className="bg-white rounded-xl p-4 border border-outline-variant shadow-sm">
+        <Progress value={(earnedCount / totalCount) * 100} color="primary" showLabel />
+      </div>
+
+      {/* Ghostie Başarı Koçu */}
+      <GhostieMotivationCard
+        title="Ghostie Başarı Koçu"
+        message="Rozetler seni motive etmek ve ilerlemelerini ödüllendirmek için tasarlandı. Yeni rozetler açmak için dersleri tamamla ve streak serini koru! 🚀"
+        mood="celebrating"
+      />
 
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-36" />)}
         </div>
       ) : (
-        <>
+        <div className="flex flex-col gap-6">
           {/* Kazanılan rozetler */}
           {earnedCount > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Kazanılan</h2>
+            <div className="flex flex-col gap-3">
+              <h2 className="font-label text-label-caps text-primary uppercase tracking-wider">Kazanılan Rozetler</h2>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {ALL_BADGES.filter(b => earnedTypes.has(b.type)).map(badge => {
                   const earned = badges?.find(b => b.badgeType === badge.type);
                   return (
-                    <Card key={badge.type} className="border-yellow-500/40 bg-yellow-500/10 text-center py-4">
-                      <div className="text-4xl mb-2">{badge.emoji}</div>
-                      <p className="text-white font-semibold text-sm">{badge.title}</p>
-                      <p className="text-slate-400 text-xs mt-1">{badge.description}</p>
+                    <Card key={badge.type} className="border-amber-300 bg-gradient-to-br from-amber-50/70 to-white text-center py-6 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                      <div className="text-5xl mb-3 animate-bounce-once">{badge.emoji}</div>
+                      <p className="text-on-surface font-bold text-base font-heading">{badge.title}</p>
+                      <p className="text-on-surface-variant text-xs mt-1.5 font-sans px-2">{badge.description}</p>
                       {earned && (
-                        <p className="text-yellow-500/70 text-xs mt-2">
+                        <p className="text-amber-700/80 font-semibold text-[11px] font-label mt-3 bg-amber-100/50 inline-block px-2 py-0.5 rounded-full">
                           {new Date(earned.earnedAt).toLocaleDateString('tr-TR')}
                         </p>
                       )}
@@ -68,29 +78,31 @@ export default function BadgesPage() {
           )}
 
           {/* Kazanılmayan rozetler */}
-          <div>
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Kilitli</h2>
+          <div className="flex flex-col gap-3">
+            <h2 className="font-label text-label-caps text-on-surface-variant uppercase tracking-wider">Kilitli Rozetler</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {ALL_BADGES.filter(b => !earnedTypes.has(b.type)).map(badge => (
                 <div
                   key={badge.type}
                   className={cn(
-                    'group relative rounded-xl border border-slate-700/50 bg-slate-800/40 p-4 text-center opacity-50',
-                    'hover:opacity-70 transition-opacity cursor-default'
+                    'group relative rounded-xl border border-outline-variant bg-white/60 p-6 text-center shadow-sm overflow-hidden',
+                    'hover:shadow-md transition-all duration-200 cursor-help'
                   )}
                 >
-                  <div className="text-4xl mb-2 grayscale">{badge.emoji}</div>
-                  <Lock className="w-4 h-4 text-slate-500 mx-auto mb-1" />
-                  <p className="text-slate-500 font-semibold text-sm">???</p>
+                  <div className="text-5xl mb-3 grayscale opacity-30">{badge.emoji}</div>
+                  <Lock className="w-5 h-5 text-outline mx-auto mb-2" />
+                  <p className="text-on-surface-variant/40 font-bold text-sm font-heading">???</p>
+                  <p className="text-on-surface-variant/30 text-xs mt-1 font-sans">Kilitli Rozet</p>
+                  
                   {/* Hover tooltip */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900/80 rounded-xl p-3">
-                    <p className="text-xs text-slate-300 text-center">{badge.condition}</p>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-primary/95 p-4 rounded-xl shadow-primary-lg">
+                    <p className="text-sm font-semibold text-white text-center font-sans">{badge.condition}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

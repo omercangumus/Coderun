@@ -63,21 +63,6 @@ class LearningPathScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // Unit header card
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, 0,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: _UnitCard(
-                      title: progress.module.title,
-                      description: progress.module.description,
-                      completedCount: progress.completedLessons,
-                      totalCount: progress.totalLessons,
-                    ),
-                  ),
-                ),
-
                 // Lesson nodes
                 lessonsAsync.when(
                   data: (lessons) {
@@ -318,6 +303,18 @@ class _UnitCard extends StatelessWidget {
   }
 }
 
+class UnitData {
+  final String title;
+  final String description;
+  final List<int> indices;
+
+  UnitData({
+    required this.title,
+    required this.description,
+    required this.indices,
+  });
+}
+
 class _LearningPathJourney extends StatelessWidget {
   final List<LessonModel> lessons;
   final int activeIndex;
@@ -334,7 +331,6 @@ class _LearningPathJourney extends StatelessWidget {
   NodeState _getNodeState(LessonModel lesson, int index) {
     if (lesson.isCompleted) return NodeState.completed;
     if (index == activeIndex) return NodeState.active;
-    if (index > activeIndex) return NodeState.locked;
     return NodeState.locked;
   }
 
@@ -348,41 +344,115 @@ class _LearningPathJourney extends StatelessWidget {
     return NodeType.lesson;
   }
 
+  List<UnitData> _getUnits(int lessonCount) {
+    if (moduleSlug == 'python') {
+      return [
+        UnitData(
+          title: "Ünite 1: Python Temelleri",
+          description: "Değişkenler, veri tipleri, sayılar, stringler, karşılaştırmalar ve basit I/O işlemleri.",
+          indices: [0, 1, 2, 3, 4],
+        ),
+        UnitData(
+          title: "Ünite 2: Listeler",
+          description: "Liste tanımı, indeks erişimi, eleman işlemleri, listelerde for döngüsü ve pratik görevler.",
+          indices: [5, 6, 7, 8, 9],
+        ),
+        UnitData(
+          title: "Ünite 3: Koşullar",
+          description: "if/elif/else blokları, karşılaştırma operatörleri ve iç içe mantıksal sorgulamalar.",
+          indices: [10, 11, 12, 13, 14],
+        ),
+        UnitData(
+          title: "Ünite 4: Döngüler",
+          description: "for ve while döngüleri, range fonksiyonu, break ve continue komutları.",
+          indices: [15, 16, 17, 18, 19],
+        ),
+        UnitData(
+          title: "Ünite 5: Fonksiyonlar",
+          description: "Fonksiyon tanımlama, parametreler, return anahtar kelimesi ve yerel/global scope.",
+          indices: [20, 21, 22, 23, 24],
+        ),
+        UnitData(
+          title: "Ünite 6: Python Kodlama Ödevleri",
+          description: "Derleyici üzerinde çalışan gerçek zamanlı algoritmik kodlama projeleri.",
+          indices: [25],
+        ),
+      ].where((u) => u.indices.first < lessonCount).toList();
+    }
+
+    return [
+      UnitData(
+        title: "Ünite 1: Temel Konular",
+        description: "Modüle ait tüm konu anlatımları ve pratik görevler.",
+        indices: List<int>.generate(lessonCount, (i) => i),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    final units = _getUnits(lessons.length);
+
     return Column(
       children: [
-        for (int i = 0; i < lessons.length; i++) ...[
-          // Ghostie helper near active node
-          if (i == activeIndex) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
-              child: GhostieSpeechBubble(
-                message: 'Devam et! Bir sonraki ders seni bekliyor 🚀',
-                mood: GhostieMood.helping,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-
-          // Node
+        for (int u = 0; u < units.length; u++) ...[
+          // Unit Card Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: ProgressNode(
-              state: _getNodeState(lessons[i], i),
-              type: _getNodeType(lessons[i], i),
-              label: lessons[i].title,
-              isLeft: i.isEven,
-              onTap: () => onLessonTap(lessons[i]),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+            child: _UnitCard(
+              title: units[u].title,
+              description: units[u].description,
+              completedCount: units[u].indices.map((idx) => lessons[idx]).where((l) => l.isCompleted).length,
+              totalCount: units[u].indices.length,
             ),
           ),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Connector (not after last)
-          if (i < lessons.length - 1)
-            NodeConnector(
-              isCompleted: lessons[i].isCompleted,
-              height: 36,
-            ),
+          // Lessons inside this Unit
+          for (int idxWithinUnit = 0; idxWithinUnit < units[u].indices.length; idxWithinUnit++) ...[
+            (() {
+              final i = units[u].indices[idxWithinUnit];
+              final lesson = lessons[i];
+              
+              return Column(
+                children: [
+                  // Ghostie helper near active node
+                  if (i == activeIndex) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+                      child: GhostieSpeechBubble(
+                        message: 'Devam et! Bir sonraki ders seni bekliyor 🚀',
+                        mood: GhostieMood.helping,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+
+                  // Node
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    child: ProgressNode(
+                      state: _getNodeState(lesson, i),
+                      type: _getNodeType(lesson, i),
+                      label: lesson.title,
+                      isLeft: i.isEven,
+                      onTap: () => onLessonTap(lesson),
+                    ),
+                  ),
+
+                  // Connector (not after last lesson in module)
+                  if (i < lessons.length - 1)
+                    NodeConnector(
+                      isCompleted: lesson.isCompleted,
+                      height: 36,
+                    ),
+                ],
+              );
+            }()),
+          ],
+          
+          // Extra space after unit
+          if (u < units.length - 1) const SizedBox(height: AppSpacing.xl),
         ],
         const SizedBox(height: AppSpacing.xl),
       ],
