@@ -7,10 +7,10 @@ interface BadgeProps {
 }
 
 const variantClasses = {
-  default: 'bg-slate-700 text-slate-300',
-  gold: 'bg-xpGold/20 text-xpGold border border-xpGold/30',
-  orange: 'bg-streakOrange/20 text-streakOrange border border-streakOrange/30',
-  green: 'bg-green-500/20 text-green-400 border border-green-500/30',
+  default: 'bg-surface-container text-on-surface-variant border border-outline-variant',
+  gold: 'bg-xp-gold/20 text-xp-gold border border-xp-gold/30',
+  orange: 'bg-streak-orange/20 text-streak-orange border border-streak-orange/30',
+  green: 'bg-secondary-container/30 text-secondary border border-secondary/30',
 };
 
 export function Badge({ children, variant = 'default', className }: BadgeProps) {

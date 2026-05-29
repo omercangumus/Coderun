@@ -11,7 +11,7 @@ export function Skeleton({ className, rounded = false }: SkeletonProps) {
   return (
     <div
       className={cn(
-        'animate-pulse bg-slate-700/60',
+        'animate-pulse bg-surface-container',
         rounded ? 'rounded-full' : 'rounded-lg',
         className
       )}

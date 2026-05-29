@@ -13,11 +13,11 @@ interface LessonTileProps {
 export function LessonTile({ lesson, moduleSlug }: LessonTileProps) {
   if (lesson.isLocked) {
     return (
-      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-700/50 bg-slate-800/20 opacity-50 cursor-not-allowed">
-        <Lock className="h-5 w-5 text-slate-500" />
+      <div className="flex items-center gap-3 p-3 rounded-xl border border-outline-variant bg-surface-container-low/60 opacity-60 cursor-not-allowed">
+        <Lock className="h-5 w-5 text-outline shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-slate-400 truncate">{lesson.title}</p>
-          <p className="text-xs text-slate-500">{lesson.xpReward} XP</p>
+          <p className="font-sans text-body-sm text-on-surface-variant truncate">{lesson.title}</p>
+          <p className="font-sans text-xs text-on-surface-variant/70">{lesson.xpReward} XP</p>
         </div>
       </div>
     );
@@ -29,18 +29,18 @@ export function LessonTile({ lesson, moduleSlug }: LessonTileProps) {
       className={cn(
         'flex items-center gap-3 p-3 rounded-xl border transition-all',
         lesson.isCompleted
-          ? 'border-green-500/30 bg-green-500/10 hover:bg-green-500/20'
-          : 'border-slate-700/50 bg-slate-800/40 hover:border-accent/50 hover:bg-accent/5'
+          ? 'border-secondary/30 bg-secondary-container/10 hover:bg-secondary-container/20'
+          : 'border-outline-variant bg-surface-container-lowest hover:border-primary/40 hover:bg-primary-fixed/20'
       )}
     >
       {lesson.isCompleted ? (
-        <CheckCircle className="h-5 w-5 text-green-400 shrink-0" />
+        <CheckCircle className="h-5 w-5 text-secondary shrink-0" />
       ) : (
-        <PlayCircle className="h-5 w-5 text-accent shrink-0" />
+        <PlayCircle className="h-5 w-5 text-primary shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">{lesson.title}</p>
-        <p className="text-xs text-slate-400">
+        <p className="font-sans text-body-sm font-semibold text-on-surface truncate">{lesson.title}</p>
+        <p className="font-sans text-xs text-on-surface-variant">
           {lesson.xpReward} XP
           {lesson.score !== null && ` · ${lesson.score}/100`}
         </p>

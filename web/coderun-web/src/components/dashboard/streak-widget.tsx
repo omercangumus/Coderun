@@ -12,14 +12,14 @@ export function StreakWidget({ streak, className }: StreakWidgetProps) {
       className={cn(
         'flex flex-col items-center gap-1 px-4 py-3 rounded-xl border',
         streak.isAlive
-          ? 'border-streakOrange/40 bg-streakOrange/10'
-          : 'border-slate-700 bg-slate-800/40 opacity-60',
+          ? 'border-streak-orange/40 bg-streak-orange/10'
+          : 'border-outline-variant bg-surface-container-low opacity-70',
         className
       )}
     >
       <span className="text-2xl">{streak.isAlive ? '🔥' : '💤'}</span>
-      <span className="text-2xl font-bold text-white">{streak.currentStreak}</span>
-      <span className="text-xs text-slate-400">Günlük seri</span>
+      <span className="font-heading text-2xl font-bold text-on-surface">{streak.currentStreak}</span>
+      <span className="font-sans text-xs text-on-surface-variant">Günlük seri</span>
     </div>
   );
 }

@@ -9,6 +9,7 @@ export interface LeaderboardEntry {
   streak: number;
   level: number;
   isCurrentUser?: boolean;
+  isDemo?: boolean;
   league?: string;
 }
 
@@ -24,9 +25,9 @@ const rankColors: Record<number, string> = {
 };
 
 const rankBg: Record<number, string> = {
-  1: 'bg-yellow-50 border-yellow-200',
-  2: 'bg-slate-50 border-slate-200',
-  3: 'bg-amber-50 border-amber-200',
+  1: 'bg-yellow-500/10 border-yellow-500/30',
+  2: 'bg-surface-container border-outline-variant',
+  3: 'bg-amber-500/10 border-amber-500/30',
 };
 
 const rankEmoji: Record<number, string> = {
@@ -42,7 +43,7 @@ export function LeaderboardRow({ entry, className }: LeaderboardRowProps) {
     <div
       className={cn(
         'flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-150',
-        isTop3 ? rankBg[entry.rank] : 'bg-white border-outline-variant',
+        isTop3 ? rankBg[entry.rank] : 'bg-surface-container-lowest border-outline-variant',
         entry.isCurrentUser && 'border-primary/40 bg-primary-fixed/30',
         className
       )}
@@ -158,9 +159,14 @@ function PodiumSlot({
       >
         {entry.username.charAt(0).toUpperCase()}
       </div>
-      <p className="font-sans text-xs font-semibold text-on-surface text-center max-w-[64px] truncate">
+      <p className="font-sans text-xs font-semibold text-on-surface text-center max-w-[72px] truncate">
         {entry.username}
       </p>
+      {entry.isDemo && (
+        <span className="font-label text-[10px] uppercase tracking-wide text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded-full">
+          Demo
+        </span>
+      )}
       <p className="font-heading text-sm font-bold text-primary">
         {entry.xpThisWeek.toLocaleString()} XP
       </p>

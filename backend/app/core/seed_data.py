@@ -1,11 +1,11 @@
 # Coderun backend — kapsamlı ders içeriği seed verisi.
-# Python (10 ders), DevOps (8 ders), Cloud (8 ders) — toplam ~260+ soru
+# Python (25 ders + 1 kodlama ödevi = 26), DevOps (8 ders), Cloud (8 ders)
 # Her derste: multiple_choice, fill_in_blank, reorder, spot_the_bug, true_false_reason, multi_select karışık
 # Pekiştirme soruları: is_reinforcement=True, has_reinforcement=True bağlantısıyla
 
 SEED_DATA: list[dict] = [
     # =========================================================================
-    # PYTHON MODÜLÜ — 10 Ders
+    # PYTHON MODÜLÜ — 25 Ders (+ 1 kodlama ödevi seed.py ile eklenir = 26)
     # =========================================================================
     {
         "slug": "python",

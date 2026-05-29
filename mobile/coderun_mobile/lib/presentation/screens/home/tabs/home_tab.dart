@@ -28,7 +28,7 @@ class HomeTab extends ConsumerWidget {
         authState.whenOrNull(authenticated: (u) => u.username) ?? 'Kullanıcı';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(userStatsProvider);
@@ -41,7 +41,7 @@ class HomeTab extends ConsumerWidget {
             // App bar
             SliverAppBar(
               pinned: true,
-              backgroundColor: AppColors.surfaceContainerLowest,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
               scrolledUnderElevation: 1,
               title: Row(

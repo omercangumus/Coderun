@@ -14,16 +14,16 @@ export function BadgeChip({ badge, earned = true, className }: BadgeChipProps) {
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center',
+        'flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all',
         earned
-          ? 'border-xpGold/30 bg-xpGold/10'
-          : 'border-slate-700 bg-slate-800/40 opacity-40 grayscale',
+          ? 'border-xp-gold/30 bg-xp-gold/10 shadow-sm'
+          : 'border-outline-variant bg-surface-container-low/50 opacity-70 grayscale hover:opacity-90',
         className
       )}
       title={badge.description}
     >
       <span className="text-2xl">{icon}</span>
-      <span className="text-xs font-medium text-slate-300 leading-tight">
+      <span className="font-sans text-xs font-medium text-on-surface leading-tight">
         {badge.title}
       </span>
     </div>

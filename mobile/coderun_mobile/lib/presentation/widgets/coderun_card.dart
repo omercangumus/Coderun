@@ -27,21 +27,22 @@ class CoderunCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final card = Container(
       padding: padding ?? const EdgeInsets.all(AppSpacing.cardPadding),
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surfaceContainerLowest,
+        color: backgroundColor ?? colorScheme.surface,
         borderRadius: BorderRadius.circular(
           borderRadius ?? AppSpacing.radiusXl,
         ),
         border: Border.all(
-          color: borderColor ?? AppColors.outlineVariant,
+          color: borderColor ?? colorScheme.outlineVariant,
           width: 1,
         ),
         boxShadow: shadows ??
             [
               BoxShadow(
-                color: AppColors.onSurface.withValues(alpha: 0.04),
+                color: colorScheme.onSurface.withValues(alpha: 0.04),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
