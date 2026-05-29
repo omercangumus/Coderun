@@ -3,7 +3,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './auth-provider';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSettingsStore } from '@/store/settings-store';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -17,6 +18,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
       })
   );
+
+  const theme = useSettingsStore((s) => s.theme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme || 'light');
+  }, [theme]);
 
   return (
     <QueryClientProvider client={queryClient}>

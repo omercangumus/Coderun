@@ -19,7 +19,7 @@ const paddingMap = {
 };
 
 const variantMap = {
-  default: 'bg-white border border-outline-variant shadow-card',
+  default: 'bg-surface-container-lowest border border-outline-variant shadow-card',
   highlight: 'bg-primary-fixed border border-primary/20 shadow-primary',
   success: 'bg-secondary-container/30 border border-secondary-fixed-dim',
   ghost: 'bg-surface-container border border-outline-variant/50',
@@ -64,9 +64,9 @@ interface StatCardProps {
 const statColorMap = {
   primary: { bg: 'bg-primary-fixed', text: 'text-primary', icon: 'text-primary' },
   success: { bg: 'bg-secondary-container/40', text: 'text-secondary', icon: 'text-secondary' },
-  warning: { bg: 'bg-amber-50', text: 'text-amber-700', icon: 'text-amber-500' },
+  warning: { bg: 'bg-amber-500/10', text: 'text-amber-700 dark:text-amber-400', icon: 'text-amber-500' },
   purple: { bg: 'bg-tertiary-fixed', text: 'text-tertiary', icon: 'text-tertiary' },
-  orange: { bg: 'bg-orange-50', text: 'text-orange-600', icon: 'text-orange-500' },
+  orange: { bg: 'bg-orange-500/10', text: 'text-orange-600 dark:text-orange-400', icon: 'text-orange-500' },
 };
 
 export function StatCard({ icon, label, value, subValue, color = 'primary', className }: StatCardProps) {

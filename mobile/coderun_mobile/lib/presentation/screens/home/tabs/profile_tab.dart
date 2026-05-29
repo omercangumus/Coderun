@@ -13,6 +13,8 @@ import '../../../widgets/loading_widget.dart';
 import '../../../widgets/stat_card.dart';
 import '../../../widgets/streak_widget.dart';
 import '../../../widgets/xp_progress_bar.dart';
+import '../../../../providers/providers.dart';
+
 
 class ProfileTab extends ConsumerStatefulWidget {
   const ProfileTab({super.key});
@@ -124,6 +126,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
     final authState = ref.watch(authProvider);
     final statsAsync = ref.watch(userStatsProvider);
     final streakAsync = ref.watch(streakProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     final username =
         authState.whenOrNull(authenticated: (u) => u.username) ?? '';
@@ -389,7 +392,65 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
+
+              // Tema Ayarları
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tema Ayarları',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _ThemeOptionButton(
+                              isSelected: themeMode == 'light',
+                              label: 'Açık',
+                              icon: Icons.light_mode,
+                              onTap: () {
+                                ref.read(themeModeProvider.notifier).setTheme('light');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _ThemeOptionButton(
+                              isSelected: themeMode == 'dark',
+                              label: 'Koyu',
+                              icon: Icons.dark_mode,
+                              onTap: () {
+                                ref.read(themeModeProvider.notifier).setTheme('dark');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _ThemeOptionButton(
+                              isSelected: themeMode == 'coderun-comfort',
+                              label: 'Comfort',
+                              icon: Icons.palette,
+                              onTap: () {
+                                ref.read(themeModeProvider.notifier).setTheme('coderun-comfort');
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
 
               // Çıkış butonu
               SizedBox(
@@ -479,3 +540,64 @@ class WeeklyActivityPainter extends CustomPainter {
   bool shouldRepaint(WeeklyActivityPainter oldDelegate) =>
       oldDelegate.data != data;
 }
+
+class _ThemeOptionButton extends StatelessWidget {
+  final bool isSelected;
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ThemeOptionButton({
+    required this.isSelected,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline.withValues(alpha: 0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.8),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

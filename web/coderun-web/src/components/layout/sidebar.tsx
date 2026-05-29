@@ -32,7 +32,7 @@ export function Sidebar() {
   const { toggleMentor } = useMentorStore();
 
   return (
-    <aside className="hidden lg:flex flex-col w-sidebar min-h-screen bg-white border-r border-outline-variant">
+    <aside className="hidden lg:flex flex-col w-sidebar min-h-screen bg-surface-container-lowest border-r border-outline-variant">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-outline-variant">
         <div className="w-8 h-8 flex items-center justify-center">
@@ -82,7 +82,7 @@ export function Sidebar() {
           onClick={toggleMentor}
           className={cn(
             'flex items-center gap-3 px-4 py-3 rounded-xl w-full text-left',
-            'bg-gradient-to-r from-primary-fixed to-white',
+            'bg-gradient-to-r from-primary-fixed to-surface-container-lowest',
             'border border-primary/20',
             'transition-all duration-150 hover:shadow-primary cursor-pointer'
           )}

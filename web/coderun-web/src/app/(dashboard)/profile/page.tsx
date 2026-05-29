@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, Smartphone, Bell } from 'lucide-react';
+import { LogOut, Smartphone, Bell, Sun, Moon, Palette } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useUserStats, useBadges } from '@/lib/hooks/use-gamification';
 import { useSettingsStore } from '@/store/settings-store';
@@ -11,6 +11,7 @@ import { BADGE_ICONS } from '@/lib/constants/app.constants';
 import { CoderunCard, StatCard, SectionHeader } from '@/components/stitch/CoderunCard';
 import { LeagueBadge } from '@/components/stitch/LeaderboardCard';
 import { StatPill } from '@/components/stitch/StitchButton';
+import { cn } from '@/lib/utils/cn';
 
 const ALL_BADGES = Object.entries(BADGE_ICONS).map(([type, icon]) => ({
   id: type,
@@ -25,7 +26,7 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const { data: stats, isLoading } = useUserStats();
   const { data: earnedBadges } = useBadges();
-  const { hapticsEnabled, toggleHaptics } = useSettingsStore();
+  const { hapticsEnabled, toggleHaptics, theme, setTheme } = useSettingsStore();
 
   const earnedTypes = new Set(earnedBadges?.map((b) => b.badgeType) ?? []);
 
@@ -207,6 +208,47 @@ export default function ProfilePage() {
                     }`}
                   />
                 </button>
+              </div>
+
+              {/* Tema Seçimi */}
+              <div className="flex flex-col gap-3 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center">
+                    <Palette className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-sans text-body-sm font-semibold text-on-surface">
+                      Görünüm Teması
+                    </p>
+                    <p className="font-sans text-xs text-on-surface-variant">
+                      Platform görünümünü kişiselleştirin
+                    </p>
+                  </div>
+                </div>
+                {/* Theme selectors */}
+                <div className="grid grid-cols-3 gap-2 mt-1">
+                  {(['light', 'dark', 'coderun-comfort'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTheme(t)}
+                      className={cn(
+                        'flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150',
+                        theme === t
+                          ? 'bg-primary text-white border-primary shadow-[0_2px_8px_rgba(61,74,216,0.15)]'
+                          : 'bg-surface-container text-on-surface-variant border-outline-variant hover:bg-surface-container-high'
+                      )}
+                    >
+                      {t === 'light' && <Sun className="w-3.5 h-3.5" />}
+                      {t === 'dark' && <Moon className="w-3.5 h-3.5" />}
+                      {t === 'coderun-comfort' && <Palette className="w-3.5 h-3.5" />}
+                      <span>
+                        {t === 'light' && 'Açık'}
+                        {t === 'dark' && 'Koyu'}
+                        {t === 'coderun-comfort' && 'Comfort'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Bildirimler placeholder */}

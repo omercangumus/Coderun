@@ -81,7 +81,7 @@ export function GhostieMotivationCard({
   return (
     <div
       className={cn(
-        'cr-card p-4 bg-gradient-to-br from-primary-fixed to-white border-primary/20',
+        'cr-card p-4 bg-gradient-to-br from-primary-fixed to-surface-container-lowest border-primary/20',
         className
       )}
     >
@@ -117,7 +117,7 @@ export function GhostieMentorPanel({
   className,
 }: GhostieMentorPanelProps) {
   return (
-    <div className={cn('flex flex-col h-full bg-white border-l border-outline-variant', className)}>
+    <div className={cn('flex flex-col h-full bg-surface-container-lowest border-l border-outline-variant', className)}>
       {/* Header */}
       <div className="p-4 border-b border-outline-variant bg-primary-fixed/50">
         <div className="flex items-center gap-2 mb-1">
@@ -128,7 +128,7 @@ export function GhostieMentorPanel({
           </div>
         </div>
         {context && (
-          <div className="mt-2 px-2 py-1 bg-white/60 rounded-lg">
+          <div className="mt-2 px-2 py-1 bg-surface-container-low/60 rounded-lg">
             <p className="font-label text-label-sm text-on-surface-variant truncate">
               📍 {context}
             </p>
