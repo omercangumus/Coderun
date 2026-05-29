@@ -18,7 +18,7 @@ export function Card({ children, className, padding = 'md', onClick }: CardProps
   return (
     <div
       className={cn(
-        'rounded-xl border border-slate-700/50 bg-slate-800/40 backdrop-blur-sm',
+        'rounded-xl border border-outline-variant bg-surface-container-lowest shadow-card',
         paddingClasses[padding],
         className
       )}

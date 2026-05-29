@@ -79,6 +79,8 @@ const config: Config = {
         'badge-purple': 'var(--color-badge-purple)',
         'diamond-blue': 'var(--color-diamond-blue)',
         'gold-league': 'var(--color-gold-league)',
+        // Legacy alias — maps to primary for backward compatibility
+        accent: 'var(--color-primary)',
         // Node states
         'node-completed': 'var(--color-node-completed)',
         'node-active': 'var(--color-node-active)',

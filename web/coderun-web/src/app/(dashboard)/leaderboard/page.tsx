@@ -31,9 +31,10 @@ export default function LeaderboardPage() {
     streak: e.streak ?? 0,
     level: e.level ?? 1,
     isCurrentUser: e.userId === user?.id,
+    isDemo: false,
   }));
 
-  // Ensure we always have 3 podium entries
+  // Podium için demo yer tutucular — gerçek API verisi yoksa gösterilir
   const mockNames = ['GhostieBot 🤖', 'Gizemli Kodcu 👤', 'Sıradaki Sen 🫵'];
   const mockXps = [500, 250, 0];
   const mockStreaks = [7, 3, 0];
@@ -49,6 +50,7 @@ export default function LeaderboardPage() {
       streak: mockStreaks[nextRank - 1],
       level: mockLevels[nextRank - 1],
       isCurrentUser: false,
+      isDemo: true,
     });
   }
 
@@ -98,6 +100,11 @@ export default function LeaderboardPage() {
           <Skeleton className="h-48" />
         ) : (
           <CoderunCard>
+            {mappedEntries.length === 0 && (
+              <p className="font-sans text-xs text-on-surface-variant text-center pb-2">
+                Podiumdaki demo kullanıcılar yer tutucudur — ilk dersini tamamla ve gerçek sıralamaya gir!
+              </p>
+            )}
             <LeaderboardPodium top3={top3Mapped} />
           </CoderunCard>
         )}

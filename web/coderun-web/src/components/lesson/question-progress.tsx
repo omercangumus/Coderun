@@ -13,9 +13,9 @@ export function QuestionProgress({ total, current, answered }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+      <div className="w-full h-1.5 bg-primary-fixed rounded-full overflow-hidden">
         <div
-          className="h-full bg-accent rounded-full transition-all duration-300"
+          className="h-full bg-primary rounded-full transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -26,10 +26,10 @@ export function QuestionProgress({ total, current, answered }: Props) {
             className={cn(
               'rounded-full transition-all duration-200',
               idx === current
-                ? 'w-4 h-4 bg-accent'
+                ? 'w-4 h-4 bg-primary'
                 : answered.includes(idx)
-                ? 'w-2.5 h-2.5 bg-green-500'
-                : 'w-2.5 h-2.5 bg-slate-600'
+                ? 'w-2.5 h-2.5 bg-secondary'
+                : 'w-2.5 h-2.5 bg-outline-variant'
             )}
           />
         ))}

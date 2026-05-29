@@ -22,6 +22,7 @@ class LearningPathScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final moduleAsync = ref.watch(moduleProgressProvider(moduleSlug));
+    final colorScheme = Theme.of(context).colorScheme;
 
     return moduleAsync.when(
       data: (progress) {
@@ -29,7 +30,7 @@ class LearningPathScreen extends ConsumerWidget {
         final lessonsAsync = ref.watch(lessonsProvider(moduleSlug));
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: colorScheme.surface,
           body: RefreshIndicator(
             onRefresh: () async =>
                 ref.invalidate(moduleProgressProvider(moduleSlug)),
@@ -39,8 +40,8 @@ class LearningPathScreen extends ConsumerWidget {
                 // App bar with module info
                 SliverAppBar(
                   pinned: true,
-                  backgroundColor: AppColors.surfaceContainerLowest,
-                  foregroundColor: AppColors.onSurface,
+                  backgroundColor: colorScheme.surface,
+                  foregroundColor: colorScheme.onSurface,
                   elevation: 0,
                   scrolledUnderElevation: 1,
                   title: Text(
@@ -124,25 +125,31 @@ class LearningPathScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => Scaffold(
-        backgroundColor: AppColors.background,
+      loading: () {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Scaffold(
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: AppColors.surfaceContainerLowest,
+          backgroundColor: colorScheme.surface,
           title: const Text('Yükleniyor...'),
         ),
         body: const LoadingWidget(),
-      ),
-      error: (e, _) => Scaffold(
-        backgroundColor: AppColors.background,
+      );
+      },
+      error: (e, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Scaffold(
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: AppColors.surfaceContainerLowest,
+          backgroundColor: colorScheme.surface,
           title: const Text('Hata'),
         ),
         body: AppErrorWidget(
           message: e.toString(),
           onRetry: () => ref.invalidate(moduleProgressProvider(moduleSlug)),
         ),
-      ),
+      );
+      },
     );
   }
 }
@@ -160,11 +167,12 @@ class _ProgressHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md,
       ),
-      color: AppColors.surfaceContainerLowest,
+      color: colorScheme.surface,
       child: Column(
         children: [
           Row(
@@ -172,19 +180,19 @@ class _ProgressHeader extends StatelessWidget {
             children: [
               Text(
                 '$completed / $total ders',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Lexend',
                   fontSize: 13,
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
                 '${(progressValue * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
               ),
             ],
@@ -195,8 +203,8 @@ class _ProgressHeader extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progressValue,
               minHeight: 6,
-              backgroundColor: AppColors.primaryFixed,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
             ),
           ),
         ],
@@ -220,16 +228,20 @@ class _UnitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPaddingLg),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primaryFixed, AppColors.surfaceContainerLowest],
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.primary.withValues(alpha: 0.12),
+            colorScheme.surface,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -237,24 +249,24 @@ class _UnitCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'ÜNİTE',
                   style: TextStyle(
                     fontFamily: 'SpaceGrotesk',
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                     letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'PlusJakartaSans',
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -262,10 +274,10 @@ class _UnitCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Lexend',
                     fontSize: 13,
-                    color: AppColors.onSurfaceVariant,
+                    color: colorScheme.onSurfaceVariant,
                     height: 1.4,
                   ),
                   maxLines: 2,
@@ -279,20 +291,20 @@ class _UnitCard extends StatelessWidget {
             children: [
               Text(
                 '$completedCount',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                   height: 1.0,
                 ),
               ),
               Text(
                 '/ $totalCount',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Lexend',
                   fontSize: 13,
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],

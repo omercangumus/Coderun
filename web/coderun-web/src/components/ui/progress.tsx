@@ -8,9 +8,9 @@ interface ProgressProps {
 }
 
 const colorClasses = {
-  primary: 'bg-accent',
-  gold: 'bg-xpGold',
-  orange: 'bg-streakOrange',
+  primary: 'bg-primary',
+  gold: 'bg-xp-gold',
+  orange: 'bg-streak-orange',
 };
 
 export function Progress({
@@ -23,7 +23,7 @@ export function Progress({
 
   return (
     <div className={cn('relative', className)}>
-      <div className="h-2 w-full rounded-full bg-slate-700">
+      <div className="h-2 w-full rounded-full bg-primary-fixed">
         <div
           className={cn(
             'h-full rounded-full transition-all duration-500',
@@ -33,7 +33,7 @@ export function Progress({
         />
       </div>
       {showLabel && (
-        <span className="absolute right-0 -top-5 text-xs text-slate-400">
+        <span className="absolute right-0 -top-5 text-xs text-on-surface-variant">
           {Math.round(clamped)}%
         </span>
       )}

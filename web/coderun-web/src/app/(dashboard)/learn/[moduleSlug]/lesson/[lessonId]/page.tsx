@@ -202,7 +202,7 @@ export default function LessonPage({
       <div className="flex items-center gap-3 mb-4 flex-shrink-0">
         <button
           onClick={() => setShowExitDialog(true)}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-on-surface-variant hover:text-on-surface transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
@@ -213,7 +213,7 @@ export default function LessonPage({
             answered={answeredIndices}
           />
         </div>
-        <span className="text-sm text-slate-400 flex-shrink-0">
+        <span className="font-sans text-sm text-on-surface-variant flex-shrink-0">
           {currentQuestionIndex + 1}/{total}
         </span>
       </div>
@@ -362,7 +362,7 @@ export default function LessonPage({
 
       {/* Çıkış diyalog */}
       {showExitDialog && (
-        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-inverse-surface/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="max-w-sm w-full bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-primary-lg p-6 animate-bounce-in">
             <h3 className="text-lg font-bold text-on-surface mb-2 font-heading">Dersten çıkmak istiyor musun?</h3>
             <p className="text-on-surface-variant text-sm mb-6 font-sans">İlerlemeniz kaydedilmeyecek.</p>

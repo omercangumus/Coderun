@@ -133,7 +133,7 @@ export default function ProfilePage() {
         {stats && (
           <CoderunCard>
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+              <div className="w-14 h-14 bg-streak-orange/10 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
                 🔥
               </div>
               <div>

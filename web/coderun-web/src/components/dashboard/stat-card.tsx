@@ -14,17 +14,17 @@ export function StatCard({
   icon: Icon,
   value,
   title,
-  bgColor = 'bg-accent/10',
+  bgColor = 'bg-primary/10',
   className,
 }: StatCardProps) {
   return (
     <Card className={cn('flex items-center gap-4', className)}>
       <div className={cn('p-3 rounded-xl', bgColor)}>
-        <Icon className="h-5 w-5 text-white" />
+        <Icon className="h-5 w-5 text-primary" />
       </div>
       <div>
-        <p className="text-xl font-bold text-white">{value}</p>
-        <p className="text-xs text-slate-400">{title}</p>
+        <p className="font-heading text-xl font-bold text-on-surface">{value}</p>
+        <p className="font-sans text-xs text-on-surface-variant">{title}</p>
       </div>
     </Card>
   );
