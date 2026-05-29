@@ -202,10 +202,10 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    children: [
+                    children: const [
                       Icon(Icons.assignment_outlined,
                           size: 16, color: AppColors.primary),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6),
                       Text(
                         'Gorev',
                         style: TextStyle(

@@ -12,12 +12,85 @@ import type {
   LessonCreateData,
   QuestionAdminItem,
   QuestionCreateData,
+  QuestionUpdateData,
   UserAdminItem,
   UserProgressDetail,
   ReorderItem,
 } from '@/lib/types/admin.types';
 
 const PREFIX = '/admin';
+
+// ---------------------------------------------------------------------------
+// Helpers for mapping
+// ---------------------------------------------------------------------------
+
+function mapQuestionAdminItem(raw: any): QuestionAdminItem {
+  return {
+    id: raw.id,
+    lessonId: raw.lesson_id,
+    questionType: raw.question_type,
+    questionText: raw.question_text,
+    options: raw.options ?? null,
+    correctAnswer: raw.correct_answer,
+    hint: raw.hint ?? null,
+    explanation: raw.explanation ?? null,
+    codeBlock: raw.code_block ?? null,
+    wordBank: raw.word_bank ?? null,
+    correctLineIndex: raw.correct_line_index ?? null,
+    order: raw.order,
+    reinforcementQuestionId: raw.reinforcement_question_id ?? null,
+    // Code assignment fields
+    language: raw.language ?? null,
+    starterCode: raw.starter_code ?? null,
+    testCases: raw.test_cases
+      ? raw.test_cases.map((tc: any) => ({
+          name: tc.name,
+          stdin: tc.stdin ?? '',
+          expectedStdout: tc.expected_stdout ?? '',
+          hidden: tc.hidden ?? false,
+        }))
+      : null,
+    assignmentInstructions: raw.assignment_instructions ?? null,
+    maxRuntimeMs: raw.max_runtime_ms ?? null,
+    memoryLimitMb: raw.memory_limit_mb ?? null,
+  };
+}
+
+function mapQuestionPayload(payload: any) {
+  const mapped: any = {};
+  if (payload.lessonId !== undefined) mapped.lesson_id = payload.lessonId;
+  if (payload.questionType !== undefined) mapped.question_type = payload.questionType;
+  if (payload.questionText !== undefined) mapped.question_text = payload.questionText;
+  if (payload.options !== undefined) mapped.options = payload.options;
+  if (payload.correctAnswer !== undefined) mapped.correct_answer = payload.correctAnswer;
+  if (payload.hint !== undefined) mapped.hint = payload.hint;
+  if (payload.explanation !== undefined) mapped.explanation = payload.explanation;
+  if (payload.codeBlock !== undefined) mapped.code_block = payload.codeBlock;
+  if (payload.wordBank !== undefined) mapped.word_bank = payload.wordBank;
+  if (payload.correctLineIndex !== undefined) mapped.correct_line_index = payload.correctLineIndex;
+  if (payload.order !== undefined) mapped.order = payload.order;
+  if (payload.reinforcementQuestionId !== undefined) mapped.reinforcement_question_id = payload.reinforcementQuestionId;
+
+  // Code runner fields
+  if (payload.language !== undefined) mapped.language = payload.language;
+  if (payload.starterCode !== undefined) mapped.starter_code = payload.starterCode;
+  if (payload.assignmentInstructions !== undefined) mapped.assignment_instructions = payload.assignmentInstructions;
+  if (payload.maxRuntimeMs !== undefined) mapped.max_runtime_ms = payload.maxRuntimeMs;
+  if (payload.memoryLimitMb !== undefined) mapped.memory_limit_mb = payload.memoryLimitMb;
+
+  if (payload.testCases !== undefined) {
+    mapped.test_cases = payload.testCases
+      ? payload.testCases.map((tc: any) => ({
+          name: tc.name,
+          stdin: tc.stdin ?? '',
+          expected_stdout: tc.expectedStdout ?? '',
+          hidden: tc.hidden ?? false,
+        }))
+      : null;
+  }
+
+  return mapped;
+}
 
 // ---------------------------------------------------------------------------
 // Stats
@@ -124,21 +197,32 @@ export async function deleteLesson(lessonId: string): Promise<void> {
 export async function getQuestionsAdmin(
   lessonId: string
 ): Promise<QuestionAdminItem[]> {
-  const { data } = await axiosClient.get<QuestionAdminItem[]>(
+  const { data } = await axiosClient.get<any[]>(
     `${PREFIX}/questions`,
     { params: { lesson_id: lessonId } }
   );
-  return data;
+  return data.map(mapQuestionAdminItem);
 }
 
 export async function createQuestion(
   payload: QuestionCreateData
 ): Promise<QuestionAdminItem> {
-  const { data } = await axiosClient.post<QuestionAdminItem>(
+  const { data } = await axiosClient.post<any>(
     `${PREFIX}/questions`,
-    payload
+    mapQuestionPayload(payload)
   );
-  return data;
+  return mapQuestionAdminItem(data);
+}
+
+export async function updateQuestion(
+  questionId: string,
+  payload: QuestionUpdateData
+): Promise<QuestionAdminItem> {
+  const { data } = await axiosClient.put<any>(
+    `${PREFIX}/questions/${questionId}`,
+    mapQuestionPayload(payload)
+  );
+  return mapQuestionAdminItem(data);
 }
 
 export async function deleteQuestion(questionId: string): Promise<void> {

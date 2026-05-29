@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { QuestionResponse } from '@/lib/types/module.types';
 import type { CodeRunResponse, CodeSubmitResponse, TestCaseResult } from '@/lib/types/code-runner.types';
@@ -161,12 +161,19 @@ export function CodeRunnerAssignment({
   currentAnswer,
   onChange,
 }: CodeRunnerAssignmentProps) {
-  const starterCode = question.starterCode ?? '# Buraya kodunuzu yazın\n';
+  const starterCode = question.starterCode ?? '# Buraya kodunuzu yazin\n';
   const [code, setCode] = useState<string>(currentAnswer || starterCode);
   const [editorState, setEditorState] = useState<EditorState>('idle');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [useTextarea, setUseTextarea] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setUseTextarea(true);
+    }
+  }, []);
 
   const handleCodeChange = useCallback(
     (value: string | undefined) => {
@@ -306,9 +313,15 @@ export function CodeRunnerAssignment({
               <div className="w-3 h-3 rounded-full bg-green-500/70" />
             </div>
             <span className="text-xs text-gray-400 font-mono">solution.py</span>
+            <button
+              onClick={() => setUseTextarea(!useTextarea)}
+              className="ml-auto text-[10px] text-primary hover:underline px-2 py-0.5 bg-primary/10 rounded font-semibold transition-colors"
+            >
+              {useTextarea ? '🖹 Zengin Editör' : '🖹 Düz Metin Editörü'}
+            </button>
           </div>
 
-          {/* Monaco editor */}
+          {/* Monaco editor / textarea fallback */}
           <div className="flex-1 min-h-[280px] relative">
             {isLoading && (
               <div className="absolute inset-0 bg-black/30 z-10 flex items-center justify-center">
@@ -317,24 +330,33 @@ export function CodeRunnerAssignment({
                 </div>
               </div>
             )}
-            <MonacoEditor
-              height="280px"
-              language="python"
-              theme="vs-dark"
-              value={code}
-              onChange={handleCodeChange}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                wordWrap: 'on',
-                lineNumbers: 'on',
-                renderLineHighlight: 'line',
-                automaticLayout: true,
-                tabSize: 4,
-                insertSpaces: true,
-              }}
-            />
+            {useTextarea ? (
+              <textarea
+                value={code}
+                onChange={(e) => handleCodeChange(e.target.value)}
+                className="w-full h-[280px] p-4 font-mono text-sm bg-[#1e1e1e] text-slate-100 border-0 focus:outline-none focus:ring-0 resize-none leading-relaxed"
+                placeholder="# Buraya kodunuzu yazın..."
+              />
+            ) : (
+              <MonacoEditor
+                height="280px"
+                language="python"
+                theme="vs-dark"
+                value={code}
+                onChange={handleCodeChange}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                  lineNumbers: 'on',
+                  renderLineHighlight: 'line',
+                  automaticLayout: true,
+                  tabSize: 4,
+                  insertSpaces: true,
+                }}
+              />
+            )}
           </div>
 
           {/* Terminal output */}
