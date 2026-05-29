@@ -196,6 +196,53 @@ export default function LessonPage({
 
   if (!currentQuestion) return null;
 
+  const isCodingLab =
+    lesson.lessonType === 'code_editor' || currentQuestion.questionType === 'code_editor';
+
+  if (isCodingLab && phase === 'answering' && !showingLearningCard) {
+    return (
+      <div className="flex h-[calc(100vh-80px)] flex-col">
+        <div className="mb-3 flex shrink-0 items-center gap-3">
+          <button
+            onClick={() => setShowExitDialog(true)}
+            className="text-on-surface-variant transition-colors hover:text-on-surface"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <div className="flex-1">
+            <QuestionProgress total={total} current={currentQuestionIndex} answered={answeredIndices} />
+          </div>
+          <span className="shrink-0 font-sans text-sm text-on-surface-variant">
+            {currentQuestionIndex + 1}/{total}
+          </span>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <QuestionRouter
+            question={currentQuestion}
+            currentAnswer={currentAnswer}
+            selectedAnswer={answers[currentQuestion.id]}
+            onAnswer={(answer) => answerQuestion(currentQuestion.id, answer)}
+            questionIndex={currentQuestionIndex}
+            totalQuestions={total}
+            onPrevQuestion={() => prevQuestion()}
+            onNextQuestion={handleNextQuestion}
+            canPrevQuestion={currentQuestionIndex > 0}
+            canNextQuestion={!isLastQuestion && !!currentAnswer}
+          />
+        </div>
+
+        {isLastQuestion && (
+          <div className="mt-3 flex shrink-0 justify-end">
+            <Button onClick={() => handleSubmit()} isLoading={isSubmitting} disabled={!currentAnswer} size="lg">
+              Dersi Tamamla
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-80px)]">
       {/* Top bar */}
@@ -295,6 +342,8 @@ export default function LessonPage({
                 currentAnswer={currentAnswer}
                 selectedAnswer={answers[currentQuestion.id]}
                 onAnswer={(answer) => answerQuestion(currentQuestion.id, answer)}
+                questionIndex={currentQuestionIndex}
+                totalQuestions={total}
               />
             )}
           </Card>
