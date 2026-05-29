@@ -44,20 +44,21 @@ class BadgeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final emoji = _badgeIcons[badgeType] ?? '🏅';
     final name = badge?.title ?? _badgeNames[badgeType] ?? badgeType;
     final description = _badgeDescriptions[badgeType] ?? 'Gizemli başarı ödülü';
 
     return Container(
       decoration: BoxDecoration(
-        color: isEarned 
-            ? AppColors.surfaceContainerLowest 
-            : AppColors.surfaceContainerLow.withValues(alpha: 0.5),
+        color: isEarned
+            ? colorScheme.surface
+            : colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: isEarned 
-              ? AppColors.xpGold 
-              : AppColors.outlineVariant.withValues(alpha: 0.6),
+          color: isEarned
+              ? AppColors.xpGold
+              : colorScheme.outlineVariant.withValues(alpha: 0.6),
           width: isEarned ? 2 : 1.5,
         ),
         boxShadow: isEarned
@@ -88,14 +89,14 @@ class BadgeCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerHighest.withValues(alpha: 0.9),
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.outlineVariant, width: 1.5),
+                    border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
                   ),
-                  child: const Icon(
-                    Icons.lock, 
-                    size: 14, 
-                    color: AppColors.onSurfaceVariant
+                  child: Icon(
+                    Icons.lock,
+                    size: 14,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
             ],
@@ -107,7 +108,7 @@ class BadgeCard extends StatelessWidget {
               fontFamily: 'PlusJakartaSans',
               fontWeight: FontWeight.w700, 
               fontSize: 13,
-              color: isEarned ? AppColors.onSurface : AppColors.onSurfaceVariant,
+              color: isEarned ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -119,7 +120,7 @@ class BadgeCard extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Lexend',
               fontSize: 10.0,
-              color: isEarned ? AppColors.onSurfaceVariant : AppColors.outline,
+              color: isEarned ? colorScheme.onSurfaceVariant : colorScheme.outline,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,

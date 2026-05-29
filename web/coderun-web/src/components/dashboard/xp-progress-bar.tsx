@@ -19,7 +19,7 @@ export function XpProgressBar({ levelProgress, className }: XpProgressBarProps) 
       <div className="flex-1">
         <Progress value={progressPercentage} color="gold" />
       </div>
-      <span className="text-xs text-slate-400 whitespace-nowrap">
+      <span className="text-xs text-on-surface-variant whitespace-nowrap">
         {isMaxLevel ? 'MAX' : `${xpRemaining} XP kaldı`}
       </span>
     </div>

@@ -85,7 +85,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(

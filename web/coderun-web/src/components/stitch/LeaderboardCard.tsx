@@ -20,7 +20,7 @@ interface LeaderboardRowProps {
 
 const rankColors: Record<number, string> = {
   1: 'text-yellow-500',
-  2: 'text-slate-400',
+  2: 'text-on-surface-variant',
   3: 'text-amber-600',
 };
 
@@ -193,7 +193,7 @@ interface LeagueBadgeProps {
 const leagueConfig: Record<string, { emoji: string; color: string; bg: string }> = {
   Diamond: { emoji: '💎', color: 'text-diamond-blue', bg: 'bg-blue-50 border-blue-200' },
   Gold: { emoji: '🥇', color: 'text-gold-league', bg: 'bg-yellow-50 border-yellow-200' },
-  Silver: { emoji: '🥈', color: 'text-slate-500', bg: 'bg-slate-50 border-slate-200' },
+  Silver: { emoji: '🥈', color: 'text-on-surface-variant', bg: 'bg-surface-container border-outline-variant' },
   Bronze: { emoji: '🥉', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' },
 };
 

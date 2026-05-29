@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, FlaskConical } from 'lucide-react';
 import { moduleApi } from '@/lib/api/module-api';
@@ -10,8 +9,10 @@ import { usePlacementState } from '@/lib/hooks/use-placement';
 import { MultipleChoiceQuestion } from '@/components/lesson/multiple-choice-question';
 import { QuestionProgress } from '@/components/lesson/question-progress';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CoderunCard } from '@/components/stitch/CoderunCard';
+import { GhostieMotivationCard } from '@/components/stitch/GhostieCard';
+import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 
 type Step = 'intro' | 'test' | 'result';
 
@@ -21,7 +22,6 @@ export default function PlacementPage({
   params: { moduleSlug: string };
 }) {
   const { moduleSlug } = params;
-  const router = useRouter();
   const [step, setStep] = useState<Step>('intro');
 
   const { data: placementData, isLoading } = useQuery({
@@ -54,19 +54,22 @@ export default function PlacementPage({
     if (res) setStep('result');
   };
 
-  // Adım 1: Giriş
   if (step === 'intro') {
     return (
-      <div className="flex flex-col items-center gap-6 max-w-md mx-auto py-8">
-        <div className="text-center">
-          <FlaskConical className="w-16 h-16 text-accent mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white">Seviye Testi</h1>
-          <p className="text-slate-400 mt-2 text-sm">
-            Mevcut bilgi seviyenizi ölçerek doğru dersten başlamanızı sağlar.
-            15 soruluk kısa bir test yapacaksınız.
+      <div className="max-w-lg mx-auto flex flex-col gap-6 py-4">
+        <GhostieMotivationCard
+          title="Seviye Testi"
+          message="Mevcut bilgi seviyeni ölçerek doğru dersten başlamanı sağlar. 15 soruluk kısa bir test yapacaksın."
+          mood="helping"
+        />
+        <CoderunCard className="text-center">
+          <FlaskConical className="w-12 h-12 text-primary mx-auto mb-3" />
+          <h1 className="font-heading text-h3 font-bold text-on-surface">Seviye Testi</h1>
+          <p className="font-sans text-body-sm text-on-surface-variant mt-2">
+            Test sonucuna göre uygun dersten başlayabilir veya tüm dersleri sıfırdan tamamlayabilirsin.
           </p>
-        </div>
-        <div className="flex flex-col gap-3 w-full">
+        </CoderunCard>
+        <div className="flex flex-col gap-3">
           <Button size="lg" className="w-full" onClick={() => setStep('test')}>
             Seviye Testi Yap
           </Button>
@@ -80,7 +83,6 @@ export default function PlacementPage({
     );
   }
 
-  // Adım 2: Test
   if (step === 'test') {
     if (isLoading || !currentQuestion) {
       return (
@@ -94,30 +96,34 @@ export default function PlacementPage({
     return (
       <div className="flex flex-col gap-6 max-w-2xl mx-auto">
         <div className="flex items-center gap-3">
-          <Link href={`/learn/${moduleSlug}`} className="text-slate-400 hover:text-white">
+          <Link
+            href={`/learn/${moduleSlug}`}
+            className="text-on-surface-variant hover:text-on-surface transition-colors"
+            aria-label="Geri dön"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="flex-1">
             <QuestionProgress total={total} current={currentIndex} answered={answeredIndices} />
           </div>
-          <span className="text-sm text-slate-400 flex-shrink-0">
+          <span className="font-sans text-sm text-on-surface-variant flex-shrink-0">
             {currentIndex + 1}/{total}
           </span>
         </div>
 
-        <Card className="min-h-[280px]">
+        <CoderunCard className="min-h-[280px]">
           <MultipleChoiceQuestion
             question={currentQuestion}
             selectedAnswer={answers[currentQuestion.id]}
             onSelect={(answer) => answerQuestion(currentQuestion.id, answer)}
           />
-        </Card>
+        </CoderunCard>
 
         <div className="flex gap-3">
           <Button
             variant="ghost"
             onClick={() => skipQuestion(currentQuestion.id, total)}
-            className="text-slate-400"
+            className="text-on-surface-variant"
           >
             Atla
           </Button>
@@ -139,27 +145,34 @@ export default function PlacementPage({
     );
   }
 
-  // Adım 3: Sonuç
   if (step === 'result' && result) {
     return (
-      <div className="flex flex-col items-center gap-6 max-w-md mx-auto py-8">
-        <div className="text-center">
-          <p className="text-6xl font-black text-accent">%{Math.round(result.percentage)}</p>
-          <p className="text-slate-400 mt-2">{result.message}</p>
-          <p className="text-sm text-slate-500 mt-1">
-            {result.correctCount}/{result.totalCount} doğru
-          </p>
+      <div className="max-w-lg mx-auto flex flex-col gap-6 py-4">
+        <div className="flex flex-col items-center gap-4">
+          <GhostieReaction
+            state={result.percentage >= 70 ? 'celebrating' : 'idle'}
+            size={100}
+            message={result.message}
+          />
+          <div className="text-center">
+            <p className="font-heading text-6xl font-black text-primary">
+              %{Math.round(result.percentage)}
+            </p>
+            <p className="font-sans text-body-sm text-on-surface-variant mt-2">
+              {result.correctCount}/{result.totalCount} doğru
+            </p>
+          </div>
         </div>
-        <Card className="w-full text-center">
-          <p className="text-white font-semibold">
+        <CoderunCard variant="highlight" className="text-center">
+          <p className="font-heading text-base font-bold text-primary">
             {result.skippedLessons > 0
               ? `${result.skippedLessons} ders atlanıyor`
-              : 'Baştan başlıyorsunuz'}
+              : 'Baştan başlıyorsun'}
           </p>
-          <p className="text-slate-400 text-sm mt-1">
-            {result.startingLessonOrder}. dersten başlıyorsunuz
+          <p className="font-sans text-body-sm text-on-surface-variant mt-1">
+            {result.startingLessonOrder}. dersten başlıyorsun
           </p>
-        </Card>
+        </CoderunCard>
         <Link href={`/learn/${moduleSlug}`} className="w-full">
           <Button size="lg" className="w-full">Öğrenmeye Başla</Button>
         </Link>

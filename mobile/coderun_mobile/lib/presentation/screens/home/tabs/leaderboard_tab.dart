@@ -86,6 +86,7 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
   Widget build(BuildContext context) {
     final leaderboardAsync = ref.watch(leaderboardProvider);
     final authState = ref.watch(authProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     final currentUsername =
         authState.whenOrNull(authenticated: (u) => u.username);
 
@@ -133,8 +134,8 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                         children: [
                           Text(
                             'Bu hafta: ${lb.weekStart} – ${lb.weekEnd}',
-                            style: const TextStyle(
-                                fontSize: 13, color: AppColors.grey),
+                            style: TextStyle(
+                                fontSize: 13, color: colorScheme.onSurfaceVariant),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -153,6 +154,20 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                           ),
                         ],
                       ),
+
+                      if (lb.entries.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Podiumdaki demo kullanıcılar yer tutucudur.',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+
                       const SizedBox(height: 20),
 
                       // Podium animasyonu
@@ -167,7 +182,8 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                                 child: _PodiumItem(
                                   entry: top3[1],
                                   height: 80,
-                                  color: AppColors.grey,
+                                  color: colorScheme.onSurfaceVariant,
+                                  isDemo: top3[1].userId.startsWith('mock_'),
                                 ),
                               ),
                             ),
@@ -178,6 +194,7 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                                   entry: top3[0],
                                   height: 110,
                                   color: AppColors.xpGold,
+                                  isDemo: top3[0].userId.startsWith('mock_'),
                                 ),
                               ),
                             ),
@@ -188,6 +205,7 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
                                   entry: top3[2],
                                   height: 60,
                                   color: AppColors.streakOrange,
+                                  isDemo: top3[2].userId.startsWith('mock_'),
                                 ),
                               ),
                             ),
@@ -263,13 +281,13 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
               if (lb.userRank != null)
                 SliverToBoxAdapter(
                   child: Container(
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     child: Text(
                       'Senin sıran: #${lb.userRank}',
-                      style: const TextStyle(
-                          color: AppColors.white,
+                      style: TextStyle(
+                          color: colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 15),
                     ),
@@ -292,11 +310,13 @@ class _PodiumItem extends StatelessWidget {
   final LeaderboardEntryModel entry;
   final double height;
   final Color color;
+  final bool isDemo;
 
   const _PodiumItem({
     required this.entry,
     required this.height,
     required this.color,
+    this.isDemo = false,
   });
 
   @override
@@ -308,7 +328,25 @@ class _PodiumItem extends StatelessWidget {
           entry.username,
           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
+        if (isDemo)
+          Container(
+            margin: const EdgeInsets.only(top: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'Demo',
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         const SizedBox(height: 4),
         Text(
           '${entry.weeklyXp} XP',
