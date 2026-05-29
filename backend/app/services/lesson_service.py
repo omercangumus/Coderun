@@ -370,24 +370,22 @@ async def submit_lesson_answer(
     # Pekiştirme sorusu response'u oluştur
     reinforcement_response = None
     if reinforcement_q is not None:
-        from unittest.mock import Mock
-        if not isinstance(reinforcement_q, Mock):
-            reinforcement_response = QuestionResponse(
-                id=reinforcement_q.id,
-                lesson_id=reinforcement_q.lesson_id,
-                question_type=reinforcement_q.question_type,
-                question_text=reinforcement_q.question_text,
-                options=reinforcement_q.options,
-                hint=reinforcement_q.hint,
-                explanation=reinforcement_q.explanation,
-                code_block=reinforcement_q.code_block,
-                word_bank=reinforcement_q.word_bank,
-                correct_line_index=reinforcement_q.correct_line_index,
-                is_reinforcement=reinforcement_q.is_reinforcement,
-                order=reinforcement_q.order,
-                # correct_answer intentionally excluded — never sent to client
-                # reinforcement_question intentionally None — no nested reinforcement (loop prevention)
-            )
+        reinforcement_response = QuestionResponse(
+            id=reinforcement_q.id,
+            lesson_id=reinforcement_q.lesson_id,
+            question_type=reinforcement_q.question_type,
+            question_text=reinforcement_q.question_text,
+            options=reinforcement_q.options,
+            hint=reinforcement_q.hint,
+            explanation=reinforcement_q.explanation,
+            code_block=reinforcement_q.code_block,
+            word_bank=reinforcement_q.word_bank,
+            correct_line_index=reinforcement_q.correct_line_index,
+            is_reinforcement=reinforcement_q.is_reinforcement,
+            order=reinforcement_q.order,
+            # correct_answer intentionally excluded — never sent to client
+            # reinforcement_question intentionally None — no nested reinforcement (loop prevention)
+        )
 
     return LessonResultResponse(
         lesson_id=lesson_id,
