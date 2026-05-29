@@ -7,31 +7,143 @@
 
 @layer base {
   :root {
-    /* Stitch color tokens */
+    /* Stitch color tokens - Light Theme */
     --color-primary: #3D4AD8;
     --color-primary-container: #5865F2;
     --color-primary-fixed: #E0E0FF;
+    --color-primary-fixed-dim: #BEC2FF;
+    --color-on-primary: #FFFFFF;
+    --color-on-primary-container: #FFFFFF;
+    --color-inverse-primary: #BEC2FF;
+
     --color-secondary: #006D37;
     --color-secondary-container: #6BFE9C;
+    --color-secondary-fixed: #6BFE9C;
+    --color-secondary-fixed-dim: #4AE183;
+    --color-on-secondary: #FFFFFF;
+    --color-on-secondary-container: #00743A;
+
     --color-tertiary: #81419C;
+    --color-tertiary-container: #9C5AB7;
+    --color-tertiary-fixed: #F8D8FF;
+    --color-tertiary-fixed-dim: #EBB2FF;
+    --color-on-tertiary: #FFFFFF;
+    --color-on-tertiary-container: #FFFFFF;
+
     --color-background: #F7FAFD;
     --color-surface: #F7FAFD;
+    --color-surface-bright: #F7FAFD;
+    --color-surface-dim: #D7DADE;
     --color-surface-lowest: #FFFFFF;
     --color-surface-low: #F1F4F8;
     --color-surface-container: #EBEEF2;
     --color-surface-high: #E5E8EC;
     --color-surface-highest: #E0E3E7;
+    --color-surface-variant: #E0E3E7;
+    --color-surface-tint: #3F4CDA;
+
     --color-on-surface: #181C1F;
     --color-on-surface-variant: #454655;
+    --color-on-background: #181C1F;
     --color-outline: #767686;
     --color-outline-variant: #C6C5D7;
+    --color-inverse-surface: #2D3134;
+    --color-inverse-on-surface: #EEF1F5;
+
     --color-error: #BA1A1A;
+    --color-error-container: #FFDAD6;
+    --color-on-error: #FFFFFF;
+    --color-on-error-container: #93000A;
+
     --color-xp-gold: #FFD700;
     --color-streak-orange: #FF6B35;
+    --color-streak-fire: #FF4500;
+    --color-badge-purple: #9C27B0;
+    --color-diamond-blue: #00B4D8;
+    --color-gold-league: #FFB300;
+
+    --color-node-completed: #4AE183;
+    --color-node-active: #5865F2;
+    --color-node-locked: #E0E3E7;
+    --color-node-review: #FF9800;
+    --color-node-checkpoint: #FFD700;
+    --color-node-project: #9C5AB7;
 
     /* Sidebar */
     --sidebar-width: 240px;
     --mentor-panel-width: 320px;
+  }
+
+  html[data-theme='dark'] {
+    --color-primary: #5865F2;
+    --color-primary-container: #3D4AD8;
+    --color-primary-fixed: #1E1F30;
+    --color-primary-fixed-dim: #3F446E;
+    --color-on-primary: #FFFFFF;
+    --color-on-primary-container: #BEC2FF;
+    --color-inverse-primary: #BEC2FF;
+
+    --color-secondary: #4AE183;
+    --color-secondary-container: #004D23;
+    --color-secondary-fixed: #004D23;
+    --color-secondary-fixed-dim: #006D37;
+    --color-on-secondary: #000000;
+    --color-on-secondary-container: #6BFE9C;
+
+    --color-tertiary: #9C5AB7;
+    --color-tertiary-container: #81419C;
+
+    --color-background: #0B0E14;
+    --color-surface: #0F121D;
+    --color-surface-bright: #151926;
+    --color-surface-dim: #07090F;
+    --color-surface-lowest: #07090F;
+    --color-surface-low: #131724;
+    --color-surface-container: #181D2C;
+    --color-surface-high: #1F2538;
+    --color-surface-highest: #252C43;
+    --color-surface-variant: #252C43;
+    --color-surface-tint: #5865F2;
+
+    --color-on-surface: #F7FAFD;
+    --color-on-surface-variant: #A5A7BC;
+    --color-on-background: #F7FAFD;
+    --color-outline: #6B6D82;
+    --color-outline-variant: #3E4154;
+    --color-inverse-surface: #EEF1F5;
+    --color-inverse-on-surface: #2D3134;
+
+    --color-node-locked: #3E4154;
+  }
+
+  html[data-theme='coderun-comfort'] {
+    --color-primary: #3F4CDA;
+    --color-primary-container: #5A67F2;
+    --color-primary-fixed: #E2E2FF;
+    --color-primary-fixed-dim: #BFC3FF;
+    --color-on-primary: #FFFFFF;
+    --color-on-primary-container: #FFFFFF;
+    --color-inverse-primary: #BFC3FF;
+
+    --color-background: #F0F4F8; /* Soft comfort off-white blue-grey */
+    --color-surface: #F0F4F8;
+    --color-surface-bright: #F5F8FA;
+    --color-surface-dim: #D5DFEB;
+    --color-surface-lowest: #F5F8FA;
+    --color-surface-low: #E5ECF4;
+    --color-surface-container: #DAE4EE;
+    --color-surface-high: #CFDAE8;
+    --color-surface-highest: #C4D1E2;
+    --color-surface-variant: #C4D1E2;
+    --color-surface-tint: #3F4CDA;
+
+    --color-on-surface: #1E2530; /* Soft charcoal */
+    --color-on-surface-variant: #4A5568;
+    --color-on-background: #1E2530;
+    --color-outline: #718096;
+    --color-outline-variant: #CBD5E0;
+    --color-inverse-surface: #2D3748;
+    --color-inverse-on-surface: #EDF2F7;
   }
 
   html {

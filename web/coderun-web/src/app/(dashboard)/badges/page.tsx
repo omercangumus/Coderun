@@ -36,7 +36,7 @@ export default function BadgesPage() {
         <p className="font-sans text-body-sm text-on-surface-variant mt-1">{earnedCount} / {totalCount} rozet kazanıldı</p>
       </div>
 
-      <div className="bg-white rounded-xl p-4 border border-outline-variant shadow-sm">
+      <div className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant shadow-sm">
         <Progress value={(earnedCount / totalCount) * 100} color="primary" showLabel />
       </div>
 
@@ -61,7 +61,7 @@ export default function BadgesPage() {
                 {ALL_BADGES.filter(b => earnedTypes.has(b.type)).map(badge => {
                   const earned = badges?.find(b => b.badgeType === badge.type);
                   return (
-                    <Card key={badge.type} className="border-amber-300 bg-gradient-to-br from-amber-50/70 to-white text-center py-6 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                    <Card key={badge.type} className="border-amber-300 bg-gradient-to-br from-amber-500/10 to-surface-container-lowest text-center py-6 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                       <div className="text-5xl mb-3 animate-bounce-once">{badge.emoji}</div>
                       <p className="text-on-surface font-bold text-base font-heading">{badge.title}</p>
                       <p className="text-on-surface-variant text-xs mt-1.5 font-sans px-2">{badge.description}</p>
@@ -85,7 +85,7 @@ export default function BadgesPage() {
                 <div
                   key={badge.type}
                   className={cn(
-                    'group relative rounded-xl border border-outline-variant bg-white/60 p-6 text-center shadow-sm overflow-hidden',
+                    'group relative rounded-xl border border-outline-variant bg-surface-container-low/60 p-6 text-center shadow-sm overflow-hidden',
                     'hover:shadow-md transition-all duration-200 cursor-help'
                   )}
                 >

@@ -55,29 +55,29 @@ export function AiMentorSidebar({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl border-l border-gray-200 flex flex-col z-50">
+    <div className="fixed right-0 top-0 h-full w-80 bg-surface-container-lowest shadow-2xl border-l border-outline-variant flex flex-col z-50 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b border-outline-variant bg-surface-container-low">
         <div className="flex items-center gap-2">
           <GhostieAvatar state="idle" size={24} />
-          <span className="font-semibold text-gray-800">Ghostie AI</span>
-          <span className="text-xs text-gray-500">(Mentor)</span>
+          <span className="font-semibold text-on-surface">Ghostie AI</span>
+          <span className="text-xs text-on-surface-variant">(Mentor)</span>
         </div>
         <div className="flex items-center gap-1">
           {/* Attempt count göstergesi */}
-          <span className="text-xs text-purple-400 bg-purple-50 px-2 py-0.5 rounded-full">
+          <span className="text-xs text-tertiary bg-tertiary-container/30 px-2 py-0.5 rounded-full font-semibold">
             {attemptCount === 1 ? 'İpucu modu' : attemptCount === 2 ? 'Açık ipucu' : 'Örnek modu'}
           </span>
           <button
             onClick={clearChat}
             title="Sohbeti temizle"
-            className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors"
+            className="text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 p-1 rounded transition-colors"
+            className="text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -85,7 +85,7 @@ export function AiMentorSidebar({
       </div>
 
       {/* Mesaj listesi */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
         {messages.length === 0 && (
            <div className="flex justify-center mb-6">
              <GhostieReaction state="idle" message="Merhaba! Ben Ghostie AI. Herhangi bir konuda yardıma ihtiyacın olursa buradayım! 👋" size={80} />
@@ -122,19 +122,19 @@ export function AiMentorSidebar({
       </div>
 
       {/* Input alanı */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-outline-variant">
         <div className="flex gap-2">
           <input
             ref={inputRef}
             onKeyDown={handleKeyDown}
             placeholder="Soru sor..."
             disabled={isLoading}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400 disabled:opacity-60"
+            className="flex-1 border border-outline-variant bg-surface-container text-on-surface rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary disabled:opacity-60"
           />
           <button
             onClick={() => void handleSend()}
             disabled={isLoading}
-            className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+            className="p-2 bg-primary text-white rounded-lg hover:bg-primary-container disabled:opacity-50 transition-colors"
           >
             <Send className="w-4 h-4" />
           </button>

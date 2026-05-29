@@ -172,7 +172,7 @@ interface UnitHeaderProps {
 
 export function UnitHeader({ title, subtitle, progress, lessonCount, completedCount }: UnitHeaderProps) {
   return (
-    <div className="cr-card p-4 bg-gradient-to-r from-primary-fixed to-white border-primary/20 mb-4">
+    <div className="cr-card p-4 bg-gradient-to-r from-primary-fixed to-surface-container-lowest border-primary/20 mb-4">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
           <p className="font-label text-label-sm text-primary uppercase tracking-wide mb-0.5">

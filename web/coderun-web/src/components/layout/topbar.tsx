@@ -12,7 +12,7 @@ export function Topbar() {
   const { data: stats } = useUserStats();
 
   return (
-    <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur border-b border-outline-variant">
+    <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-surface-container-lowest/95 backdrop-blur border-b border-outline-variant">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2">
         <div className="w-7 h-7 flex items-center justify-center">
@@ -29,7 +29,7 @@ export function Topbar() {
               ⚡ {formatXP(stats.totalXp)}
             </span>
             {stats.streak > 0 && (
-              <span className="inline-flex items-center gap-1 bg-orange-50 text-streak-orange rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
+              <span className="inline-flex items-center gap-1 bg-orange-500/10 text-streak-orange rounded-full px-2.5 py-1 text-xs font-semibold font-sans">
                 🔥 {stats.streak}
               </span>
             )}

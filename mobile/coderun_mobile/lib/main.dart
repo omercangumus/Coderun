@@ -37,10 +37,20 @@ class CoderunApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
+
+    ThemeData appTheme;
+    if (themeMode == 'dark') {
+      appTheme = AppTheme.darkTheme;
+    } else if (themeMode == 'coderun-comfort') {
+      appTheme = AppTheme.comfortTheme;
+    } else {
+      appTheme = AppTheme.lightTheme;
+    }
 
     return MaterialApp.router(
       title: AppConstants.appName,
-      theme: AppTheme.lightTheme,
+      theme: appTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: const Locale('tr', 'TR'),

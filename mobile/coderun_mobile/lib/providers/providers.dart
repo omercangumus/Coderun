@@ -106,3 +106,30 @@ final codeRunnerRepositoryProvider = Provider<CodeRunnerRepository>((ref) {
   final dataSource = ref.watch(codeRunnerRemoteDataSourceProvider);
   return CodeRunnerRepositoryImpl(remoteDataSource: dataSource);
 });
+
+/// Theme mode provider using secure storage persistence
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, String>((ref) {
+  final storage = ref.watch(secureStorageProvider);
+  return ThemeModeNotifier(storage);
+});
+
+class ThemeModeNotifier extends StateNotifier<String> {
+  final FlutterSecureStorage _storage;
+  static const _themeKey = 'selected_theme';
+
+  ThemeModeNotifier(this._storage) : super('light') {
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final savedTheme = await _storage.read(key: _themeKey);
+    if (savedTheme != null) {
+      state = savedTheme;
+    }
+  }
+
+  Future<void> setTheme(String theme) async {
+    await _storage.write(key: _themeKey, value: theme);
+    state = theme;
+  }
+}
