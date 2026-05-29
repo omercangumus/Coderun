@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 
 interface MultiSelectQuestionProps {
   questionText: string;
@@ -18,9 +19,11 @@ export function MultiSelectQuestion({
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const { vibrateTap } = useHaptics();
 
   const toggleChoice = (index: number) => {
     if (submitted) return;
+    vibrateTap();
     const newSelected = new Set(selected);
     if (newSelected.has(index)) {
       newSelected.delete(index);
@@ -32,6 +35,7 @@ export function MultiSelectQuestion({
 
   const handleSubmit = () => {
     if (selected.size === 0) return;
+    vibrateTap();
     setSubmitted(true);
     const answer = Array.from(selected)
       .map((i) => choices[i])

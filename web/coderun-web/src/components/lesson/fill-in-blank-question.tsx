@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 
 interface FillInBlankQuestionProps {
   questionText: string;
@@ -21,6 +22,7 @@ export function FillInBlankQuestion({
   const [filledBlanks, setFilledBlanks] = useState<string[]>(Array(blanks).fill(''));
   const [usedWords, setUsedWords] = useState<Set<number>>(new Set());
   const [showHint, setShowHint] = useState(false);
+  const { vibrateTap } = useHaptics();
 
   const handleWordClick = (word: string, wordIndex: number) => {
     if (usedWords.has(wordIndex)) return;
@@ -28,6 +30,7 @@ export function FillInBlankQuestion({
     const firstEmptyIndex = filledBlanks.findIndex((b) => b === '');
     if (firstEmptyIndex === -1) return;
 
+    vibrateTap();
     const newBlanks = [...filledBlanks];
     newBlanks[firstEmptyIndex] = word;
     setFilledBlanks(newBlanks);
@@ -42,6 +45,7 @@ export function FillInBlankQuestion({
   const handleBlankClick = (blankIndex: number) => {
     if (filledBlanks[blankIndex] === '') return;
 
+    vibrateTap();
     const word = filledBlanks[blankIndex];
     const wordIndex = wordBank.words.indexOf(word);
 

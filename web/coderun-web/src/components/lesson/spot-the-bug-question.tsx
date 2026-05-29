@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 
 interface SpotTheBugQuestionProps {
   questionText: string;
@@ -21,15 +22,18 @@ export function SpotTheBugQuestion({
   const [selectedFix, setSelectedFix] = useState<number | null>(null);
   const [step, setStep] = useState<'line' | 'fix'>('line');
   const [showHint, setShowHint] = useState(false);
+  const { vibrateTap } = useHaptics();
 
   const lines = codeBlock.split('\n');
 
   const handleLineClick = (lineIndex: number) => {
+    vibrateTap();
     setSelectedLine(lineIndex);
     setStep('fix');
   };
 
   const handleFixClick = (fixIndex: number) => {
+    vibrateTap();
     setSelectedFix(fixIndex);
     if (selectedLine !== null) {
       onAnswer(`${selectedLine}|${fixOptions[fixIndex]}`);

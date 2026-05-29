@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useHaptics } from '@/lib/hooks/use-haptics';
 
 interface ReorderQuestionProps {
   questionText: string;
@@ -21,8 +22,10 @@ export function ReorderQuestion({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { vibrateTap } = useHaptics();
 
   const handleDragStart = (index: number) => {
+    vibrateTap();
     setDragIndex(index);
   };
 
@@ -48,12 +51,14 @@ export function ReorderQuestion({
     const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
     if (toIndex < 0 || toIndex >= order.length) return;
 
+    vibrateTap();
     const newOrder = [...order];
     [newOrder[fromIndex], newOrder[toIndex]] = [newOrder[toIndex], newOrder[fromIndex]];
     setOrder(newOrder);
   };
 
   const handleSubmit = () => {
+    vibrateTap();
     setSubmitted(true);
     onAnswer(JSON.stringify(order.map(String)));
   };

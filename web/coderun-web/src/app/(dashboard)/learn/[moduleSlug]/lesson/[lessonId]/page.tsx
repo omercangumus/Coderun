@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, X, Lightbulb, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -73,11 +73,13 @@ export default function LessonPage({
     !shownLearningCards.includes(currentQuestionIndex) &&
     shouldShowLearningCard(lesson.lessonType, currentQuestionIndex, total);
 
-  // Show the learning card automatically
-  if (needsLearningCard) {
-    setShowingLearningCard(true);
-    setShownLearningCards((prev) => [...prev, currentQuestionIndex]);
-  }
+  // Show the learning card automatically via useEffect to avoid rendering side-effects
+  useEffect(() => {
+    if (needsLearningCard) {
+      setShowingLearningCard(true);
+      setShownLearningCards((prev) => [...prev, currentQuestionIndex]);
+    }
+  }, [needsLearningCard, currentQuestionIndex]);
 
   // Ghostie state mapping
   const ghostieState: GhostieState = (() => {
