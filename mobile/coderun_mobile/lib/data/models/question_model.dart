@@ -26,6 +26,18 @@ class QuestionModel {
   final int order;
   @JsonKey(name: 'reinforcement_question')
   final QuestionModel? reinforcementQuestion;
+  // Code assignment fields (code_editor type)
+  final String? language;
+  @JsonKey(name: 'starter_code')
+  final String? starterCode;
+  @JsonKey(name: 'test_cases')
+  final List<Map<String, dynamic>>? testCases;
+  @JsonKey(name: 'assignment_instructions')
+  final String? assignmentInstructions;
+  @JsonKey(name: 'max_runtime_ms')
+  final int? maxRuntimeMs;
+  @JsonKey(name: 'memory_limit_mb')
+  final int? memoryLimitMb;
 
   const QuestionModel({
     required this.id,
@@ -41,6 +53,12 @@ class QuestionModel {
     this.isReinforcement = false,
     required this.order,
     this.reinforcementQuestion,
+    this.language,
+    this.starterCode,
+    this.testCases,
+    this.assignmentInstructions,
+    this.maxRuntimeMs,
+    this.memoryLimitMb,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) =>

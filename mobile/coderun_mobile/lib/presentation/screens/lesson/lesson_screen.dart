@@ -11,6 +11,7 @@ import '../../widgets/ghostie_reaction.dart';
 import 'widgets/multiple_choice_widget.dart';
 import 'widgets/code_completion_widget.dart';
 import 'widgets/mini_project_widget.dart';
+import 'widgets/code_assignment_widget.dart';
 import 'widgets/fill_in_blank_widget.dart';
 import 'widgets/reorder_widget.dart';
 import 'widgets/spot_the_bug_widget.dart';
@@ -260,6 +261,12 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         );
 
       case 'code_editor':
+        return CodeAssignmentWidget(
+          question: question,
+          currentAnswer: currentAnswer,
+          onAnswerChanged: onAnswer,
+        );
+
       case 'mini_project':
         return MiniProjectWidget(
           question: question,

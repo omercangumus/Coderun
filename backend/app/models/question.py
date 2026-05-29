@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, Integer, String, Boolean
+from sqlalchemy import ForeignKey, Integer, String, Boolean, Text
 from sqlalchemy.dialects.postgresql import JSON, UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -74,6 +74,20 @@ class Question(BaseModel):
         Boolean,
         default=False,
         nullable=False,
+    )
+
+    # --- Code Assignment Fields (code_editor type) ---
+    language: Mapped[str | None] = mapped_column(
+        String, nullable=True, server_default="python"
+    )
+    starter_code: Mapped[str | None] = mapped_column(Text, nullable=True)
+    test_cases: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
+    assignment_instructions: Mapped[str | None] = mapped_column(Text, nullable=True)
+    max_runtime_ms: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, server_default="5000"
+    )
+    memory_limit_mb: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, server_default="128"
     )
 
     lesson: Mapped[Lesson] = relationship("Lesson", back_populates="questions")

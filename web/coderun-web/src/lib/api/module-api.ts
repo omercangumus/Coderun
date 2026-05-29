@@ -159,6 +159,13 @@ function mapQuestion(raw: any): QuestionResponse {
     reinforcementQuestion: raw.reinforcement_question
       ? mapQuestion(raw.reinforcement_question)
       : null,
+    // Code assignment fields
+    language: raw.language ?? null,
+    starterCode: raw.starter_code ?? null,
+    testCases: raw.test_cases ?? null,
+    assignmentInstructions: raw.assignment_instructions ?? null,
+    maxRuntimeMs: raw.max_runtime_ms ?? null,
+    memoryLimitMb: raw.memory_limit_mb ?? null,
   };
 }
 

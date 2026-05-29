@@ -72,6 +72,12 @@ class Settings(BaseSettings):
     LEADERBOARD_TTL_SECONDS: int = 604800
     LEADERBOARD_TOP_N: int = 100
 
+    # --- Code Runner ---
+    CODE_RUNNER_TIMEOUT_MS: int = 5000
+    CODE_RUNNER_MEMORY_MB: int = 128
+    CODE_RUNNER_OUTPUT_LIMIT_KB: int = 10
+    CODE_RUNNER_DOCKER_IMAGE: str = "python:3.11-slim"
+
     model_config = SettingsConfigDict(
         env_file=[".env", "../.env"],  # backend/ veya root'tan çalışırken her ikisini de dene
         env_file_encoding="utf-8",

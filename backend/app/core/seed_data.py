@@ -2865,3 +2865,230 @@ SEED_DATA: list[dict] = [
         ],
     },
 ]
+
+# =============================================================================
+# PYTHON KODLAMA ODEVLERi — Ek ders (code_editor tipi)
+# seed.py bu veriyi Python modülüne ekler.
+# =============================================================================
+
+CODING_ASSIGNMENTS_LESSON: dict = {
+    "title": "Python Kodlama Odevleri",
+    "lesson_type": "code_editor",
+    "order": 11,
+    "xp_reward": 50,
+    "questions": [
+        # ------------------------------------------------------------------
+        # 1. Hello Coderun
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Hello Coderun",
+            "question_type": "code_editor",
+            "language": "python",
+            "assignment_instructions": (
+                "Ekrana tam olarak 'Hello, Coderun!' yazdiran bir program yazin.\n\n"
+                "Ipucu: print() fonksiyonunu kullanin."
+            ),
+            "starter_code": "# Buraya kodunuzu yazin\n",
+            "correct_answer": "__code_editor__",
+            "hint": "print() fonksiyonunu kullanin.",
+            "explanation": "print('Hello, Coderun!') ifadesi ekrana istenen metni yazdirir.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 1,
+            "test_cases": [
+                {
+                    "name": "Temel cikti",
+                    "stdin": "",
+                    "expected_stdout": "Hello, Coderun!",
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli dogrulama",
+                    "stdin": "",
+                    "expected_stdout": "Hello, Coderun!",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 2. Iki Sayinin Toplami
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Iki Sayinin Toplami",
+            "question_type": "code_editor",
+            "language": "python",
+            "assignment_instructions": (
+                "Iki tam sayiyi toplayip sonucu yazdiran bir program yazin.\n\n"
+                "Giris: Iki satirda birer tam sayi\n"
+                "Cikti: Toplamlar"
+            ),
+            "starter_code": (
+                "a = int(input())\n"
+                "b = int(input())\n"
+                "# Toplami hesaplayin ve yazdirin\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "a + b ifadesini print() ile yazdiriniz.",
+            "explanation": "print(a + b) iki sayinin toplamini yazdirir.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 2,
+            "test_cases": [
+                {
+                    "name": "3 + 5 = 8",
+                    "stdin": "3\n5",
+                    "expected_stdout": "8",
+                    "hidden": False,
+                },
+                {
+                    "name": "Negatif sayilar",
+                    "stdin": "-2\n7",
+                    "expected_stdout": "5",
+                    "hidden": True,
+                },
+                {
+                    "name": "Sifir",
+                    "stdin": "0\n0",
+                    "expected_stdout": "0",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 3. Cift Sayilari Say
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Cift Sayilari Say",
+            "question_type": "code_editor",
+            "language": "python",
+            "assignment_instructions": (
+                "1'den N'e kadar (N dahil) olan cift sayilarin adedini yazdirin.\n\n"
+                "Giris: Tek bir tam sayi N\n"
+                "Cikti: Cift sayi adedi"
+            ),
+            "starter_code": (
+                "n = int(input())\n"
+                "# Cift sayilari sayiniz\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "range(2, n+1, 2) ile cift sayilari sayabilirsiniz.",
+            "explanation": "n // 2 veya len(range(2, n+1, 2)) cift sayi adedini verir.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 3,
+            "test_cases": [
+                {
+                    "name": "N=10 -> 5",
+                    "stdin": "10",
+                    "expected_stdout": "5",
+                    "hidden": False,
+                },
+                {
+                    "name": "N=1 -> 0",
+                    "stdin": "1",
+                    "expected_stdout": "0",
+                    "hidden": True,
+                },
+                {
+                    "name": "N=6 -> 3",
+                    "stdin": "6",
+                    "expected_stdout": "3",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 4. String Tersine Cevir
+        # ------------------------------------------------------------------
+        {
+            "question_text": "String Tersine Cevir",
+            "question_type": "code_editor",
+            "language": "python",
+            "assignment_instructions": (
+                "Girilen string'i tersine cevirip yazdirin.\n\n"
+                "Giris: Bir string\n"
+                "Cikti: Tersine cevrilmis string"
+            ),
+            "starter_code": (
+                "s = input()\n"
+                "# String'i tersine ceviriniz\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "Python'da s[::-1] ifadesi string'i tersine cevirir.",
+            "explanation": "print(s[::-1]) veya print(''.join(reversed(s))) kullanilabilir.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 4,
+            "test_cases": [
+                {
+                    "name": "hello -> olleh",
+                    "stdin": "hello",
+                    "expected_stdout": "olleh",
+                    "hidden": False,
+                },
+                {
+                    "name": "python -> nohtyp",
+                    "stdin": "python",
+                    "expected_stdout": "nohtyp",
+                    "hidden": True,
+                },
+                {
+                    "name": "Tek karakter",
+                    "stdin": "a",
+                    "expected_stdout": "a",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 5. FizzBuzz Mini
+        # ------------------------------------------------------------------
+        {
+            "question_text": "FizzBuzz Mini",
+            "question_type": "code_editor",
+            "language": "python",
+            "assignment_instructions": (
+                "1'den 15'e kadar sayilari yazdirin.\n"
+                "3'un katlari icin 'Fizz', 5'in katlari icin 'Buzz',\n"
+                "her ikisinin katlari icin 'FizzBuzz' yazdirin."
+            ),
+            "starter_code": (
+                "for i in range(1, 16):\n"
+                "    # Kosullari kontrol ediniz\n"
+                "    pass\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "Once 15'in katlarini (FizzBuzz), sonra 3 ve 5'in katlarini kontrol edin.",
+            "explanation": (
+                "if i % 15 == 0: print('FizzBuzz')\n"
+                "elif i % 3 == 0: print('Fizz')\n"
+                "elif i % 5 == 0: print('Buzz')\n"
+                "else: print(i)"
+            ),
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 5,
+            "test_cases": [
+                {
+                    "name": "1-15 tam cikti",
+                    "stdin": "",
+                    "expected_stdout": (
+                        "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n"
+                        "11\nFizz\n13\n14\nFizzBuzz"
+                    ),
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli dogrulama",
+                    "stdin": "",
+                    "expected_stdout": (
+                        "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n"
+                        "11\nFizz\n13\n14\nFizzBuzz"
+                    ),
+                    "hidden": True,
+                },
+            ],
+        },
+    ],
+}
+
