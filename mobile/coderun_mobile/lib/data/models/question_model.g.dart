@@ -24,6 +24,14 @@ QuestionModel _$QuestionModelFromJson(Map<String, dynamic> json) =>
           ? null
           : QuestionModel.fromJson(
               json['reinforcement_question'] as Map<String, dynamic>),
+      language: json['language'] as String?,
+      starterCode: json['starter_code'] as String?,
+      testCases: (json['test_cases'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList(),
+      assignmentInstructions: json['assignment_instructions'] as String?,
+      maxRuntimeMs: (json['max_runtime_ms'] as num?)?.toInt(),
+      memoryLimitMb: (json['memory_limit_mb'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$QuestionModelToJson(QuestionModel instance) =>
@@ -41,4 +49,10 @@ Map<String, dynamic> _$QuestionModelToJson(QuestionModel instance) =>
       'is_reinforcement': instance.isReinforcement,
       'order': instance.order,
       'reinforcement_question': instance.reinforcementQuestion,
+      'language': instance.language,
+      'starter_code': instance.starterCode,
+      'test_cases': instance.testCases,
+      'assignment_instructions': instance.assignmentInstructions,
+      'max_runtime_ms': instance.maxRuntimeMs,
+      'memory_limit_mb': instance.memoryLimitMb,
     };

@@ -48,6 +48,10 @@ abstract class ApiConstants {
   static const String mentorStatus = '/mentor/status';
   static const String mentorAsk = '/mentor/ask'; // attempt_count destekli LLM endpoint
 
+  // Code Runner endpoint'leri
+  static const String codeRun = '/code/run';
+  static const String codeSubmit = '/code/submit';
+
   // Timeout değerleri (milisaniye)
   static const int connectTimeout = 30000;
   static const int receiveTimeout = 30000;

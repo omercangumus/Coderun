@@ -9,6 +9,7 @@ import { ReorderQuestion } from './reorder-question';
 import { SpotTheBugQuestion } from './spot-the-bug-question';
 import { MultiSelectQuestion } from './multi-select-question';
 import { TrueFalseReasonQuestion } from './true-false-reason-question';
+import { CodeRunnerAssignment } from './code-runner-assignment';
 
 interface QuestionRouterProps {
   question: QuestionResponse;
@@ -47,7 +48,7 @@ export function QuestionRouter({
 
     case 'code_editor':
       return (
-        <MiniProjectQuestion
+        <CodeRunnerAssignment
           question={question}
           currentAnswer={currentAnswer}
           onChange={onAnswer}

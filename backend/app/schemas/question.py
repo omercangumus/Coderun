@@ -21,6 +21,13 @@ class QuestionSimpleResponse(BaseModel):
     correct_line_index: int | None = None
     is_reinforcement: bool = False
     order: int
+    # Code assignment fields (code_editor type)
+    language: str | None = None
+    starter_code: str | None = None
+    test_cases: list[dict] | None = None
+    assignment_instructions: str | None = None
+    max_runtime_ms: int | None = None
+    memory_limit_mb: int | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -103,6 +110,13 @@ class QuestionCreateSchema(BaseModel):
     is_reinforcement: bool = False
     order: int = 0
     reinforcement_question_id: uuid.UUID | None = None
+    # Code assignment fields
+    language: str | None = None
+    starter_code: str | None = None
+    test_cases: list[dict] | None = None
+    assignment_instructions: str | None = None
+    max_runtime_ms: int | None = None
+    memory_limit_mb: int | None = None
 
 
 class QuestionUpdateSchema(BaseModel):
@@ -120,3 +134,10 @@ class QuestionUpdateSchema(BaseModel):
     is_reinforcement: bool | None = None
     order: int | None = None
     reinforcement_question_id: uuid.UUID | None = None
+    # Code assignment fields
+    language: str | None = None
+    starter_code: str | None = None
+    test_cases: list[dict] | None = None
+    assignment_instructions: str | None = None
+    max_runtime_ms: int | None = None
+    memory_limit_mb: int | None = None

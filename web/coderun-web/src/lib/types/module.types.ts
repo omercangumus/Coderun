@@ -55,6 +55,13 @@ export interface QuestionResponse {
   isReinforcement: boolean;
   order: number;
   reinforcementQuestion: QuestionResponse | null;
+  // Code assignment fields (code_editor type)
+  language: string | null;
+  starterCode: string | null;
+  testCases: Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }> | null;
+  assignmentInstructions: string | null;
+  maxRuntimeMs: number | null;
+  memoryLimitMb: number | null;
 }
 
 export interface LessonDetailResponse extends LessonResponse {

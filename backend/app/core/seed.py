@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.lesson import Lesson
 from app.models.module import Module
 from app.models.question import Question
-from app.core.seed_data import SEED_DATA
+from app.core.seed_data import SEED_DATA, CODING_ASSIGNMENTS_LESSON
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,10 @@ async def seed_database(db: AsyncSession) -> None:
 
     try:
         for module_data in SEED_DATA:
-            lessons_data = module_data.get("lessons", [])
+            # Python modülüne kodlama ödevleri dersini ekle
+            lessons_data = list(module_data.get("lessons", []))
+            if module_data.get("slug") == "python":
+                lessons_data = lessons_data + [CODING_ASSIGNMENTS_LESSON]
             module_id = uuid4()
 
             module = Module(
@@ -92,6 +95,13 @@ async def seed_database(db: AsyncSession) -> None:
                         correct_line_index=question_data.get("correct_line_index"),
                         is_reinforcement=question_data.get("is_reinforcement", False),
                         order=question_data["order"],
+                        # Code assignment fields
+                        language=question_data.get("language"),
+                        starter_code=question_data.get("starter_code"),
+                        test_cases=question_data.get("test_cases"),
+                        assignment_instructions=question_data.get("assignment_instructions"),
+                        max_runtime_ms=question_data.get("max_runtime_ms"),
+                        memory_limit_mb=question_data.get("memory_limit_mb"),
                     )
                     db.add(question)
                     question_list.append((

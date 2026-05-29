@@ -37,6 +37,47 @@ export default function QuestionEditorPage() {
     'It subtracts the value instead of adding it to the total.'
   );
 
+  // Code assignment fields (code_editor type)
+  const [assignmentInstructions, setAssignmentInstructions] = useState('');
+  const [starterCode, setStarterCode] = useState('# Write your solution here\n');
+  const [maxRuntimeMs, setMaxRuntimeMs] = useState(5000);
+  const [memoryLimitMb, setMemoryLimitMb] = useState(128);
+  const [testCases, setTestCases] = useState<
+    Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }>
+  >([{ name: 'Basic test', stdin: '', expectedStdout: '', hidden: false }]);
+  const [testCaseError, setTestCaseError] = useState<string | null>(null);
+
+  const addTestCase = () => {
+    setTestCases((prev) => [
+      ...prev,
+      { name: `Test ${prev.length + 1}`, stdin: '', expectedStdout: '', hidden: false },
+    ]);
+    setTestCaseError(null);
+  };
+
+  const removeTestCase = (index: number) => {
+    setTestCases((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateTestCase = (
+    index: number,
+    field: 'name' | 'stdin' | 'expectedStdout' | 'hidden',
+    value: string | boolean
+  ) => {
+    setTestCases((prev) =>
+      prev.map((tc, i) => (i === index ? { ...tc, [field]: value } : tc))
+    );
+  };
+
+  const handleSave = () => {
+    if (questionType === 'code_editor' && testCases.length === 0) {
+      setTestCaseError('At least one test case is required for code assignments.');
+      return;
+    }
+    setTestCaseError(null);
+    // Save logic would go here
+  };
+
   const typeLabel =
     QUESTION_TYPES.find((t) => t.value === questionType)?.label || questionType;
 
@@ -55,7 +96,9 @@ export default function QuestionEditorPage() {
           <button className="px-4 py-2 text-body-sm text-on-surface-variant hover:text-on-surface transition-colors">
             Discard
           </button>
-          <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-on font-semibold text-button-sm hover:shadow-primary transition-all">
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-on font-semibold text-button-sm hover:shadow-primary transition-all">
             <Save size={16} />
             Save Draft
           </button>
@@ -181,6 +224,186 @@ export default function QuestionEditorPage() {
             />
           </div>
         </div>
+
+        {/* Code Assignment Fields — only for code_editor */}
+        {questionType === 'code_editor' && (
+          <div className="space-y-6 pt-4 border-t border-outline-variant">
+            <h3 className="text-h4 font-heading text-on-surface flex items-center gap-2">
+              🐍 Code Assignment Settings
+            </h3>
+
+            {/* Language + Runtime + Memory */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
+                  Language
+                </label>
+                <select
+                  disabled
+                  className="w-full p-3 rounded-lg border border-outline-variant bg-surface-container text-on-surface opacity-70 cursor-not-allowed"
+                >
+                  <option value="python">Python 3.11</option>
+                </select>
+                <p className="text-xs text-on-surface-variant mt-1">Only Python supported in MVP</p>
+              </div>
+              <div>
+                <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
+                  Max Runtime (ms)
+                </label>
+                <input
+                  type="number"
+                  value={maxRuntimeMs}
+                  onChange={(e) => setMaxRuntimeMs(Number(e.target.value))}
+                  min={1000}
+                  max={30000}
+                  step={1000}
+                  className="w-full p-3 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
+                  Memory Limit (MB)
+                </label>
+                <input
+                  type="number"
+                  value={memoryLimitMb}
+                  onChange={(e) => setMemoryLimitMb(Number(e.target.value))}
+                  min={64}
+                  max={512}
+                  step={64}
+                  className="w-full p-3 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Assignment Instructions */}
+            <div>
+              <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
+                Assignment Instructions
+              </label>
+              <textarea
+                value={assignmentInstructions}
+                onChange={(e) => setAssignmentInstructions(e.target.value)}
+                rows={4}
+                placeholder="Describe the task clearly. Include input/output format if needed."
+                className="w-full p-3 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:border-primary focus:outline-none transition-colors resize-y"
+              />
+            </div>
+
+            {/* Starter Code */}
+            <div>
+              <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
+                Starter Code
+              </label>
+              <div className="rounded-lg border border-outline-variant overflow-hidden">
+                <div className="bg-inverse-surface px-4 py-2 flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-error/60" />
+                  <div className="w-3 h-3 rounded-full bg-xp-gold/60" />
+                  <div className="w-3 h-3 rounded-full bg-secondary/60" />
+                  <span className="text-xs text-inverse-on-surface/60 ml-2 font-mono">solution.py</span>
+                </div>
+                <textarea
+                  value={starterCode}
+                  onChange={(e) => setStarterCode(e.target.value)}
+                  rows={6}
+                  className="w-full p-4 font-mono text-body-sm bg-surface-container-highest text-on-surface focus:outline-none resize-y"
+                />
+              </div>
+            </div>
+
+            {/* Test Cases */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-label-caps text-on-surface-variant uppercase tracking-wider">
+                  Test Cases
+                </label>
+                <button
+                  type="button"
+                  onClick={addTestCase}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
+                >
+                  + Add Test Case
+                </button>
+              </div>
+
+              {testCaseError && (
+                <div className="mb-3 p-3 rounded-lg bg-error/10 border border-error/30 text-sm text-error">
+                  {testCaseError}
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {testCases.map((tc, index) => (
+                  <div
+                    key={index}
+                    className={`p-4 rounded-xl border ${
+                      tc.hidden
+                        ? 'border-outline-variant bg-surface-container'
+                        : 'border-outline-variant bg-surface-container-lowest'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <input
+                        type="text"
+                        value={tc.name}
+                        onChange={(e) => updateTestCase(index, 'name', e.target.value)}
+                        placeholder="Test name"
+                        className="flex-1 p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm focus:border-primary focus:outline-none"
+                      />
+                      <label className="flex items-center gap-2 text-sm text-on-surface-variant cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={tc.hidden}
+                          onChange={(e) => updateTestCase(index, 'hidden', e.target.checked)}
+                          className="w-4 h-4 accent-primary"
+                        />
+                        Hidden
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeTestCase(index)}
+                        className="text-error hover:text-error/70 text-sm font-medium transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-on-surface-variant block mb-1">
+                          Input (stdin)
+                        </label>
+                        <textarea
+                          value={tc.stdin}
+                          onChange={(e) => updateTestCase(index, 'stdin', e.target.value)}
+                          rows={2}
+                          placeholder="Leave empty if no input needed"
+                          className="w-full p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm font-mono focus:border-primary focus:outline-none resize-y"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-on-surface-variant block mb-1">
+                          Expected Output (stdout)
+                        </label>
+                        <textarea
+                          value={tc.expectedStdout}
+                          onChange={(e) => updateTestCase(index, 'expectedStdout', e.target.value)}
+                          rows={2}
+                          placeholder="Exact expected output"
+                          className="w-full p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm font-mono focus:border-primary focus:outline-none resize-y"
+                        />
+                      </div>
+                    </div>
+                    {tc.hidden && (
+                      <p className="mt-2 text-xs text-on-surface-variant">
+                        🔒 Hidden — students will see pass/fail only, not the expected output.
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Pro Tip */}

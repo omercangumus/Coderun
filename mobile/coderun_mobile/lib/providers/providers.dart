@@ -14,6 +14,8 @@ import '../data/repositories/auth_repository.dart';
 import '../data/repositories/mentor_repository.dart';
 import '../data/repositories/module_repository.dart';
 import '../data/repositories/gamification_repository.dart';
+import '../data/repositories/code_runner_repository.dart';
+import '../data/datasources/code_runner_remote_datasource.dart';
 
 /// NotificationService provider — main.dart'ta override edilir.
 final notificationServiceProvider = Provider<NotificationService>((ref) {
@@ -90,4 +92,17 @@ final mentorRepositoryProvider = Provider<MentorRepository>((ref) {
   return MentorRepositoryImpl(
     remoteDataSource: ref.watch(mentorRemoteDataSourceProvider),
   );
+});
+
+/// Code Runner uzak veri kaynağı provider'ı.
+final codeRunnerRemoteDataSourceProvider =
+    Provider<CodeRunnerRemoteDataSource>((ref) {
+  final dio = ref.watch(dioProvider);
+  return CodeRunnerRemoteDataSourceImpl(dio: dio);
+});
+
+/// Code Runner repository provider'ı.
+final codeRunnerRepositoryProvider = Provider<CodeRunnerRepository>((ref) {
+  final dataSource = ref.watch(codeRunnerRemoteDataSourceProvider);
+  return CodeRunnerRepositoryImpl(remoteDataSource: dataSource);
 });
