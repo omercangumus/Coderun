@@ -1,0 +1,11 @@
+{
+  "name": "coderun-runtime-qa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "node capture-runtime-ui.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

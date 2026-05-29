@@ -2,6 +2,32 @@
 
 Güncel UI, 26 derslik Python müfredatı ve tema sistemini görmek için aşağıdaki adımları izleyin.
 
+## Önemli: Docker ile çalışıyorsanız
+
+Web konteyneri **production build** kullanır (`npm run build` imaja gömülür). UI değişikliklerini görmek için imajı yeniden oluşturmanız gerekir:
+
+```powershell
+# Tam sıfırlama (DB + önbellek + imaj)
+docker compose down -v
+Remove-Item -Recurse -Force web/coderun-web/.next -ErrorAction SilentlyContinue
+docker compose build --no-cache web backend
+docker compose up -d db redis
+# DB hazır olunca (15 sn):
+cd backend
+python -m alembic upgrade head
+python -m app.core.reset_seed
+docker compose up -d backend web
+```
+
+Alternatif (en hızlı geliştirme): Web'i Docker dışında `npm run dev` ile çalıştırın; backend+db Docker'da kalabilir.
+
+## Tema localStorage
+
+Web tema anahtarı: `coderun-settings` (zustand persist). Eski tema takılıysa:
+
+1. DevTools → Application → Local Storage → `coderun-settings` silin, veya
+2. Profil → Görünüm Teması → Açık / Koyu / Comfort seçin
+
 ## 1. Veritabanı
 
 ```bash
@@ -9,6 +35,11 @@ cd backend
 python -m alembic upgrade head
 python -m app.core.reset_seed
 ```
+
+Admin kullanıcı (giriş için):
+
+- E-posta: `admin@coderun.com`
+- Şifre: `admin123`
 
 > **Not:** `seed.py` idempotenttir — mevcut modül varsa seed atlanır. Eski müfredat görüyorsanız `reset_seed` çalıştırın.
 
@@ -29,7 +60,7 @@ npm run dev
 
 Tarayıcıda açın:
 
-- Ana sayfa: http://localhost:3000
+- Öğrenme yolları: http://localhost:3000/learn
 - Python öğrenme yolu: http://localhost:3000/learn/python
 - Rozetler: http://localhost:3000/badges
 - Liderboard: http://localhost:3000/leaderboard
@@ -44,6 +75,18 @@ flutter run
 ```
 
 Tema seçici: **Profil** sekmesi → **Görünüm Teması** (Açık / Koyu / Comfort)
+
+## Runtime UI ekran görüntüleri
+
+```powershell
+cd scripts/qa
+npm install
+npx playwright install chromium
+$env:GIT_COMMIT = git -C ../.. rev-parse HEAD
+npm run capture
+```
+
+Çıktı: `docs/qa/runtime-ui/*.png`
 
 ## Beklenen durum
 
