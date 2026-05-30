@@ -28,7 +28,7 @@ Testler SQLite ile çalışır; Postgres servisi gerekmez. Redis servisi sağlı
 
 ## Mobile CI
 
-- Flutter **3.24.5** (stable)
+- Flutter **3.29.3** (stable; `video_player` için Dart SDK ≥3.7 gerekir)
 - `dart run build_runner build --delete-conflicting-outputs` her koşuda çalışır
 
 ## Code runner / Docker entegrasyonu
