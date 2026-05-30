@@ -5,6 +5,7 @@ import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { parseApiError } from '@/lib/utils/api-errors';
 import { useAuthGhostie } from '@/components/auth/AuthGhostieContext';
 import Link from 'next/link';
 

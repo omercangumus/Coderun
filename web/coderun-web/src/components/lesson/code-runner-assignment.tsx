@@ -12,8 +12,14 @@ import {
   CodingLabProblemContent,
   type ChallengeDifficulty,
 } from '@/components/coding-lab/CodingLabShell';
+import { FloatingGhostieMentor } from '@/components/coding-lab/FloatingGhostieMentor';
 import { cn } from '@/lib/utils/cn';
 import { parseCodeRunnerError, getCodeRunnerDevDetail } from '@/lib/utils/code-runner-errors';
+
+function formatRunDuration(ms: number): string {
+  if (ms < 1000) return `${ms} ms`;
+  return `${(ms / 1000).toFixed(2)} sn`;
+}
 
 type ResultTab = 'output' | 'errors' | 'tests';
 
@@ -104,7 +110,8 @@ function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
           </span>
         </span>
         <span>
-          SÜRE: <span className="font-bold text-blue-400">{result.durationMs}ms</span>
+          Süre:{' '}
+          <span className="font-bold text-blue-400">{formatRunDuration(result.durationMs)}</span>
         </span>
       </div>
     </div>
@@ -136,7 +143,7 @@ function TestResultsPanel({ results }: { results: TestCaseResult[] }) {
               {r.hidden && (
                 <span className="rounded bg-surface-container px-1.5 py-0.5 text-[9px] uppercase">gizli</span>
               )}
-              <span className="ml-auto font-mono opacity-70">{r.durationMs}ms</span>
+              <span className="ml-auto font-mono opacity-70">{formatRunDuration(r.durationMs)}</span>
             </div>
             {!r.passed && !r.hidden && r.expectedStdout && (
               <p className="mt-2 font-mono text-[10px] opacity-80">Beklenen: {r.expectedStdout.slice(0, 120)}</p>
@@ -205,6 +212,8 @@ export function CodeRunnerAssignment({
         memoryLimitMb: question.memoryLimitMb ?? 128,
       });
       setRunResult(result);
+      setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
+      setEditorTab('terminal');
     } catch (err: unknown) {
       setError(parseCodeRunnerError(err, 'Kod çalıştırılamadı.'));
       setErrorDev(getCodeRunnerDevDetail(err));
@@ -396,7 +405,7 @@ export function CodeRunnerAssignment({
         }
         editorPanel={editorPanel}
         resultsPanel={
-          <div className="flex h-full max-h-[240px] flex-col">
+          <div className="flex h-full min-h-[140px] flex-col">
             <div className="flex gap-1 border-b border-outline-variant bg-surface-container px-2 py-1">
               {(
                 [
@@ -425,32 +434,29 @@ export function CodeRunnerAssignment({
             <div className="min-h-0 flex-1">{resultsPanelContent()}</div>
           </div>
         }
-        mentorPanel={
-          <div className="flex h-full flex-col gap-3 p-4">
-            <GhostieReaction state={ghostieState} message={ghostieMessage} size={96} preferAnimation />
-            {submitResult && (
-              <div
-                className={cn(
-                  'rounded-2xl border p-4 text-center',
-                  submitResult.passed
-                    ? 'border-secondary/30 bg-secondary/10'
-                    : 'border-error/30 bg-error-container/20',
-                )}
-              >
-                <p className="font-heading text-3xl font-bold">{submitResult.score}%</p>
-                <p className="mt-1 text-sm font-semibold">
-                  {submitResult.passed ? '🎉 Tüm testler geçti!' : 'Tekrar dene!'}
-                </p>
-              </div>
-            )}
-          </div>
-        }
       />
 
-      {/* Mobile mentor fallback */}
-      <div className="xl:hidden">
-        <GhostieReaction state={ghostieState} message={ghostieMessage} size={72} preferAnimation />
-      </div>
+      <FloatingGhostieMentor
+        state={ghostieState}
+        message={ghostieMessage}
+        scoreBanner={
+          submitResult ? (
+            <div
+              className={cn(
+                'rounded-xl border p-3 text-center',
+                submitResult.passed
+                  ? 'border-secondary/30 bg-secondary/10'
+                  : 'border-error/30 bg-error-container/20',
+              )}
+            >
+              <p className="font-heading text-2xl font-bold">{submitResult.score}%</p>
+              <p className="mt-1 text-xs font-semibold">
+                {submitResult.passed ? 'Tüm testler geçti' : 'Bazı testler başarısız'}
+              </p>
+            </div>
+          ) : undefined
+        }
+      />
     </div>
   );
 }

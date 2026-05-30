@@ -84,14 +84,19 @@ export default function ModulePage({
     return 'locked';
   };
 
-  const getNodeType = (lesson: { title: string }, index: number): NodeType => {
+  const getNodeType = (lesson: { title: string; lessonType?: string }, index: number): NodeType => {
+    if (lesson.lessonType === 'code_editor') return 'miniProject';
+    if (lesson.lessonType === 'quiz') return 'quiz';
     const title = lesson.title.toLowerCase();
+    if (title.includes('kodlama') || title.includes('ödev') || title.includes('odev')) return 'miniProject';
     if (title.includes('quiz') || title.includes('test')) return 'quiz';
     if (title.includes('review') || title.includes('tekrar')) return 'review';
     if (title.includes('proje') || title.includes('project')) return 'miniProject';
     if ((index + 1) % 5 === 0) return 'checkpoint';
     return 'lesson';
   };
+
+  const codingLesson = lessons?.find((l) => l.lessonType === 'code_editor');
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -121,6 +126,33 @@ export default function ModulePage({
               </div>
             </div>
           </div>
+
+          {codingLesson && !codingLesson.isLocked && (
+            <Link href={`/learn/${moduleSlug}/lesson/${codingLesson.id}`}>
+              <CoderunCard
+                variant="highlight"
+                className="cursor-pointer border-violet-500/40 bg-gradient-to-br from-violet-500/10 to-primary/10 hover:shadow-lg transition-shadow"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/20 text-2xl">
+                    💻
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-label text-label-sm uppercase tracking-wide text-violet-700 dark:text-violet-300">
+                      Kod Labı · Ödevler
+                    </p>
+                    <p className="font-heading text-base font-bold text-on-surface">{codingLesson.title}</p>
+                    <p className="mt-1 font-sans text-body-sm text-on-surface-variant">
+                      Gerçek Python editöründe kod yaz, çalıştır ve test et.
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-bold text-white">
+                    Kod çözmeye başla
+                  </span>
+                </div>
+              </CoderunCard>
+            </Link>
+          )}
 
           {/* Placement test */}
           {noneCompleted && (
