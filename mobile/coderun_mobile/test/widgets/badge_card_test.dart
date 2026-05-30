@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coderun_mobile/data/models/badge_model.dart';
+import 'package:coderun_mobile/core/theme/app_colors.dart';
 import 'package:coderun_mobile/presentation/screens/badges/widgets/badge_card.dart';
 
 void main() {
@@ -33,7 +34,7 @@ void main() {
         if (decoration is BoxDecoration) {
           final border = decoration.border;
           if (border is Border) {
-            return border.top.color == Colors.amber;
+            return border.top.color == AppColors.xpGold;
           }
         }
         return false;
@@ -97,8 +98,7 @@ void main() {
       expect(find.text('🔥'), findsOneWidget);
     });
 
-    testWidgets('kazanılmamış rozet opacity 0.4 ile gösteriliyor',
-        (tester) async {
+    testWidgets('kazanılmamış rozet Kilitli etiketi gösteriyor', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -111,8 +111,7 @@ void main() {
         ),
       );
 
-      final opacity = tester.widget<Opacity>(find.byType(Opacity));
-      expect(opacity.opacity, 0.4);
+      expect(find.text('Kilitli'), findsOneWidget);
     });
   });
 }

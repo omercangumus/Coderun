@@ -13,6 +13,7 @@ void main() {
         'description': 'Python öğren',
         'order': 1,
         'is_active': true,
+        'created_at': '2026-01-01T00:00:00Z',
       };
       final model = ModuleModel.fromJson(json);
       expect(model.id, '1');
