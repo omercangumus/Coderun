@@ -77,6 +77,8 @@ class Settings(BaseSettings):
     CODE_RUNNER_MEMORY_MB: int = 128
     CODE_RUNNER_OUTPUT_LIMIT_KB: int = 10
     CODE_RUNNER_DOCKER_IMAGE: str = "python:3.11-slim"
+    # İsteğe bağlı: yerel debug için paylaşımlı sandbox dizini (kod tmpfs ile aktarılır)
+    CODE_RUNNER_SANDBOX_DIR: str = "/coderun-sandbox"
 
     model_config = SettingsConfigDict(
         env_file=[".env", "../.env"],  # backend/ veya root'tan çalışırken her ikisini de dene

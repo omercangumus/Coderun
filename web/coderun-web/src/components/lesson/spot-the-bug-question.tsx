@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHaptics } from '@/lib/hooks/use-haptics';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface SpotTheBugQuestionProps {
   questionText: string;
@@ -21,7 +22,6 @@ export function SpotTheBugQuestion({
   const [selectedLine, setSelectedLine] = useState<number | null>(null);
   const [selectedFix, setSelectedFix] = useState<number | null>(null);
   const [step, setStep] = useState<'line' | 'fix'>('line');
-  const [showHint, setShowHint] = useState(false);
   const { vibrateTap } = useHaptics();
 
   const lines = codeBlock.split('\n');
@@ -41,8 +41,9 @@ export function SpotTheBugQuestion({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <p className="text-body-lg text-on-surface font-medium">{questionText}</p>
+    <div className="flex flex-col gap-5 animate-fade-in">
+      <QuizQuestionHeader questionText={questionText} />
+      {hint && <QuizHintCard hint={hint} />}
 
       {/* Code Block with Line Numbers */}
       <div className="rounded-xl border border-outline-variant overflow-hidden">
@@ -101,14 +102,6 @@ export function SpotTheBugQuestion({
         </div>
       )}
 
-      {hint && (
-        <button
-          onClick={() => setShowHint(!showHint)}
-          className="text-body-sm text-primary hover:text-primary-container transition-colors"
-        >
-          {showHint ? '💡 ' + hint : '💡 İpucu göster'}
-        </button>
-      )}
     </div>
   );
 }

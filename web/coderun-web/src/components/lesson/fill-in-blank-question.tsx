@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHaptics } from '@/lib/hooks/use-haptics';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface FillInBlankQuestionProps {
   questionText: string;
@@ -21,7 +22,6 @@ export function FillInBlankQuestion({
   const blanks = (codeBlock.match(/___/g) || []).length;
   const [filledBlanks, setFilledBlanks] = useState<string[]>(Array(blanks).fill(''));
   const [usedWords, setUsedWords] = useState<Set<number>>(new Set());
-  const [showHint, setShowHint] = useState(false);
   const { vibrateTap } = useHaptics();
 
   const handleWordClick = (word: string, wordIndex: number) => {
@@ -64,7 +64,7 @@ export function FillInBlankQuestion({
     const parts = codeBlock.split('___');
 
     return (
-      <pre className="bg-surface-container-highest rounded-lg p-4 font-mono text-body-sm overflow-x-auto">
+      <pre className="overflow-x-auto rounded-2xl border border-outline-variant bg-[#1E1E2E] p-4 font-mono text-sm leading-relaxed text-green-300">
         {parts.map((part, i) => (
           <span key={i}>
             {part}
@@ -87,15 +87,14 @@ export function FillInBlankQuestion({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <p className="text-body-lg text-on-surface font-medium">{questionText}</p>
-
+    <div className="flex flex-col gap-5 animate-fade-in">
+      <QuizQuestionHeader questionText={questionText} />
+      {hint && <QuizHintCard hint={hint} />}
       {renderCode()}
 
-      {/* Word Bank */}
       <div className="space-y-2">
-        <p className="text-label-caps text-on-surface-variant uppercase tracking-wider">
-          Kelime Bankası
+        <p className="font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
+          Kelime bankası
         </p>
         <div className="flex flex-wrap gap-2">
           {wordBank.words.map((word, i) => (
@@ -115,14 +114,6 @@ export function FillInBlankQuestion({
         </div>
       </div>
 
-      {hint && (
-        <button
-          onClick={() => setShowHint(!showHint)}
-          className="text-body-sm text-primary hover:text-primary-container transition-colors"
-        >
-          {showHint ? '💡 ' + hint : '💡 İpucu göster'}
-        </button>
-      )}
     </div>
   );
 }

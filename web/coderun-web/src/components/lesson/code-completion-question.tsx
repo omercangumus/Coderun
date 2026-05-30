@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils/cn';
 import type { QuestionResponse } from '@/lib/types/module.types';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface Props {
   question: QuestionResponse;
@@ -13,9 +14,10 @@ export function CodeCompletionQuestion({ question, currentAnswer, onChange }: Pr
   const parts = question.questionText.split('___');
 
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-sm text-slate-400 font-medium">Boşluğu doldurun:</p>
-      <div className="bg-[#1e1e1e] rounded-xl p-4 font-mono text-sm">
+    <div className="flex flex-col gap-5">
+      <QuizQuestionHeader questionText={question.questionText.replace(/___/g, '______')} />
+      {question.hint && <QuizHintCard hint={question.hint} />}
+      <div className="overflow-hidden rounded-2xl border border-outline-variant bg-[#1E1E2E] p-4 font-mono text-sm">
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700">
           <div className="w-3 h-3 rounded-full bg-red-500" />
           <div className="w-3 h-3 rounded-full bg-yellow-500" />

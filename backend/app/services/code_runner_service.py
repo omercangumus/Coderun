@@ -4,12 +4,9 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import logging
 import math
-import os
-import shutil
-import tempfile
-import uuid
 from math import floor
 
 from fastapi import HTTPException, status
@@ -25,6 +22,19 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_LANGUAGES = {"python"}
 OUTPUT_LIMIT_BYTES = settings.CODE_RUNNER_OUTPUT_LIMIT_KB * 1024  # 10 KB
+# Ortam değişkeni üzerinden kod aktarımı (DooD bind-mount yol sorunlarını önler)
+MAX_CODE_BYTES = 96 * 1024
+_SANDBOX_BOOTSTRAP = (
+    "import base64, os, runpy\n"
+    "p = '/tmp/solution.py'\n"
+    "open(p, 'wb').write(base64.b64decode(os.environ['CODERUN_CODE']))\n"
+    "runpy.run_path(p, run_name='__main__')\n"
+)
+
+DOCKER_UNAVAILABLE_DETAIL = (
+    "Kod çalıştırıcı şu anda Docker'a erişemiyor. "
+    "Docker Desktop açık mı? Ardından: docker compose up -d backend"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -38,12 +48,50 @@ async def _check_docker_available() -> bool:
         proc = await asyncio.create_subprocess_exec(
             "docker", "info",
             stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE,
         )
         await asyncio.wait_for(proc.wait(), timeout=5.0)
         return proc.returncode == 0
     except (FileNotFoundError, asyncio.TimeoutError, OSError):
         return False
+
+
+def _build_sandbox_command(code: str, memory_mb: int) -> list[str]:
+    """Güvenli Docker sandbox komutunu oluşturur (host bind-mount gerektirmez)."""
+    if len(code.encode("utf-8")) > MAX_CODE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Kod çok uzun; lütfen daha kısa bir çözüm gönderin.",
+        )
+    code_b64 = base64.b64encode(code.encode("utf-8")).decode("ascii")
+    memory_str = f"{memory_mb}m"
+    return [
+        "docker",
+        "run",
+        "--rm",
+        "--network=none",
+        f"--memory={memory_str}",
+        f"--memory-swap={memory_str}",
+        "--cpus=1",
+        "--read-only",
+        "--tmpfs",
+        "/tmp:size=32m",
+        "--user=nobody",
+        "-e",
+        f"CODERUN_CODE={code_b64}",
+        "-i",
+        settings.CODE_RUNNER_DOCKER_IMAGE,
+        "python",
+        "-c",
+        _SANDBOX_BOOTSTRAP,
+    ]
+
+
+def _raise_docker_unavailable() -> None:
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail=DOCKER_UNAVAILABLE_DETAIL,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -81,95 +129,87 @@ async def run_code(
         )
 
     if not await _check_docker_available():
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Code runner is unavailable in this environment.",
-        )
+        _raise_docker_unavailable()
 
-    tmp_dir: str | None = None
+    cmd = _build_sandbox_command(code, memory_mb)
+    timeout_sec = timeout_ms / 1000.0
+    start_time = asyncio.get_event_loop().time()
+
     try:
-        # Geçici dizin oluştur
-        tmp_dir = tempfile.mkdtemp(prefix=f"coderun_{uuid.uuid4().hex}_")
-        code_file = os.path.join(tmp_dir, "solution.py")
-        with open(code_file, "w", encoding="utf-8") as f:
-            f.write(code)
-
-        # Docker komutu — tüm güvenlik bayrakları
-        memory_str = f"{memory_mb}m"
-        cmd = [
-            "docker", "run",
-            "--rm",
-            "--network=none",
-            f"--memory={memory_str}",
-            f"--memory-swap={memory_str}",
-            "--cpus=1",
-            "--read-only",
-            "--tmpfs", "/tmp:size=32m",
-            "--user=nobody",
-            "-v", f"{tmp_dir}:/code:ro",
-            settings.CODE_RUNNER_DOCKER_IMAGE,
-            "python", "/code/solution.py",
-        ]
-
-        timeout_sec = timeout_ms / 1000.0
-        start_time = asyncio.get_event_loop().time()
-
         proc = await asyncio.create_subprocess_exec(
             *cmd,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
+    except OSError as exc:
+        logger.error("docker run başlatılamadı: %s", exc)
+        _raise_docker_unavailable()
 
-        timed_out = False
+    timed_out = False
+    try:
+        stdin_bytes = stdin.encode("utf-8") if stdin else b""
+        stdout_bytes, stderr_bytes = await asyncio.wait_for(
+            proc.communicate(input=stdin_bytes),
+            timeout=timeout_sec,
+        )
+    except asyncio.TimeoutError:
+        timed_out = True
         try:
-            stdin_bytes = stdin.encode("utf-8") if stdin else b""
-            stdout_bytes, stderr_bytes = await asyncio.wait_for(
-                proc.communicate(input=stdin_bytes),
-                timeout=timeout_sec,
-            )
-        except asyncio.TimeoutError:
-            timed_out = True
-            try:
-                proc.kill()
-            except ProcessLookupError:
-                pass
-            stdout_bytes = b""
-            stderr_bytes = f"Execution timed out after {timeout_ms}ms".encode()
-            proc.returncode  # noqa: B018
+            proc.kill()
+        except ProcessLookupError:
+            pass
+        stdout_bytes = b""
+        stderr_bytes = f"Execution timed out after {timeout_ms}ms".encode()
 
-        end_time = asyncio.get_event_loop().time()
-        duration_ms = int((end_time - start_time) * 1000)
+    end_time = asyncio.get_event_loop().time()
+    duration_ms = int((end_time - start_time) * 1000)
 
-        stdout_str = stdout_bytes.decode("utf-8", errors="replace")
-        stderr_str = stderr_bytes.decode("utf-8", errors="replace")
+    stdout_str = stdout_bytes.decode("utf-8", errors="replace")
+    stderr_str = stderr_bytes.decode("utf-8", errors="replace")
 
-        # Çıktı boyutu sınırı
-        stdout_str, stderr_str = _truncate_output(stdout_str, stderr_str)
+    stdout_str, stderr_str = _truncate_output(stdout_str, stderr_str)
 
-        exit_code = proc.returncode if proc.returncode is not None else -1
-        if timed_out:
-            exit_code = -1
+    exit_code = proc.returncode if proc.returncode is not None else -1
+    if timed_out:
+        exit_code = -1
 
-        logger.info(
-            "code_run: language=%s code_len=%d exit_code=%d duration_ms=%d timed_out=%s",
-            language, len(code), exit_code, duration_ms, timed_out,
+    docker_infra_markers = (
+        "Cannot connect to the Docker daemon",
+        "error during connect",
+        "docker daemon",
+        "permission denied",
+        "Is the docker daemon running",
+    )
+    if any(marker.lower() in stderr_str.lower() for marker in docker_infra_markers):
+        logger.error("docker infrastructure error: %s", stderr_str[:500])
+        _raise_docker_unavailable()
+
+    if "Unable to find image" in stderr_str or "pull access denied" in stderr_str:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                f"Sandbox imajı bulunamadı ({settings.CODE_RUNNER_DOCKER_IMAGE}). "
+                f"Terminalde çalıştırın: docker pull {settings.CODE_RUNNER_DOCKER_IMAGE}"
+            ),
         )
 
-        return CodeRunResponse(
-            stdout=stdout_str,
-            stderr=stderr_str,
-            exit_code=exit_code,
-            duration_ms=duration_ms,
-            timed_out=timed_out,
-        )
+    logger.info(
+        "code_run: language=%s code_len=%d exit_code=%d duration_ms=%d timed_out=%s",
+        language,
+        len(code),
+        exit_code,
+        duration_ms,
+        timed_out,
+    )
 
-    finally:
-        if tmp_dir and os.path.exists(tmp_dir):
-            try:
-                shutil.rmtree(tmp_dir, ignore_errors=True)
-            except Exception:
-                pass
+    return CodeRunResponse(
+        stdout=stdout_str,
+        stderr=stderr_str,
+        exit_code=exit_code,
+        duration_ms=duration_ms,
+        timed_out=timed_out,
+    )
 
 
 def _truncate_output(stdout: str, stderr: str) -> tuple[str, str]:

@@ -8,6 +8,7 @@ services:
       # Docker network içinde servis adları kullanılmalı (localhost değil)
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
+      CODE_RUNNER_SANDBOX_DIR: /coderun-sandbox
     depends_on:
       db:
         condition: service_healthy
@@ -15,6 +16,11 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
+      # Kod çalıştırıcı: host Docker daemon + paylaşımlı sandbox (DooD)
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.coderun-sandbox:/coderun-sandbox
+    # Docker socket erişimi için yerel geliştirmede root (production'da ayrı runner servisi önerilir)
+    user: "0:0"
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]

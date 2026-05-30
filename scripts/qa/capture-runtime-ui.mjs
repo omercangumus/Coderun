@@ -158,10 +158,81 @@ async function main() {
     await page.goto(`${BASE}/learn/python/lesson/${codeLesson.id}`, {
       waitUntil: 'networkidle',
     });
-    await page.waitForTimeout(3000);
-    await shot(page, 'web_code_runner.png');
+    await page.waitForTimeout(2000);
+    const startBtn = page.getByRole('button', { name: /Başla/i });
+    if (await startBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await startBtn.click();
+      await page.waitForTimeout(1500);
+    }
+    const continueBtn = page.getByRole('button', { name: /Anladım|Devam/i });
+    if (await continueBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await continueBtn.click();
+      await page.waitForTimeout(2500);
+    }
+    await shot(page, 'web_code_runner_before.png');
+
+    const setEditorCode = async (code) => {
+      await page.evaluate((c) => {
+        const ta = document.querySelector('textarea');
+        if (ta) {
+          ta.value = c;
+          ta.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+        // Monaco fallback
+        const monaco = window.monaco;
+        const models = monaco?.editor?.getModels?.();
+        if (models?.[0]) models[0].setValue(c);
+      }, code);
+    };
+
+    await page.waitForTimeout(2000);
+    const runBtn = page.locator('button').filter({ hasText: 'Çalıştır' }).first();
+    if (await runBtn.isVisible({ timeout: 8000 }).catch(() => false)) {
+      await setEditorCode('print("Hello, Coderun!")');
+      await runBtn.click();
+      await page.waitForTimeout(5000);
+      await shot(page, 'web_code_runner_success.png');
+
+      await setEditorCode('print("wrong")');
+      await runBtn.click();
+      await page.waitForTimeout(4000);
+      await shot(page, 'web_code_runner_fail.png');
+
+      await setEditorCode('print(1 / 0)');
+      await runBtn.click();
+      await page.waitForTimeout(4000);
+      await shot(page, 'web_code_runner_runtime_error.png');
+    }
+
     meta.codeLessonId = codeLesson.id;
     meta.codeLessonTitle = codeLesson.title;
+  }
+
+  if (firstLesson && firstLesson.id !== codeLesson?.id) {
+    await page.goto(`${BASE}/learn/python/lesson/${firstLesson.id}`, {
+      waitUntil: 'networkidle',
+    });
+    await page.waitForTimeout(2500);
+    await shot(page, 'web_quiz_question.png');
+  }
+
+  const reinforcementLesson = lessons.find((l) => l.has_reinforcement || l.hasReinforcement);
+  if (reinforcementLesson) {
+    await page.goto(`${BASE}/learn/python/lesson/${reinforcementLesson.id}`, {
+      waitUntil: 'networkidle',
+    });
+    await page.waitForTimeout(2000);
+    const submitBtn = page.getByRole('button', { name: /Gönder|Kontrol|Cevapla/i }).first();
+    if (await submitBtn.isVisible().catch(() => false)) {
+      const choice = page.locator('button').filter({ hasText: /^[A-F]\s/ }).first();
+      if (await choice.isVisible().catch(() => false)) {
+        await choice.click();
+        await submitBtn.click();
+        await page.waitForTimeout(2500);
+      }
+    }
+    await shot(page, 'web_quiz_reinforcement.png');
   }
 
   await writeFile(path.join(OUT_DIR, 'capture-meta.json'), JSON.stringify(meta, null, 2));

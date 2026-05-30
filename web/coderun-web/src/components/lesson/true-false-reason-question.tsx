@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHaptics } from '@/lib/hooks/use-haptics';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface TrueFalseReasonQuestionProps {
   questionText: string;
@@ -19,7 +20,6 @@ export function TrueFalseReasonQuestion({
   const [step, setStep] = useState<'tf' | 'reason'>('tf');
   const [tfAnswer, setTfAnswer] = useState<'true' | 'false' | null>(null);
   const [selectedReason, setSelectedReason] = useState<number | null>(null);
-  const [showHint, setShowHint] = useState(false);
   const { vibrateTap } = useHaptics();
 
   const handleTfSelect = (answer: 'true' | 'false') => {
@@ -37,14 +37,9 @@ export function TrueFalseReasonQuestion({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Statement */}
-      <div className="p-6 rounded-xl bg-surface-container-low border border-outline-variant">
-        <p className="text-label-caps text-on-surface-variant uppercase tracking-wider mb-2">
-          İfade
-        </p>
-        <p className="text-body-lg text-on-surface font-medium">{questionText}</p>
-      </div>
+    <div className="flex flex-col gap-5 animate-fade-in">
+      <QuizQuestionHeader questionText={questionText} />
+      {hint && <QuizHintCard hint={hint} />}
 
       {/* Step 1: True/False */}
       {step === 'tf' && (
@@ -101,14 +96,6 @@ export function TrueFalseReasonQuestion({
         </div>
       )}
 
-      {hint && (
-        <button
-          onClick={() => setShowHint(!showHint)}
-          className="text-body-sm text-primary hover:text-primary-container transition-colors"
-        >
-          {showHint ? '💡 ' + hint : '💡 İpucu göster'}
-        </button>
-      )}
     </div>
   );
 }
