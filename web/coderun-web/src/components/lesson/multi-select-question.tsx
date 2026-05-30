@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHaptics } from '@/lib/hooks/use-haptics';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface MultiSelectQuestionProps {
   questionText: string;
@@ -18,7 +19,6 @@ export function MultiSelectQuestion({
 }: MultiSelectQuestionProps) {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
-  const [showHint, setShowHint] = useState(false);
   const { vibrateTap } = useHaptics();
 
   const toggleChoice = (index: number) => {
@@ -44,13 +44,10 @@ export function MultiSelectQuestion({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <p className="text-body-lg text-on-surface font-medium">{questionText}</p>
-        <p className="text-body-sm text-on-surface-variant mt-1">
-          Birden fazla seçenek işaretleyebilirsiniz
-        </p>
-      </div>
+    <div className="flex flex-col gap-5 animate-fade-in">
+      <QuizQuestionHeader questionText={questionText} />
+      <p className="-mt-2 text-sm text-on-surface-variant">Birden fazla seçenek işaretleyebilirsiniz.</p>
+      {hint && <QuizHintCard hint={hint} />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {choices.map((choice, i) => (
@@ -99,14 +96,6 @@ export function MultiSelectQuestion({
         </button>
       )}
 
-      {hint && (
-        <button
-          onClick={() => setShowHint(!showHint)}
-          className="text-body-sm text-primary hover:text-primary-container transition-colors"
-        >
-          {showHint ? '💡 ' + hint : '💡 İpucu göster'}
-        </button>
-      )}
     </div>
   );
 }

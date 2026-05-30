@@ -129,6 +129,7 @@ terraform.rc
 # ========================
 # Environment & Secrets
 # ========================
+.coderun-sandbox/
 .env
 .env.local
 .env.*.local

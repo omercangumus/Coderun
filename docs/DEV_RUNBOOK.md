@@ -43,6 +43,35 @@ Admin kullanıcı (giriş için):
 
 > **Not:** `seed.py` idempotenttir — mevcut modül varsa seed atlanır. Eski müfredat görüyorsanız `reset_seed` çalıştırın.
 
+## Kod çalıştırıcı (Code Runner)
+
+Yerel geliştirmede kullanıcı kodu **Docker sandbox** içinde çalışır. Gereksinimler:
+
+1. **Docker Desktop** açık ve çalışır durumda
+2. Sandbox imajı: `docker pull python:3.11-slim`
+3. `docker-compose.yml` backend servisinde:
+   - `/var/run/docker.sock` mount
+   - `user: "0:0"` (socket erişimi; yalnızca yerel geliştirme)
+
+Kullanıcı kodu host bind-mount yerine **tmpfs + ortam değişkeni** ile sandbox'a aktarılır (Windows/macOS DooD uyumlu).
+
+Backend imajını yeniden oluşturun (statik Docker CLI):
+
+```powershell
+docker compose build --no-cache backend
+docker compose up -d backend
+```
+
+503 / "Docker'a erişemiyor" görürseniz: Docker Desktop'ı başlatın, ardından `docker compose restart backend`.
+
+Test (API):
+
+```powershell
+# Önce giriş token alın, sonra POST /api/v1/code/run
+```
+
+Web: Python → **Python Kodlama Ödevleri** → **Hello Coderun** → **Çalıştır**
+
 ## 2. Backend
 
 ```bash

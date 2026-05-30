@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useHaptics } from '@/lib/hooks/use-haptics';
+import { QuizHintCard, QuizQuestionHeader } from './quiz-ui';
 
 interface ReorderQuestionProps {
   questionText: string;
@@ -20,7 +21,6 @@ export function ReorderQuestion({
     items.map((_, i) => i).sort(() => Math.random() - 0.5) // shuffle initially
   );
   const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [showHint, setShowHint] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { vibrateTap } = useHaptics();
 
@@ -64,8 +64,9 @@ export function ReorderQuestion({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <p className="text-body-lg text-on-surface font-medium">{questionText}</p>
+    <div className="flex flex-col gap-5 animate-fade-in">
+      <QuizQuestionHeader questionText={questionText} />
+      {hint && <QuizHintCard hint={hint} />}
 
       <div className="space-y-2">
         {order.map((itemIndex, i) => (
@@ -126,14 +127,6 @@ export function ReorderQuestion({
         </button>
       )}
 
-      {hint && (
-        <button
-          onClick={() => setShowHint(!showHint)}
-          className="text-body-sm text-primary hover:text-primary-container transition-colors"
-        >
-          {showHint ? '💡 ' + hint : '💡 İpucu göster'}
-        </button>
-      )}
     </div>
   );
 }

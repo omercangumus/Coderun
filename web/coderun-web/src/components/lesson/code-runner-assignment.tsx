@@ -13,6 +13,9 @@ import {
   type ChallengeDifficulty,
 } from '@/components/coding-lab/CodingLabShell';
 import { cn } from '@/lib/utils/cn';
+import { parseCodeRunnerError, getCodeRunnerDevDetail } from '@/lib/utils/code-runner-errors';
+
+type ResultTab = 'output' | 'errors' | 'tests';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -62,7 +65,7 @@ function getGhostieMessage(
   if (runResult?.timedOut) return 'Zaman aşımı! Sonsuz döngü var mı?';
   if (runResult?.stderr && runResult.exitCode !== 0) return 'Bir hata oluştu. Kodu kontrol et!';
   if (runResult?.exitCode === 0) return 'Kod başarıyla çalıştı!';
-  return 'Kodunu yaz, çalıştır ve gönder!';
+  return 'Kodunu yaz, Çalıştır’a bas.';
 }
 
 function inferDifficulty(index: number): ChallengeDifficulty {
@@ -76,7 +79,7 @@ function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
     return (
       <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
         <span className="mr-2 animate-pulse">$_</span>
-        Çalıştır butonuna bas...
+        Kodunu yaz, Çalıştır’a bas.
       </div>
     );
   }
@@ -156,13 +159,15 @@ export function CodeRunnerAssignment({
   canPrev = false,
   canNext = false,
 }: CodeRunnerAssignmentProps) {
-  const starterCode = question.starterCode ?? '# Buraya kodunuzu yazin\n';
+  const starterCode = question.starterCode ?? '# Kodunu buraya yaz\n';
   const [code, setCode] = useState(currentAnswer || starterCode);
   const [editorState, setEditorState] = useState<EditorState>('idle');
-  const [activeTab, setActiveTab] = useState<'editor' | 'terminal'>('editor');
+  const [editorTab, setEditorTab] = useState<'editor' | 'terminal'>('editor');
+  const [resultTab, setResultTab] = useState<ResultTab>('output');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorDev, setErrorDev] = useState<string | null>(null);
   const [useTextarea, setUseTextarea] = useState(false);
 
   useEffect(() => {
@@ -190,7 +195,8 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
-    setActiveTab('terminal');
+    setEditorTab('terminal');
+    setResultTab('output');
     try {
       const result = await codeApi.runCode({
         language: question.language ?? 'python',
@@ -200,7 +206,8 @@ export function CodeRunnerAssignment({
       });
       setRunResult(result);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Kod çalıştırılamadı.');
+      setError(parseCodeRunnerError(err, 'Kod çalıştırılamadı.'));
+      setErrorDev(getCodeRunnerDevDetail(err));
     } finally {
       setEditorState('idle');
     }
@@ -219,8 +226,10 @@ export function CodeRunnerAssignment({
         language: question.language ?? 'python',
       });
       setSubmitResult(result);
+      setResultTab('tests');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Gönderim başarısız.');
+      setError(parseCodeRunnerError(err, 'Gönderim başarısız.'));
+      setErrorDev(getCodeRunnerDevDetail(err));
     } finally {
       setEditorState('idle');
     }
@@ -232,9 +241,27 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
+    setErrorDev(null);
   };
 
   const isLoading = editorState !== 'idle';
+
+  const resultsPanelContent = () => {
+    if (submitResult && resultTab === 'tests') {
+      return <TestResultsPanel results={submitResult.testResults} />;
+    }
+    if (runResult && resultTab === 'errors') {
+      return (
+        <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs text-rose-400">
+          {runResult.stderr || '(hata çıktısı yok)'}
+        </div>
+      );
+    }
+    if (runResult) {
+      return <TerminalOutput result={runResult} />;
+    }
+    return <TerminalOutput result={null} />;
+  };
   const ghostieState = getGhostieState(editorState, runResult, submitResult);
   const ghostieMessage = getGhostieMessage(editorState, runResult, submitResult);
 
@@ -272,20 +299,20 @@ export function CodeRunnerAssignment({
       <div className="flex items-center gap-2 border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
         <button
           type="button"
-          onClick={() => setActiveTab('editor')}
+          onClick={() => setEditorTab('editor')}
           className={cn(
             'rounded-lg px-3 py-1 text-xs font-semibold',
-            activeTab === 'editor' ? 'bg-white/10 text-white' : 'text-white/50',
+            editorTab === 'editor' ? 'bg-white/10 text-white' : 'text-white/50',
           )}
         >
           solution.py
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('terminal')}
+          onClick={() => setEditorTab('terminal')}
           className={cn(
             'rounded-lg px-3 py-1 text-xs font-semibold',
-            activeTab === 'terminal' ? 'bg-white/10 text-white' : 'text-white/50',
+            editorTab === 'terminal' ? 'bg-white/10 text-white' : 'text-white/50',
           )}
         >
           Terminal
@@ -305,7 +332,7 @@ export function CodeRunnerAssignment({
             <span className="animate-pulse text-sm text-white">İşleniyor...</span>
           </div>
         )}
-        {activeTab === 'editor' ? (
+        {editorTab === 'editor' ? (
           useTextarea ? (
             <textarea
               value={code}
@@ -338,8 +365,11 @@ export function CodeRunnerAssignment({
   return (
     <div className="flex flex-col gap-3">
       {error && (
-        <div className="rounded-xl border border-error/30 bg-error-container p-3 text-sm text-error">
-          ⚠ {error}
+        <div className="rounded-xl border border-error/30 bg-error-container p-4 text-sm text-error">
+          <p className="font-semibold">⚠ {error}</p>
+          {errorDev && (
+            <p className="mt-2 font-mono text-[10px] opacity-70">{errorDev}</p>
+          )}
         </div>
       )}
 
@@ -366,13 +396,34 @@ export function CodeRunnerAssignment({
         }
         editorPanel={editorPanel}
         resultsPanel={
-          submitResult ? (
-            <TestResultsPanel results={submitResult.testResults} />
-          ) : activeTab === 'terminal' && runResult ? (
-            <div className="h-full max-h-[200px]">
-              <TerminalOutput result={runResult} />
+          <div className="flex h-full max-h-[240px] flex-col">
+            <div className="flex gap-1 border-b border-outline-variant bg-surface-container px-2 py-1">
+              {(
+                [
+                  { id: 'output' as const, label: 'Çıktı' },
+                  { id: 'errors' as const, label: 'Hatalar' },
+                  { id: 'tests' as const, label: 'Testler' },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setResultTab(tab.id)}
+                  disabled={tab.id === 'tests' && !submitResult}
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide',
+                    resultTab === tab.id
+                      ? 'bg-primary text-on-primary'
+                      : 'text-on-surface-variant hover:bg-surface-container-high',
+                    tab.id === 'tests' && !submitResult && 'opacity-40',
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          ) : null
+            <div className="min-h-0 flex-1">{resultsPanelContent()}</div>
+          </div>
         }
         mentorPanel={
           <div className="flex h-full flex-col gap-3 p-4">

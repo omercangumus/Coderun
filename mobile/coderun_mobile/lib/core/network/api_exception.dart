@@ -75,6 +75,10 @@ class ApiException implements Exception {
       case 500:
         message = 'Sunucu hatası, lütfen daha sonra tekrar deneyin';
         break;
+      case 503:
+        message = _extractMessage(data) ??
+            "Kod çalıştırıcı şu anda Docker'a erişemiyor. Docker Desktop açık mı?";
+        break;
       default:
         message = _extractMessage(data) ?? 'Bir hata oluştu';
     }
