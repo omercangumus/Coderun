@@ -20,6 +20,7 @@ export interface LessonResponse {
   isActive: boolean;
   isCompleted: boolean;
   isLocked: boolean;
+  lockedReason: string | null;
   score: number | null;
   attemptCount: number;
 }

@@ -39,12 +39,19 @@ class LessonTile extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: lesson.score != null
+        subtitle: isLocked && lesson.lockedReason != null
             ? Text(
-                'Skor: ${lesson.score}',
-                style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                lesson.lockedReason!,
+                style: const TextStyle(fontSize: 11, color: AppColors.grey, height: 1.3),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               )
-            : null,
+            : lesson.score != null
+                ? Text(
+                    'Skor: ${lesson.score}',
+                    style: const TextStyle(fontSize: 12, color: AppColors.grey),
+                  )
+                : null,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

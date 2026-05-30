@@ -54,7 +54,7 @@ export default function ModulePage({
         {
           title: "Ünite 6: Python Kodlama Ödevleri",
           description: "Derleyici üzerinde çalışan gerçek zamanlı algoritmik kodlama projeleri.",
-          indices: [25]
+          indices: [25, 26]
         }
       ];
       return PYTHON_UNITS.filter(u => u.indices[0] < lessons.length);
@@ -127,31 +127,63 @@ export default function ModulePage({
             </div>
           </div>
 
-          {codingLesson && !codingLesson.isLocked && (
-            <Link href={`/learn/${moduleSlug}/lesson/${codingLesson.id}`}>
-              <CoderunCard
-                variant="highlight"
-                className="cursor-pointer border-violet-500/40 bg-gradient-to-br from-violet-500/10 to-primary/10 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/20 text-2xl">
-                    💻
+          {codingLesson && (
+            codingLesson.isLocked ? (
+              <CoderunCard className="border-dashed border-violet-500/30 bg-violet-500/5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-2xl">
+                    🔒
                   </div>
                   <div className="flex-1">
                     <p className="font-label text-label-sm uppercase tracking-wide text-violet-700 dark:text-violet-300">
-                      Kod Labı · Ödevler
+                      Kod Labı · Ödevler (kilitli)
                     </p>
                     <p className="font-heading text-base font-bold text-on-surface">{codingLesson.title}</p>
                     <p className="mt-1 font-sans text-body-sm text-on-surface-variant">
-                      Gerçek Python editöründe kod yaz, çalıştır ve test et.
+                      {codingLesson.lockedReason ??
+                        'Önceki dersleri tamamladığında kod laboratuvarı açılır.'}
                     </p>
+                    {lessons && (() => {
+                      const idx = lessons.findIndex((l) => l.id === codingLesson.id);
+                      const prev = idx > 0 ? lessons[idx - 1] : null;
+                      return prev ? (
+                        <Link
+                          href={`/learn/${moduleSlug}/lesson/${prev.id}`}
+                          className="mt-3 inline-flex text-sm font-semibold text-primary hover:underline"
+                        >
+                          Önceki derse git: {prev.title} →
+                        </Link>
+                      ) : null;
+                    })()}
                   </div>
-                  <span className="shrink-0 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-bold text-white">
-                    Kod çözmeye başla
-                  </span>
                 </div>
               </CoderunCard>
-            </Link>
+            ) : (
+              <Link href={`/learn/${moduleSlug}/lesson/${codingLesson.id}`}>
+                <CoderunCard
+                  variant="highlight"
+                  className="cursor-pointer border-violet-500/40 bg-gradient-to-br from-violet-500/10 to-primary/10 transition-shadow hover:shadow-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/20 text-2xl">
+                      💻
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-label text-label-sm uppercase tracking-wide text-violet-700 dark:text-violet-300">
+                        Kod Labı · Ödevler
+                      </p>
+                      <p className="font-heading text-base font-bold text-on-surface">{codingLesson.title}</p>
+                      <p className="mt-1 font-sans text-body-sm text-on-surface-variant">
+                        Gerçek Python editöründe kod yaz, çalıştır ve test et.
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-violet-600 px-3 py-1.5 text-xs font-bold text-white">
+                      Kod çözmeye başla
+                    </span>
+                  </div>
+                </CoderunCard>
+              </Link>
+            )
           )}
 
           {/* Placement test */}
@@ -270,9 +302,19 @@ export default function ModulePage({
                       <p className="font-sans text-xs text-on-surface-variant mt-0.5">{unit.description}</p>
                     </div>
                     <div className="flex flex-col gap-2">
-                      {unitLessons.map((lesson) => (
-                        <LessonTile key={lesson.id} lesson={lesson} moduleSlug={moduleSlug} />
-                      ))}
+                      {unitLessons.map((lesson, idxWithinUnit) => {
+                        const globalIdx = unit.indices[idxWithinUnit];
+                        const unlockId =
+                          lesson.isLocked && globalIdx > 0 ? lessons?.[globalIdx - 1]?.id : null;
+                        return (
+                          <LessonTile
+                            key={lesson.id}
+                            lesson={lesson}
+                            moduleSlug={moduleSlug}
+                            unlockLessonId={unlockId}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 );

@@ -15,6 +15,7 @@ class LessonModel with _$LessonModel {
     @JsonKey(name: 'is_active') required bool isActive,
     @JsonKey(name: 'is_completed') @Default(false) bool isCompleted,
     @JsonKey(name: 'is_locked') @Default(false) bool isLocked,
+    @JsonKey(name: 'locked_reason') String? lockedReason,
     int? score,
     @JsonKey(name: 'attempt_count') @Default(0) int attemptCount,
   }) = _LessonModel;

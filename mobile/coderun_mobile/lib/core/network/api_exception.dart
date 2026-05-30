@@ -77,7 +77,7 @@ class ApiException implements Exception {
         break;
       case 503:
         message = _extractMessage(data) ??
-            "Kod çalıştırıcı şu anda Docker'a erişemiyor. Docker Desktop açık mı?";
+            'Kod çalıştırma servisine ulaşılamıyor. Docker veya backend servisi çalışmıyor olabilir.';
         break;
       default:
         message = _extractMessage(data) ?? 'Bir hata oluştu';

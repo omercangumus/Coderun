@@ -136,6 +136,7 @@ function mapLesson(raw: any): LessonResponse {
     isActive: raw.is_active,
     isCompleted: raw.is_completed ?? false,
     isLocked: raw.is_locked ?? false,
+    lockedReason: raw.locked_reason ?? null,
     score: raw.score ?? null,
     attemptCount: raw.attempt_count ?? 0,
   };
