@@ -2956,6 +2956,56 @@ SEED_DATA: list[dict] = [
 ]
 
 # =============================================================================
+# Ek Python pratik quiz (kısa, ilerleme dostu)
+# =============================================================================
+
+PYTHON_EXTRA_QUIZ_LESSON: dict = {
+    "title": "Python Hızlı Pratik",
+    "lesson_type": "quiz",
+    "order": 26,
+    "xp_reward": 25,
+    "questions": [
+        {
+            "question_text": "Python'da ekrana yazdırmak için hangi fonksiyon kullanılır?",
+            "question_type": "multiple_choice",
+            "options": {"choices": ["write()", "print()", "echo()", "output()"]},
+            "correct_answer": "print()",
+            "hint": "En sık kullanılan çıktı fonksiyonu.",
+            "explanation": "print() fonksiyonu değerleri standart çıktıya yazar.",
+            "order": 1,
+        },
+        {
+            "question_text": "Boşluk ile ayrılmış kelimeleri birleştirmek için hangi yöntem doğrudur?",
+            "question_type": "multiple_choice",
+            "options": {"choices": ['" ".join(liste)', "liste.merge()", "concat(liste)", "liste + ' '"]},
+            "correct_answer": '" ".join(liste)',
+            "hint": "String metodlarına bak.",
+            "explanation": '" ".join(liste) elemanları tek string yapar.',
+            "order": 2,
+        },
+        {
+            "question_text": "for i in range(3): döngüsü kaç kez çalışır?",
+            "question_type": "multiple_choice",
+            "options": {"choices": ["2", "3", "4", "Sonsuz"]},
+            "correct_answer": "3",
+            "hint": "range(3) 0,1,2 üretir.",
+            "explanation": "range(3) üç değer üretir; döngü 3 kez döner.",
+            "order": 3,
+        },
+        {
+            "question_text": "len('Coderun') ifadesinin sonucu nedir?",
+            "question_type": "code_completion",
+            "options": None,
+            "correct_answer": "7",
+            "hint": "len karakter sayısını verir.",
+            "explanation": "Coderun kelimesi 7 harflidir.",
+            "code_block": "sonuc = len('Coderun')  # sonuc = ___",
+            "order": 4,
+        },
+    ],
+}
+
+# =============================================================================
 # PYTHON KODLAMA ODEVLERi — Ek ders (code_editor tipi)
 # seed.py bu veriyi Python modülüne ekler.
 # =============================================================================
@@ -2963,7 +3013,7 @@ SEED_DATA: list[dict] = [
 CODING_ASSIGNMENTS_LESSON: dict = {
     "title": "Python Kodlama Odevleri",
     "lesson_type": "code_editor",
-    "order": 11,
+    "order": 27,
     "xp_reward": 50,
     "questions": [
         # ------------------------------------------------------------------

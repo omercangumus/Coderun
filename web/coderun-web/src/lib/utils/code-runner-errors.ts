@@ -14,7 +14,9 @@ export function parseCodeRunnerError(err: unknown, fallback = 'Kod çalıştır�
     if (typeof detail === 'string' && detail.length > 0 && !detail.includes('status code')) {
       return detail;
     }
-    return "Kod çalıştırıcı şu anda Docker'a erişemiyor. Docker Desktop açık mı?";
+    return (
+      'Kod çalıştırma servisine ulaşılamıyor. Docker veya backend servisi çalışmıyor olabilir.'
+    );
   }
 
   if (typeof detail === 'string') {
@@ -27,7 +29,9 @@ export function parseCodeRunnerError(err: unknown, fallback = 'Kod çalıştır�
 
   const msg = axiosLike.message ?? '';
   if (msg.includes('503') || msg.includes('status code 503')) {
-    return "Kod çalıştırıcı şu anda Docker'a erişemiyor. Docker Desktop açık mı?";
+    return (
+      'Kod çalıştırma servisine ulaşılamıyor. Docker veya backend servisi çalışmıyor olabilir.'
+    );
   }
 
   if (msg.includes('Network Error') || msg.includes('ECONNREFUSED')) {
@@ -41,6 +45,15 @@ export function getCodeRunnerDevDetail(err: unknown): string | null {
   const axiosLike = err as { response?: { status?: number }; message?: string };
   const status = axiosLike.response?.status;
   const msg = axiosLike.message;
-  if (!status && !msg) return null;
-  return [status ? `HTTP ${status}` : null, msg].filter(Boolean).join(' · ');
+  const parts: string[] = [];
+  if (status) parts.push(`HTTP ${status}`);
+  if (process.env.NODE_ENV === 'development') {
+    if (status === 503) {
+      parts.push(
+        'Geliştirme: Docker Desktop açık olmalı ve python:3.11-slim imajı hazır olmalı (docker pull python:3.11-slim).',
+      );
+    }
+    if (msg && !msg.startsWith('Request failed')) parts.push(msg);
+  }
+  return parts.length ? parts.join(' · ') : null;
 }

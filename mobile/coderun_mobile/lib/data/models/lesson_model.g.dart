@@ -17,6 +17,7 @@ _$LessonModelImpl _$$LessonModelImplFromJson(Map<String, dynamic> json) =>
       isActive: json['is_active'] as bool,
       isCompleted: json['is_completed'] as bool? ?? false,
       isLocked: json['is_locked'] as bool? ?? false,
+      lockedReason: json['locked_reason'] as String?,
       score: (json['score'] as num?)?.toInt(),
       attemptCount: (json['attempt_count'] as num?)?.toInt() ?? 0,
     );
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$LessonModelImplToJson(_$LessonModelImpl instance) =>
       'is_active': instance.isActive,
       'is_completed': instance.isCompleted,
       'is_locked': instance.isLocked,
+      'locked_reason': instance.lockedReason,
       'score': instance.score,
       'attempt_count': instance.attemptCount,
     };

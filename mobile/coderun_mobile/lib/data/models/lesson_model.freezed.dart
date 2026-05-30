@@ -35,6 +35,8 @@ mixin _$LessonModel {
   bool get isCompleted => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_locked')
   bool get isLocked => throw _privateConstructorUsedError;
+  @JsonKey(name: 'locked_reason')
+  String? get lockedReason => throw _privateConstructorUsedError;
   int? get score => throw _privateConstructorUsedError;
   @JsonKey(name: 'attempt_count')
   int get attemptCount => throw _privateConstructorUsedError;
@@ -65,6 +67,7 @@ abstract class $LessonModelCopyWith<$Res> {
       @JsonKey(name: 'is_active') bool isActive,
       @JsonKey(name: 'is_completed') bool isCompleted,
       @JsonKey(name: 'is_locked') bool isLocked,
+      @JsonKey(name: 'locked_reason') String? lockedReason,
       int? score,
       @JsonKey(name: 'attempt_count') int attemptCount});
 }
@@ -93,6 +96,7 @@ class _$LessonModelCopyWithImpl<$Res, $Val extends LessonModel>
     Object? isActive = null,
     Object? isCompleted = null,
     Object? isLocked = null,
+    Object? lockedReason = freezed,
     Object? score = freezed,
     Object? attemptCount = null,
   }) {
@@ -133,6 +137,10 @@ class _$LessonModelCopyWithImpl<$Res, $Val extends LessonModel>
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
+      lockedReason: freezed == lockedReason
+          ? _value.lockedReason
+          : lockedReason // ignore: cast_nullable_to_non_nullable
+              as String?,
       score: freezed == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
@@ -163,6 +171,7 @@ abstract class _$$LessonModelImplCopyWith<$Res>
       @JsonKey(name: 'is_active') bool isActive,
       @JsonKey(name: 'is_completed') bool isCompleted,
       @JsonKey(name: 'is_locked') bool isLocked,
+      @JsonKey(name: 'locked_reason') String? lockedReason,
       int? score,
       @JsonKey(name: 'attempt_count') int attemptCount});
 }
@@ -189,6 +198,7 @@ class __$$LessonModelImplCopyWithImpl<$Res>
     Object? isActive = null,
     Object? isCompleted = null,
     Object? isLocked = null,
+    Object? lockedReason = freezed,
     Object? score = freezed,
     Object? attemptCount = null,
   }) {
@@ -229,6 +239,10 @@ class __$$LessonModelImplCopyWithImpl<$Res>
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
+      lockedReason: freezed == lockedReason
+          ? _value.lockedReason
+          : lockedReason // ignore: cast_nullable_to_non_nullable
+              as String?,
       score: freezed == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
@@ -254,6 +268,7 @@ class _$LessonModelImpl implements _LessonModel {
       @JsonKey(name: 'is_active') required this.isActive,
       @JsonKey(name: 'is_completed') this.isCompleted = false,
       @JsonKey(name: 'is_locked') this.isLocked = false,
+      @JsonKey(name: 'locked_reason') this.lockedReason,
       this.score,
       @JsonKey(name: 'attempt_count') this.attemptCount = 0});
 
@@ -285,6 +300,9 @@ class _$LessonModelImpl implements _LessonModel {
   @JsonKey(name: 'is_locked')
   final bool isLocked;
   @override
+  @JsonKey(name: 'locked_reason')
+  final String? lockedReason;
+  @override
   final int? score;
   @override
   @JsonKey(name: 'attempt_count')
@@ -292,7 +310,7 @@ class _$LessonModelImpl implements _LessonModel {
 
   @override
   String toString() {
-    return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, lessonType: $lessonType, order: $order, xpReward: $xpReward, isActive: $isActive, isCompleted: $isCompleted, isLocked: $isLocked, score: $score, attemptCount: $attemptCount)';
+    return 'LessonModel(id: $id, moduleId: $moduleId, title: $title, lessonType: $lessonType, order: $order, xpReward: $xpReward, isActive: $isActive, isCompleted: $isCompleted, isLocked: $isLocked, lockedReason: $lockedReason, score: $score, attemptCount: $attemptCount)';
   }
 
   @override
@@ -315,6 +333,8 @@ class _$LessonModelImpl implements _LessonModel {
                 other.isCompleted == isCompleted) &&
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked) &&
+            (identical(other.lockedReason, lockedReason) ||
+                other.lockedReason == lockedReason) &&
             (identical(other.score, score) || other.score == score) &&
             (identical(other.attemptCount, attemptCount) ||
                 other.attemptCount == attemptCount));
@@ -322,8 +342,20 @@ class _$LessonModelImpl implements _LessonModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, moduleId, title, lessonType,
-      order, xpReward, isActive, isCompleted, isLocked, score, attemptCount);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      moduleId,
+      title,
+      lessonType,
+      order,
+      xpReward,
+      isActive,
+      isCompleted,
+      isLocked,
+      lockedReason,
+      score,
+      attemptCount);
 
   /// Create a copy of LessonModel
   /// with the given fields replaced by the non-null parameter values.
@@ -352,6 +384,7 @@ abstract class _LessonModel implements LessonModel {
           @JsonKey(name: 'is_active') required final bool isActive,
           @JsonKey(name: 'is_completed') final bool isCompleted,
           @JsonKey(name: 'is_locked') final bool isLocked,
+          @JsonKey(name: 'locked_reason') final String? lockedReason,
           final int? score,
           @JsonKey(name: 'attempt_count') final int attemptCount}) =
       _$LessonModelImpl;
@@ -383,6 +416,9 @@ abstract class _LessonModel implements LessonModel {
   @override
   @JsonKey(name: 'is_locked')
   bool get isLocked;
+  @override
+  @JsonKey(name: 'locked_reason')
+  String? get lockedReason;
   @override
   int? get score;
   @override

@@ -158,19 +158,19 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
   }
 
   String? get _ghostieMessage {
-    if (_editorState == _EditorState.running) return 'Kodun calistiriliyor...';
+    if (_editorState == _EditorState.running) return 'Kodun çalıştırılıyor...';
     if (_editorState == _EditorState.submitting) {
-      return 'Test senaryolari degerlendirilyor...';
+      return 'Test senaryoları değerlendiriliyor...';
     }
     if (_submitResult != null) return _submitResult!.feedback;
     if (_runResult != null) {
-      if (_runResult!.timedOut) return 'Zaman asimi! Sonsuz dongu var mi?';
+      if (_runResult!.timedOut) return 'Zaman aşımı! Sonsuz döngü var mı?';
       if (_runResult!.stderr.isNotEmpty && _runResult!.exitCode != 0) {
-        return 'Bir hata olustu. Kodu kontrol et!';
+        return 'Bir hata oluştu. Kodu kontrol et!';
       }
-      if (_runResult!.exitCode == 0) return 'Kod basariyla calisti!';
+      if (_runResult!.exitCode == 0) return 'Kod başarıyla çalıştı!';
     }
-    return 'Kodunu yaz ve calistir!';
+    return 'Kodunu yaz ve Çalıştır\'a bas.';
   }
 
   // ---------------------------------------------------------------------------
@@ -207,7 +207,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                           size: 16, color: AppColors.primary),
                       SizedBox(width: 6),
                       Text(
-                        'Gorev',
+                        'Görev',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -320,7 +320,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.all(12),
                     border: InputBorder.none,
-                    hintText: '# Kodunuzu buraya yazin...',
+                    hintText: '# Kodunu buraya yaz...',
                     hintStyle: TextStyle(
                       color: Colors.grey,
                       fontFamily: 'monospace',
@@ -346,7 +346,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                               strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.play_arrow, size: 16),
-                  label: const Text('Calistir'),
+                  label: const Text('Çalıştır'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     foregroundColor: Colors.white,
@@ -366,7 +366,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                               strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.check, size: 16),
-                  label: const Text('Gonder'),
+                  label: const Text('Gönder'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -378,7 +378,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
               OutlinedButton.icon(
                 onPressed: isLoading ? null : _handleReset,
                 icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Sifirla'),
+                label: const Text('Sıfırla'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       vertical: 10, horizontal: 12),

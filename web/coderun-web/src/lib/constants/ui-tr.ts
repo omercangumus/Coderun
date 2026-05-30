@@ -1,0 +1,26 @@
+/** Paylaşılan Türkçe UI metinleri (kullanıcıya görünen). */
+
+export const UI_TR = {
+  loading: 'Yükleniyor…',
+  saving: 'Kaydediliyor…',
+  submit: 'Gönder',
+  run: 'Çalıştır',
+  reset: 'Sıfırla',
+  next: 'Sonraki',
+  previous: 'Önceki',
+  continueLesson: 'Derse devam et',
+  continueNext: 'Sonraki derse geç',
+  startQuiz: 'Quiz çöz',
+  startCoding: 'Kod çözmeye başla',
+  goAssignment: 'Ödeve git',
+  output: 'Çıktı',
+  errors: 'Hatalar',
+  tests: 'Testler',
+  requiredField: 'Bu alan zorunludur',
+  somethingWrong: 'Bir şeyler ters gitti. Lütfen tekrar dene.',
+  lessonLockedPrefix: 'Bu ders kilitli.',
+  lessonLockedHint: (title: string) => `Önce "${title}" dersini tamamlamalısın.`,
+  codingLabLocked: 'Kod Labı kilitli',
+  noModules: 'Henüz modül bulunamadı.',
+  noLessons: 'Henüz ders yok.',
+} as const;

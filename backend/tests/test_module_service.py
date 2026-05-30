@@ -35,7 +35,7 @@ class TestGetModuleDetail:
         module_repo = ModuleRepository(db_session)
         module = await module_service.get_module_detail("python", module_repo)
 
-        assert len(module.lessons) == 26  # Seed data: 26 ders
+        assert len(module.lessons) == 27  # Seed: 25 ders + hızlı pratik + kodlama ödevleri
 
     async def test_get_module_detail_not_found(self, db_session):
         """Olmayan slug için 404 döner."""
@@ -84,7 +84,7 @@ class TestGetModuleProgress:
         assert progress.module.slug == "python"
         assert progress.completion_rate == 0.0  # Henüz ders tamamlanmamış
         assert progress.completed_lessons == 0
-        assert progress.total_lessons == 26
+        assert progress.total_lessons == 27
 
     async def test_get_module_progress_not_found(self, db_session, test_user):
         """Olmayan modül için 404 döner."""
@@ -138,7 +138,7 @@ class TestGetModuleProgressBySlug:
 
         assert progress.module.slug == "python"
         assert progress.completion_rate >= 0.0
-        assert progress.total_lessons == 26
+        assert progress.total_lessons == 27
 
     async def test_get_module_progress_by_slug_not_found(
         self, db_session, test_user

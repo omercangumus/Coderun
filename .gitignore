@@ -130,6 +130,10 @@ terraform.rc
 # Environment & Secrets
 # ========================
 .coderun-sandbox/
+
+# Geçici QA ekran görüntüleri (resmi capture script çıktıları commit edilir)
+docs/qa/runtime-ui/web_dashboard_new.png
+docs/qa/runtime-ui/web_python_new.png
 .env
 .env.local
 .env.*.local

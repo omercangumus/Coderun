@@ -52,11 +52,15 @@ async def get_lessons_by_module(
 
     result: list[LessonWithProgressResponse] = []
     previous_completed = True
+    previous_lesson_title: str | None = None
 
     for lesson in lessons:
         progress = progress_map.get(lesson.id)
         is_completed = progress.is_completed if progress else False
         is_locked = not previous_completed
+        locked_reason: str | None = None
+        if is_locked and previous_lesson_title:
+            locked_reason = f'Önce "{previous_lesson_title}" dersini tamamlamalısın.'
 
         result.append(
             LessonWithProgressResponse(
@@ -69,10 +73,12 @@ async def get_lessons_by_module(
                 is_active=lesson.is_active,
                 is_completed=is_completed,
                 is_locked=is_locked,
+                locked_reason=locked_reason,
                 score=progress.score if progress else None,
                 attempt_count=progress.attempt_count if progress else 0,
             )
         )
+        previous_lesson_title = lesson.title
         previous_completed = is_completed
 
     return result

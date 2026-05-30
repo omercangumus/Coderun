@@ -18,7 +18,7 @@ export const registerSchema = z
       .min(8, 'Şifre en az 8 karakter olmalıdır')
       .regex(/[A-Z]/, 'Şifre en az bir büyük harf içermelidir')
       .regex(/\d/, 'Şifre en az bir rakam içermelidir'),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(1, 'Şifre tekrarı zorunludur'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Şifreler eşleşmiyor',

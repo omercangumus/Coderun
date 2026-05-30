@@ -47,6 +47,7 @@ class LessonWithProgressResponse(LessonResponse):
 
     is_completed: bool = False
     is_locked: bool = False
+    locked_reason: str | None = None
     score: int | None = None
     attempt_count: int = 0
 
