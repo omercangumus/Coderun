@@ -58,8 +58,10 @@ async def unlock_python_lessons_for_user(
         if not lessons:
             raise SystemExit("Python modülünde ders yok.")
 
-        max_order = up_to_order if up_to_order is not None else max(l.order for l in lessons) - 1
-        targets = [l for l in lessons if l.order <= max_order]
+        max_order = (
+            up_to_order if up_to_order is not None else max(lesson.order for lesson in lessons) - 1
+        )
+        targets = [lesson for lesson in lessons if lesson.order <= max_order]
         now = datetime.now(timezone.utc)
         count = 0
 

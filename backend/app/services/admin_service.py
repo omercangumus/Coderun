@@ -18,7 +18,6 @@ from app.schemas.admin import (
     GrowthDataPoint,
     LessonAdminListItem,
     PathListItem,
-    ProblemAreaItem,
     UnitListItem,
     UserAdminListItem,
     UserProgressDetail,
