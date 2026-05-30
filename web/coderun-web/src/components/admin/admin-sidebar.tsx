@@ -12,12 +12,12 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/paths', label: 'Learning Paths', icon: Route },
-  { href: '/admin/lessons', label: 'Lessons', icon: BookOpen },
-  { href: '/admin/questions', label: 'Questions', icon: HelpCircle },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/settings', label: 'Settings', icon: Settings, disabled: true },
+  { href: '/admin', label: 'Genel Bakış', icon: LayoutDashboard },
+  { href: '/admin/paths', label: 'Öğrenme Yolları', icon: Route },
+  { href: '/admin/lessons', label: 'Dersler', icon: BookOpen },
+  { href: '/admin/questions', label: 'Sorular', icon: HelpCircle },
+  { href: '/admin/users', label: 'Kullanıcılar', icon: Users },
+  { href: '/admin/settings', label: 'Ayarlar', icon: Settings, disabled: true },
 ];
 
 export function AdminSidebar() {
@@ -63,7 +63,7 @@ export function AdminSidebar() {
               <span>{item.label}</span>
               {item.disabled && (
                 <span className="ml-auto text-label-sm bg-surface-container px-2 py-0.5 rounded-full">
-                  Soon
+                  Yakında
                 </span>
               )}
             </Link>
@@ -78,8 +78,8 @@ export function AdminSidebar() {
             <span className="text-tertiary-on text-sm font-bold">A</span>
           </div>
           <div>
-            <p className="text-body-sm font-medium text-on-surface">Admin</p>
-            <p className="text-label-sm text-on-surface-variant">Superuser</p>
+            <p className="text-body-sm font-medium text-on-surface">Yönetici</p>
+            <p className="text-label-sm text-on-surface-variant">Süper kullanıcı</p>
           </div>
         </div>
       </div>

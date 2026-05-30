@@ -16,20 +16,20 @@ import type { AdminStats } from '@/lib/types/admin.types';
 
 // Growth chart uses static demo data (no backend endpoint for daily growth yet)
 const DEMO_GROWTH = [
-  { day: 'Mon', count: 42 },
-  { day: 'Tue', count: 38 },
-  { day: 'Wed', count: 55 },
-  { day: 'Thu', count: 48 },
-  { day: 'Fri', count: 65 },
-  { day: 'Sat', count: 72 },
-  { day: 'Sun', count: 90 },
+  { day: 'Pzt', count: 42 },
+  { day: 'Sal', count: 38 },
+  { day: 'Çar', count: 55 },
+  { day: 'Per', count: 48 },
+  { day: 'Cum', count: 65 },
+  { day: 'Cmt', count: 72 },
+  { day: 'Paz', count: 90 },
 ];
 
 const QUICK_ACTIONS = [
-  { href: '/admin/paths', label: 'Manage Paths', icon: Route, primary: true },
-  { href: '/admin/lessons', label: 'Edit Lessons', icon: BookOpen },
-  { href: '/admin/questions', label: 'Questions', icon: HelpCircle },
-  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/paths', label: 'Yolları Yönet', icon: Route, primary: true },
+  { href: '/admin/lessons', label: 'Dersleri Düzenle', icon: BookOpen },
+  { href: '/admin/questions', label: 'Sorular', icon: HelpCircle },
+  { href: '/admin/users', label: 'Kullanıcılar', icon: Users },
 ];
 
 function StatCard({ label, value, loading }: { label: string; value: string | number; loading?: boolean }) {
@@ -74,14 +74,14 @@ export default function AdminDashboardPage() {
           Admin
         </Link>
         <span className="text-on-surface-variant">/</span>
-        <span className="text-on-surface">Dashboard</span>
+        <span className="text-on-surface">Genel Bakış</span>
       </div>
 
       {/* Header */}
       <div>
-        <h1 className="text-h1 font-heading text-on-surface">Overview</h1>
+        <h1 className="text-h1 font-heading text-on-surface">Genel Bakış</h1>
         <p className="text-body-md text-primary mt-1">
-          High-level statistics and quick insights
+          Özet istatistikler ve hızlı erişim
         </p>
       </div>
 
@@ -98,17 +98,17 @@ export default function AdminDashboardPage() {
       {/* Stat Cards — real data from /admin/stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
-          label="Total Users"
+          label="Toplam Kullanıcı"
           value={stats?.totalUsers ?? 0}
           loading={statsLoading}
         />
         <StatCard
-          label="Active Users Today"
+          label="Bugün Aktif Kullanıcı"
           value={stats?.activeToday ?? 0}
           loading={statsLoading}
         />
         <StatCard
-          label="Lessons Completed"
+          label="Bugün Tamamlanan Ders"
           value={stats?.lessonsCompletedToday ?? 0}
           loading={statsLoading}
         />
@@ -116,9 +116,9 @@ export default function AdminDashboardPage() {
 
       {/* Problem Areas — static demo until backend provides this data */}
       <div>
-        <h2 className="text-h3 font-heading text-on-surface mb-4">Problem Areas</h2>
+        <h2 className="text-h3 font-heading text-on-surface mb-4">Sorunlu Alanlar</h2>
         <p className="text-body-sm text-on-surface-variant mb-4 italic">
-          Demo data — detailed analytics coming soon
+          Demo veri — ayrıntılı analitik yakında
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 border-b-4 border-b-error hover:shadow-card transition-shadow">
@@ -127,10 +127,10 @@ export default function AdminDashboardPage() {
                 <AlertTriangle size={24} className="text-error" />
               </div>
               <div>
-                <p className="text-body-lg font-semibold text-on-surface">Most Failed Question</p>
-                <p className="text-body-sm text-on-surface-variant mt-0.5">Unit 2, Question 4</p>
+                <p className="text-body-lg font-semibold text-on-surface">En Çok Yanlış Soru</p>
+                <p className="text-body-sm text-on-surface-variant mt-0.5">Ünite 2, Soru 4</p>
                 <span className="inline-block mt-2 px-3 py-1 rounded-full bg-error-container text-error text-label-sm font-semibold">
-                  42% Wrong Rate
+                  %42 yanlış (demo)
                 </span>
               </div>
             </div>
@@ -142,10 +142,10 @@ export default function AdminDashboardPage() {
                 <Clock size={24} className="text-tertiary" />
               </div>
               <div>
-                <p className="text-body-lg font-semibold text-on-surface">Most Skipped Lesson</p>
-                <p className="text-body-sm text-on-surface-variant mt-0.5">Docker Networking</p>
+                <p className="text-body-lg font-semibold text-on-surface">En Çok Atlanan Ders</p>
+                <p className="text-body-sm text-on-surface-variant mt-0.5">Docker Ağları</p>
                 <span className="inline-block mt-2 px-3 py-1 rounded-full bg-tertiary-fixed text-tertiary text-label-sm font-semibold">
-                  28% Skip Rate
+                  %28 atlama (demo)
                 </span>
               </div>
             </div>
@@ -155,12 +155,12 @@ export default function AdminDashboardPage() {
 
       {/* Growth Chart — demo data */}
       <div>
-        <h2 className="text-h3 font-heading text-on-surface mb-4">Growth</h2>
+        <h2 className="text-h3 font-heading text-on-surface mb-4">Büyüme</h2>
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-body-md text-on-surface font-medium">New Users This Week</p>
+            <p className="text-body-md text-on-surface font-medium">Bu Hafta Yeni Kullanıcılar</p>
             <span className="px-3 py-1 rounded-full bg-secondary-container text-secondary text-label-sm font-semibold">
-              Demo data
+              Demo veri
             </span>
           </div>
           <div className="h-64">
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-h3 font-heading text-on-surface mb-4">Quick Actions</h2>
+        <h2 className="text-h3 font-heading text-on-surface mb-4">Hızlı İşlemler</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {QUICK_ACTIONS.map((action) => {
             const Icon = action.icon;

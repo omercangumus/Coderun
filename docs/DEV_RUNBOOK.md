@@ -1,6 +1,6 @@
 # Coderun — Yerel Geliştirme Runbook
 
-Güncel UI, 26 derslik Python müfredatı ve tema sistemini görmek için aşağıdaki adımları izleyin.
+Güncel UI, **27 derslik** Python müfredatı ve tema sistemini görmek için aşağıdaki adımları izleyin.
 
 ## Önemli: Docker ile çalışıyorsanız
 
@@ -41,6 +41,12 @@ Admin kullanıcı (giriş için):
 - E-posta: `admin@coderun.com`
 - Şifre: `admin123`
 
+Fresh DB sonrası admin oluşturma:
+
+```powershell
+docker compose run --rm -e ENVIRONMENT=development backend python -m app.core.create_dev_admin
+```
+
 > **Not:** `seed.py` idempotenttir — mevcut modül varsa seed atlanır. Eski müfredat görüyorsanız `reset_seed` çalıştırın.
 
 ## Kod çalıştırıcı (Code Runner)
@@ -71,6 +77,22 @@ Test (API):
 ```
 
 Web: Python → **Python Kodlama Ödevleri** → **Hello Coderun** → **Çalıştır**
+
+## Demo: Python ders kilidini açma (yalnızca geliştirme)
+
+Kodlama laboratuvarı dersi sıralı kilitle açılır. Yerel test için önceki dersleri tamamlanmış işaretleyin:
+
+```powershell
+# Backend container veya yerel Python (ENVIRONMENT=development)
+cd backend
+$env:ENVIRONMENT = "development"
+python -m app.core.dev_unlock_lessons --email kullanici@ornek.com
+
+# veya kökten:
+.\scripts\dev-unlock-python-lessons.ps1 -Email kullanici@ornek.com
+```
+
+> **Güvenlik:** Script `production` ortamında çalışmaz. Gerçek kullanıcı ilerlemesini etkilemez.
 
 ## 2. Backend
 

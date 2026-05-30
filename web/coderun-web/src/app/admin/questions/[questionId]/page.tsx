@@ -13,14 +13,14 @@ import {
 import type { QuestionAdminItem, QuestionCreateData } from '@/lib/types/admin.types';
 
 const QUESTION_TYPES = [
-  { value: 'multiple_choice', label: 'Multiple Choice' },
-  { value: 'fill_in_blank', label: 'Fill in the Blank' },
-  { value: 'reorder', label: 'Reorder' },
-  { value: 'true_false_reason', label: 'True / False with Reason' },
-  { value: 'spot_the_bug', label: 'Spot the Bug' },
-  { value: 'multi_select', label: 'Multi Select' },
-  { value: 'code_completion', label: 'Code Completion' },
-  { value: 'code_editor', label: 'Code Editor' },
+  { value: 'multiple_choice', label: 'Çoktan Seçmeli' },
+  { value: 'fill_in_blank', label: 'Boşluk Doldurma' },
+  { value: 'reorder', label: 'Sıralama' },
+  { value: 'true_false_reason', label: 'Doğru/Yanlış + Gerekçe' },
+  { value: 'spot_the_bug', label: 'Hatayı Bul' },
+  { value: 'multi_select', label: 'Çoklu Seçim' },
+  { value: 'code_completion', label: 'Kod Tamamlama' },
+  { value: 'code_editor', label: 'Kod Editörü' },
 ];
 
 export default function QuestionEditorPage() {
@@ -238,14 +238,14 @@ export default function QuestionEditorPage() {
           className="flex items-center gap-2 text-body-md text-on-surface-variant hover:text-primary transition-colors"
         >
           <ArrowLeft size={18} />
-          Back to Lessons
+          Derslere Dön
         </Link>
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
             className="px-4 py-2 text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            Discard
+            Vazgeç
           </button>
           <button
             onClick={handleSave}
@@ -253,7 +253,7 @@ export default function QuestionEditorPage() {
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-on font-semibold text-button-sm hover:shadow-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            Save Changes
+            Kaydet
           </button>
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function QuestionEditorPage() {
           >
             {questions.map((q) => (
               <option key={q.id} value={q.id}>
-                Order {q.order}: {q.questionText.slice(0, 40) || '(Metin yok)'} ({q.questionType})
+                Sıra {q.order}: {q.questionText.slice(0, 40) || '(Metin yok)'} ({q.questionType})
               </option>
             ))}
             <option value="new">+ Yeni Soru Ekle</option>
@@ -304,14 +304,14 @@ export default function QuestionEditorPage() {
       {/* Question Content Card */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-8 space-y-6">
         <h2 className="text-h4 font-heading text-on-surface border-b border-outline-variant pb-3">
-          {selectedQuestionId === 'new' ? 'Create New Question' : `Edit Question Settings`}
+          {selectedQuestionId === 'new' ? 'Yeni Soru Oluştur' : 'Soru Ayarları'}
         </h2>
 
         {/* Question Type & Order */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-              Question Type
+              Soru Türü
             </label>
             <select
               value={questionType}
@@ -327,7 +327,7 @@ export default function QuestionEditorPage() {
           </div>
           <div>
             <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-              Order
+              Sıra
             </label>
             <input
               type="number"
@@ -342,7 +342,7 @@ export default function QuestionEditorPage() {
         {/* Question Prompt */}
         <div>
           <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-            Question Prompt
+            Soru Metni
           </label>
           <textarea
             value={questionText}
@@ -357,7 +357,7 @@ export default function QuestionEditorPage() {
         {questionType !== 'code_editor' && (
           <div>
             <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-              Correct Answer
+              Doğru Cevap
             </label>
             <input
               type="text"
@@ -382,7 +382,7 @@ export default function QuestionEditorPage() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-label-caps text-on-surface-variant uppercase tracking-wider">
-                Code Snippet
+                Kod Parçası
               </label>
             </div>
             <div className="rounded-lg border border-outline-variant overflow-hidden">
@@ -421,7 +421,7 @@ export default function QuestionEditorPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-              Hint Text (Optional)
+              İpucu (isteğe bağlı)
             </label>
             <textarea
               value={hint}
@@ -432,7 +432,7 @@ export default function QuestionEditorPage() {
           </div>
           <div>
             <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-              Explanation (After Completion)
+              Açıklama (tamamlama sonrası)
             </label>
             <textarea
               value={explanation}
@@ -447,14 +447,14 @@ export default function QuestionEditorPage() {
         {questionType === 'code_editor' && (
           <div className="space-y-6 pt-4 border-t border-outline-variant">
             <h3 className="text-h4 font-heading text-on-surface flex items-center gap-2">
-              🐍 Code Assignment Settings
+              🐍 Kod Ödevi Ayarları
             </h3>
 
             {/* Language + Runtime + Memory */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-                  Language
+                  Dil
                 </label>
                 <select
                   disabled
@@ -462,11 +462,11 @@ export default function QuestionEditorPage() {
                 >
                   <option value="python">Python 3.11</option>
                 </select>
-                <p className="text-xs text-on-surface-variant mt-1">Only Python supported in MVP</p>
+                <p className="text-xs text-on-surface-variant mt-1">MVP: yalnızca Python</p>
               </div>
               <div>
                 <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-                  Max Runtime (ms)
+                  Maks. Süre (ms)
                 </label>
                 <input
                   type="number"
@@ -480,7 +480,7 @@ export default function QuestionEditorPage() {
               </div>
               <div>
                 <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-                  Memory Limit (MB)
+                  Bellek Limiti (MB)
                 </label>
                 <input
                   type="number"
@@ -497,13 +497,13 @@ export default function QuestionEditorPage() {
             {/* Assignment Instructions */}
             <div>
               <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-                Assignment Instructions
+                Ödev Talimatları
               </label>
               <textarea
                 value={assignmentInstructions}
                 onChange={(e) => setAssignmentInstructions(e.target.value)}
                 rows={4}
-                placeholder="Describe the task clearly. Include input/output format if needed."
+                placeholder="Görevi açıkça yazın. Girdi/çıktı formatını belirtin."
                 className="w-full p-3 rounded-lg border border-outline-variant bg-surface-container text-on-surface focus:border-primary focus:outline-none transition-colors resize-y"
               />
             </div>
@@ -511,7 +511,7 @@ export default function QuestionEditorPage() {
             {/* Starter Code */}
             <div>
               <label className="text-label-caps text-on-surface-variant uppercase tracking-wider block mb-2">
-                Starter Code
+                Başlangıç Kodu
               </label>
               <div className="rounded-lg border border-outline-variant overflow-hidden">
                 <div className="bg-inverse-surface px-4 py-2 flex items-center gap-2">
@@ -533,14 +533,14 @@ export default function QuestionEditorPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-label-caps text-on-surface-variant uppercase tracking-wider">
-                  Test Cases
+                  Test Senaryoları
                 </label>
                 <button
                   type="button"
                   onClick={addTestCase}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
                 >
-                  + Add Test Case
+                  + Test Senaryosu Ekle
                 </button>
               </div>
 
@@ -565,7 +565,7 @@ export default function QuestionEditorPage() {
                         type="text"
                         value={tc.name}
                         onChange={(e) => updateTestCase(index, 'name', e.target.value)}
-                        placeholder="Test name"
+                        placeholder="Test adı"
                         className="flex-1 p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm focus:border-primary focus:outline-none"
                       />
                       <label className="flex items-center gap-2 text-sm text-on-surface-variant cursor-pointer select-none">
@@ -575,45 +575,45 @@ export default function QuestionEditorPage() {
                            onChange={(e) => updateTestCase(index, 'hidden', e.target.checked)}
                            className="w-4 h-4 accent-primary"
                         />
-                        Hidden
+                        Gizli
                       </label>
                       <button
                         type="button"
                         onClick={() => removeTestCase(index)}
                         className="text-error hover:text-error/70 text-sm font-medium transition-colors"
                       >
-                        Remove
+                        Kaldır
                       </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs text-on-surface-variant block mb-1">
-                          Input (stdin)
+                          Girdi (stdin)
                         </label>
                         <textarea
                           value={tc.stdin}
                           onChange={(e) => updateTestCase(index, 'stdin', e.target.value)}
                           rows={2}
-                          placeholder="Leave empty if no input needed"
+                          placeholder="Girdi yoksa boş bırakın"
                           className="w-full p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm font-mono focus:border-primary focus:outline-none resize-y"
                         />
                       </div>
                       <div>
                         <label className="text-xs text-on-surface-variant block mb-1">
-                          Expected Output (stdout)
+                          Beklenen Çıktı (stdout)
                         </label>
                         <textarea
                           value={tc.expectedStdout}
                           onChange={(e) => updateTestCase(index, 'expectedStdout', e.target.value)}
                           rows={2}
-                          placeholder="Exact expected output"
+                          placeholder="Tam beklenen çıktı"
                           className="w-full p-2 rounded-lg border border-outline-variant bg-surface-container text-on-surface text-sm font-mono focus:border-primary focus:outline-none resize-y"
                         />
                       </div>
                     </div>
                     {tc.hidden && (
                       <p className="mt-2 text-xs text-on-surface-variant">
-                        🔒 Hidden — students will see pass/fail only, not the expected output.
+                        🔒 Gizli — öğrenci yalnızca geçti/kaldı görür, beklenen çıktıyı görmez.
                       </p>
                     )}
                   </div>
@@ -632,7 +632,7 @@ export default function QuestionEditorPage() {
           className="flex items-center gap-2 text-body-md text-on-surface-variant hover:text-error transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <Trash2 size={16} />
-          Delete Question
+          Soruyu Sil
         </button>
         <div className="flex items-center gap-3">
           <button
@@ -641,7 +641,7 @@ export default function QuestionEditorPage() {
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-on font-semibold hover:shadow-primary transition-all disabled:opacity-50"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            Publish Changes
+            Değişiklikleri Kaydet
           </button>
         </div>
       </div>
