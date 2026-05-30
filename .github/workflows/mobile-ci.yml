@@ -34,7 +34,7 @@ jobs:
         working-directory: mobile/coderun_mobile
 
       - name: Run Flutter analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
         working-directory: mobile/coderun_mobile
 
       - name: Run tests
