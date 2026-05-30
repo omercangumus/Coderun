@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { authApi } from '@/lib/api/auth-api';
+import { parseApiError } from '@/lib/utils/api-errors';
 import toast from 'react-hot-toast';
 import type { LoginRequest, RegisterRequest } from '@/lib/types/auth.types';
 
@@ -13,7 +14,7 @@ export function useAuth() {
     useAuthStore();
 
   const login = useCallback(
-    async (data: LoginRequest) => {
+    async (data: LoginRequest, options?: { silentToast?: boolean }) => {
       setError(null);
       setLoading(true);
       try {
@@ -21,20 +22,21 @@ export function useAuth() {
         authApi.saveTokens(tokens);
         const me = await authApi.getMe();
         setUser(me);
-        toast.success('Hoş geldin!');
+        if (!options?.silentToast) {
+          toast.success('Hoş geldin!');
+        }
         window.location.href = '/';
+        return true;
       } catch (err: unknown) {
-        const errData = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
-        const message = Array.isArray(errData)
-          ? (errData[0] as { msg?: string })?.msg ?? 'Giriş başarısız'
-          : typeof errData === 'string' ? errData : 'Giriş başarısız';
+        const message = parseApiError(err, 'Giriş başarısız. E-posta ve şifreni kontrol et.');
         setError(message);
         toast.error(message);
+        return false;
       } finally {
         setLoading(false);
       }
     },
-    [setLoading, setUser, setError]
+    [setLoading, setUser, setError],
   );
 
   const register = useCallback(
@@ -43,20 +45,29 @@ export function useAuth() {
       setLoading(true);
       try {
         await authApi.register(data);
+        toast.success('Kayıt başarılı! Giriş yapılıyor...');
       } catch (err: unknown) {
-        const errData = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
-        const message = Array.isArray(errData)
-          ? (errData[0] as { msg?: string })?.msg ?? 'Kayıt başarısız'
-          : typeof errData === 'string' ? errData : 'Kayıt başarısız';
+        const message = parseApiError(
+          err,
+          'Kayıt başarısız. Bilgilerini kontrol edip tekrar dene.',
+        );
         setError(message);
         toast.error(message);
         setLoading(false);
         return;
       }
-      // Kayıt başarılı — otomatik login
-      await login({ email: data.email, password: data.password });
+
+      const loggedIn = await login(
+        { email: data.email, password: data.password },
+        { silentToast: true },
+      );
+      if (!loggedIn) {
+        setError('Kayıt tamamlandı ancak otomatik giriş yapılamadı. Lütfen giriş sayfasından devam et.');
+        toast('Kayıt tamam. Giriş sayfasına yönlendiriliyorsun.', { icon: '✓' });
+        router.push('/login');
+      }
     },
-    [login, setError, setLoading]
+    [login, router, setError, setLoading],
   );
 
   const logout = useCallback(async () => {

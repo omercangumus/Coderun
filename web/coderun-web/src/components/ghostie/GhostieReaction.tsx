@@ -43,15 +43,15 @@ export function GhostieReaction({
 
   const Visual = () => (
     <div
-      className="relative rounded-full overflow-hidden"
+      className="relative overflow-hidden rounded-2xl"
       style={{ width: size, height: size }}
     >
-      <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/25 via-primary-fixed/40 to-secondary/20" />
       {showVideo ? (
         <video
           ref={videoRef}
           src={animationSrc}
-          className="relative z-10 w-full h-full object-contain"
+          className="relative z-10 h-full w-full object-contain [mix-blend-mode:multiply] dark:[mix-blend-mode:normal]"
           autoPlay
           loop
           muted
@@ -67,7 +67,7 @@ export function GhostieReaction({
           alt={`Ghostie ${state}`}
           width={size}
           height={size}
-          className="relative z-10 w-full h-full object-contain"
+          className="relative z-10 h-full w-full object-contain [mix-blend-mode:multiply] dark:[mix-blend-mode:normal]"
         />
       )}
     </div>

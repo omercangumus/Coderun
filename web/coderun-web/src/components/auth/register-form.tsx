@@ -18,14 +18,14 @@ export function RegisterForm() {
   const [hasShake, setHasShake] = useState(false);
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
     formState: { errors },
     watch,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
     defaultValues: { email: '', username: '', password: '', confirmPassword: '' },
   });
 
@@ -101,7 +101,7 @@ export function RegisterForm() {
             error={errors.email?.message}
             autoComplete="email"
             className="pl-10"
-            {...register('email')}
+            {...registerField('email')}
           />
           <Mail className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
         </div>
@@ -116,7 +116,7 @@ export function RegisterForm() {
             error={errors.username?.message}
             autoComplete="username"
             className="pl-10"
-            {...register('username')}
+            {...registerField('username')}
           />
           <User className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
         </div>
@@ -131,7 +131,7 @@ export function RegisterForm() {
             error={errors.password?.message}
             autoComplete="new-password"
             className="pl-10 pr-12"
-            {...register('password')}
+            {...registerField('password')}
           />
           <Lock className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
           <button
@@ -155,7 +155,7 @@ export function RegisterForm() {
             error={errors.confirmPassword?.message}
             autoComplete="new-password"
             className="pl-10 pr-12"
-            {...register('confirmPassword')}
+            {...registerField('confirmPassword')}
           />
           <Lock className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
           <button
