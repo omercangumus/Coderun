@@ -11,19 +11,19 @@ export default function QuestionsIndexPage() {
           Admin
         </Link>
         <span className="text-on-surface-variant">/</span>
-        <span className="text-on-surface">Questions</span>
+        <span className="text-on-surface">Sorular</span>
       </div>
 
-      <h1 className="text-h1 font-heading text-on-surface">Questions</h1>
+      <h1 className="text-h1 font-heading text-on-surface">Sorular</h1>
 
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-12 text-center">
         <HelpCircle size={48} className="text-on-surface-variant mx-auto mb-4" />
         <p className="text-body-lg text-on-surface-variant">
-          Select a lesson from the{' '}
+          Soruları görüntülemek ve düzenlemek için{' '}
           <Link href="/admin/lessons" className="text-primary hover:underline">
-            Lessons
+            Dersler
           </Link>{' '}
-          page to view and edit its questions.
+          sayfasından bir ders seçin.
         </p>
       </div>
     </div>

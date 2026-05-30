@@ -1,10 +1,11 @@
 {
-  "capturedAt": "2026-05-30T13:29:18.829Z",
+  "capturedAt": "2026-05-30T14:37:10.382Z",
   "baseUrl": "http://localhost:3000",
   "gitCommit": "unknown",
-  "lessonCount": 26,
-  "firstLessonId": "2ea37d3c-b6e5-4a18-9738-8d074b5ff312",
+  "lessonCount": 27,
+  "hizliPratikLessonId": "cac0351d-9c7f-41d4-87d0-cfbc5d7949c5",
+  "firstLessonId": "c6b300d2-a3e1-4e9d-8c34-758ccde3f925",
   "firstLessonTitle": "Değişkenler ve Veri Tipleri",
-  "codeLessonId": "f31928a1-915c-41d8-aef8-f85441dff4ca",
+  "codeLessonId": "0e44d9b5-67c9-4e94-b63c-7a51b025a5de",
   "codeLessonTitle": "Python Kodlama Odevleri"
 }

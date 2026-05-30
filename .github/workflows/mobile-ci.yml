@@ -5,9 +5,11 @@ on:
     branches: ["main", "develop"]
     paths:
       - "mobile/**"
+      - ".github/workflows/mobile-ci.yml"
   pull_request:
     paths:
       - "mobile/**"
+      - ".github/workflows/mobile-ci.yml"
 
 jobs:
   build:
@@ -19,11 +21,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.x"
+          flutter-version: "3.24.5"
+          channel: stable
           cache: true
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: mobile/coderun_mobile
+
+      - name: Generate code (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
         working-directory: mobile/coderun_mobile
 
       - name: Run Flutter analyze

@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/assets/ghostie_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/code_run_result_model.dart';
 import '../../../../data/models/question_model.dart';
@@ -37,8 +36,10 @@ class CodeAssignmentWidget extends ConsumerStatefulWidget {
       _CodeAssignmentWidgetState();
 }
 
-class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
+class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget>
+    with SingleTickerProviderStateMixin {
   late final TextEditingController _controller;
+  late final TabController _tabController;
   _EditorState _editorState = _EditorState.idle;
   CodeRunResultModel? _runResult;
   CodeSubmitResultModel? _submitResult;
@@ -52,6 +53,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
     _controller = TextEditingController(
       text: (widget.currentAnswer != null && widget.currentAnswer!.isNotEmpty)
           ? widget.currentAnswer
@@ -61,8 +63,15 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
 
   @override
   void dispose() {
+    _tabController.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _goToOutputTab() {
+    if (_tabController.index != 2) {
+      _tabController.animateTo(2);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -90,8 +99,14 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
       setState(() {
         _editorState = _EditorState.idle;
         response.when(
-          success: (data) => _runResult = data,
-          error: (msg, _) => _errorMessage = msg,
+          success: (data) {
+            _runResult = data;
+            _goToOutputTab();
+          },
+          error: (msg, _) {
+            _errorMessage = msg;
+            _goToOutputTab();
+          },
           loading: () {},
         );
       });
@@ -118,8 +133,14 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
       setState(() {
         _editorState = _EditorState.idle;
         response.when(
-          success: (data) => _submitResult = data,
-          error: (msg, _) => _errorMessage = msg,
+          success: (data) {
+            _submitResult = data;
+            _goToOutputTab();
+          },
+          error: (msg, _) {
+            _errorMessage = msg;
+            _goToOutputTab();
+          },
           loading: () {},
         );
       });
@@ -179,14 +200,47 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = _editorState != _EditorState.idle;
+    final theme = Theme.of(context);
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Material(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          child: TabBar(
+            controller: _tabController,
+            labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: const TextStyle(fontSize: 12),
+            tabs: const [
+              Tab(text: 'Soru'),
+              Tab(text: 'Kod'),
+              Tab(text: 'Çıktı'),
+              Tab(text: 'Mentor'),
+            ],
+          ),
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildSoruTab(),
+              _buildKodTab(bottomInset),
+              _buildCiktiTab(),
+              _buildMentorTab(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSoruTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Instructions card
           if (widget.question.assignmentInstructions != null) ...[
             Container(
               width: double.infinity,
@@ -220,15 +274,13 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                   const SizedBox(height: 8),
                   Text(
                     widget.question.assignmentInstructions!,
-                    style: const TextStyle(fontSize: 13, height: 1.5),
+                    style: const TextStyle(fontSize: 14, height: 1.5),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
           ],
-
-          // Language badge + title
           Row(
             children: [
               Container(
@@ -237,8 +289,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                 decoration: BoxDecoration(
                   color: Colors.blue.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                      color: Colors.blue.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   '🐍 ${_language.toUpperCase()}',
@@ -250,89 +301,97 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.question.questionText,
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w600),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 10),
+          Text(
+            widget.question.questionText,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
 
-          // Code editor
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade800),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Editor header bar
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF252526),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
+  Widget _buildKodTab(double bottomInset) {
+    final isLoading = _editorState != _EditorState.idle;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 8, 12, 8 + bottomInset),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey.shade800),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF252526),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      border: Border(bottom: BorderSide(color: Colors.grey.shade800)),
                     ),
-                    border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade800)),
+                    child: Row(
+                      children: [
+                        _dot(Colors.red.shade400),
+                        const SizedBox(width: 5),
+                        _dot(Colors.yellow.shade400),
+                        const SizedBox(width: 5),
+                        _dot(Colors.green.shade400),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'solution.py',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      _dot(Colors.red.shade400),
-                      const SizedBox(width: 5),
-                      _dot(Colors.yellow.shade400),
-                      const SizedBox(width: 5),
-                      _dot(Colors.green.shade400),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'solution.py',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(4),
+                      child: TextField(
+                        controller: _controller,
+                        onChanged: widget.onAnswerChanged,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        style: const TextStyle(
                           fontFamily: 'monospace',
+                          fontSize: 13,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(12),
+                          border: InputBorder.none,
+                          hintText: '# Kodunu buraya yaz...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: 'monospace',
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                // TextField
-                TextField(
-                  controller: _controller,
-                  onChanged: widget.onAnswerChanged,
-                  maxLines: null,
-                  minLines: 10,
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 13,
-                    color: Colors.white,
-                    height: 1.5,
-                  ),
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.all(12),
-                    border: InputBorder.none,
-                    hintText: '# Kodunu buraya yaz...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontFamily: 'monospace',
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
-
-          // Action buttons
           Row(
             children: [
               Expanded(
@@ -345,12 +404,12 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white),
                         )
-                      : const Icon(Icons.play_arrow, size: 16),
+                      : const Icon(Icons.play_arrow, size: 18),
                   label: const Text('Çalıştır'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    minimumSize: const Size(0, 44),
                   ),
                 ),
               ),
@@ -365,30 +424,36 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white),
                         )
-                      : const Icon(Icons.check, size: 16),
+                      : const Icon(Icons.check, size: 18),
                   label: const Text('Gönder'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    minimumSize: const Size(0, 44),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
+              IconButton(
                 onPressed: isLoading ? null : _handleReset,
-                icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Sıfırla'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 12),
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Sıfırla',
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(44, 44),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
 
-          // Error banner
+  Widget _buildCiktiTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           if (_errorMessage != null)
             Container(
               width: double.infinity,
@@ -396,37 +461,65 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget> {
               decoration: BoxDecoration(
                 color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                    color: Colors.red.withValues(alpha: 0.3)),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
               ),
               child: Text(
                 '⚠ $_errorMessage',
                 style: const TextStyle(color: Colors.red, fontSize: 13),
               ),
             ),
-
-          // Terminal output
           if (_runResult != null) ...[
-            const SizedBox(height: 4),
+            if (_errorMessage != null) const SizedBox(height: 8),
             _TerminalCard(result: _runResult!),
           ],
-
-          // Submit result summary + test list
           if (_submitResult != null) ...[
             const SizedBox(height: 8),
             _SubmitSummaryCard(result: _submitResult!),
             const SizedBox(height: 8),
             _TestResultsList(results: _submitResult!.testResults),
           ],
+          if (_runResult == null &&
+              _submitResult == null &&
+              _errorMessage == null)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Text(
+                  'Henüz çıktı yok.\nKod sekmesinden Çalıştır veya Gönder\'e bas.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
-          // Ghostie
+  Widget _buildMentorTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
           const SizedBox(height: 16),
           GhostieReaction(
             state: _ghostieState,
             message: _ghostieMessage,
-            size: 72,
+            size: 120,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          Text(
+            _ghostieMessage ?? 'Kodunu yaz ve Çalıştır\'a bas.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.45,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
         ],
       ),
     );
@@ -495,7 +588,7 @@ class _TerminalCard extends StatelessWidget {
                     color: Colors.orange.withValues(alpha: 0.4)),
               ),
               child: const Text(
-                '⏱ Zaman asimi',
+                '⏱ Zaman aşımı',
                 style: TextStyle(color: Colors.orange, fontSize: 12),
               ),
             ),
@@ -524,7 +617,7 @@ class _TerminalCard extends StatelessWidget {
           ],
           if (result.stdout.isEmpty && result.stderr.isEmpty)
             const Text(
-              '(cikti yok)',
+              '(çıktı yok)',
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
         ],
@@ -570,8 +663,8 @@ class _SubmitSummaryCard extends StatelessWidget {
           Expanded(
             child: Text(
               result.passed
-                  ? 'Tum testler gecti!'
-                  : 'Bazi testler basarisiz',
+                  ? 'Tüm testler geçti!'
+                  : 'Bazı testler başarısız',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

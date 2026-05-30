@@ -86,10 +86,24 @@ async function main() {
   });
   const page = await context.newPage();
 
+  await page.goto(`${BASE}/register`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1200);
+  await shot(page, 'web_register.png');
+  await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1200);
+  await shot(page, 'web_login.png');
+
   await login(page);
 
   // Default light theme
   await setTheme(page, 'light');
+  await page.goto(`${BASE}/admin`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(2000);
+  await shot(page, 'web_admin.png');
+  await page.goto(`${BASE}/admin/questions`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  await shot(page, 'web_admin_questions.png');
+
   await page.goto(`${BASE}/learn`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1500);
   await shot(page, 'web_learn.png');
@@ -140,6 +154,16 @@ async function main() {
   console.log('Lessons from API:', lessons.length);
 
   const firstLesson = lessons.find((l) => !l.is_locked && !l.isLocked) || lessons[0];
+  const hizliPratik = lessons.find((l) => /hızlı|hizli|pratik/i.test(l.title));
+  if (hizliPratik) {
+    await page.goto(`${BASE}/learn/python/lesson/${hizliPratik.id}`, {
+      waitUntil: 'networkidle',
+    });
+    await page.waitForTimeout(2500);
+    await shot(page, 'web_python_hizli_pratik.png');
+    meta.hizliPratikLessonId = hizliPratik.id;
+  }
+
   const codeLesson =
     lessons.find((l) => /kodlama|ödev|odev/i.test(l.title)) ||
     lessons[lessons.length - 1];

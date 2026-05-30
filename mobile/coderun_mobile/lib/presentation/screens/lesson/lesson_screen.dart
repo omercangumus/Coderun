@@ -161,14 +161,21 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   child: Column(
                     children: [
                       Expanded(
-                        child: SingleChildScrollView(
-                          child: _buildQuestionWidget(
-                            currentQuestion.questionType,
-                            currentQuestion,
-                            currentAnswer,
-                            notifier,
-                          ),
-                        ),
+                        child: currentQuestion.questionType == 'code_editor'
+                            ? _buildQuestionWidget(
+                                currentQuestion.questionType,
+                                currentQuestion,
+                                currentAnswer,
+                                notifier,
+                              )
+                            : SingleChildScrollView(
+                                child: _buildQuestionWidget(
+                                  currentQuestion.questionType,
+                                  currentQuestion,
+                                  currentAnswer,
+                                  notifier,
+                                ),
+                              ),
                       ),
                       const SizedBox(height: 16),
                       if (lessonState.errorMessage != null)
