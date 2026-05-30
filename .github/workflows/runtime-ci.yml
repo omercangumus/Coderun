@@ -82,6 +82,17 @@ jobs:
           docker compose logs backend
           exit 1
 
+      - name: Wait for web
+        run: |
+          for i in $(seq 1 40); do
+            if curl -sf -o /dev/null http://localhost:3000/login; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose logs web
+          exit 1
+
       - name: HTTP runtime smoke
         run: bash scripts/runtime-smoke.sh
 
