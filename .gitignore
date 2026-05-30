@@ -68,6 +68,8 @@ build/
 *.class
 *.log
 *.lock
+# Flutter uygulama kilidi commit edilir (CI deterministik çözüm)
+!mobile/coderun_mobile/pubspec.lock
 GeneratedPluginRegistrant.java
 local.properties
 android/.gradle/

@@ -7,6 +7,7 @@ from collections.abc import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
 
 from app.api.v1.endpoints.health import router as health_router
 from app.api.v1.router import api_router
@@ -34,6 +35,17 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info("Veritabanı bağlantısı başarılı.")
         async with AsyncSessionLocal() as session:
             await seed_database(session)
+    except ProgrammingError as exc:
+        err = str(exc).lower()
+        if "does not exist" in err or "undefinedtable" in err:
+            logger.critical(
+                "Veritabanı tabloları bulunamadı. Önce migration çalıştırın:\n"
+                "  python -m alembic upgrade head\n"
+                "  veya: .\\scripts\\dev-docker-rebuild.ps1 / bash scripts/dev-docker-rebuild.sh"
+            )
+        else:
+            logger.critical("Veritabanı şema hatası: %s", exc)
+        raise SystemExit(1) from exc
     except Exception as exc:
         logger.critical("Veritabanı bağlantısı kurulamadı: %s", exc)
         raise SystemExit(1) from exc

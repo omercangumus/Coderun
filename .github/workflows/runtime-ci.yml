@@ -1,0 +1,100 @@
+name: Runtime CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - "backend/**"
+      - "web/**"
+      - "docker-compose.yml"
+      - "scripts/dev-docker-rebuild.sh"
+      - "scripts/runtime-smoke.sh"
+      - ".github/workflows/runtime-ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "web/**"
+      - "docker-compose.yml"
+      - "scripts/**"
+      - ".github/workflows/runtime-ci.yml"
+  workflow_dispatch:
+
+env:
+  POSTGRES_USER: coderun
+  POSTGRES_PASSWORD: coderun_ci_secret
+  POSTGRES_DB: coderun
+  SECRET_KEY: ci-runtime-secret-key-32chars-min
+  ENVIRONMENT: development
+  OPENROUTER_API_KEY: test-openrouter-key-for-ci-only
+
+jobs:
+  runtime-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env for compose
+        run: |
+          cat > .env <<EOF
+          POSTGRES_USER=${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ env.POSTGRES_DB }}
+          SECRET_KEY=${{ env.SECRET_KEY }}
+          ENVIRONMENT=${{ env.ENVIRONMENT }}
+          OPENROUTER_API_KEY=${{ env.OPENROUTER_API_KEY }}
+          EOF
+
+      - name: Build backend and web images
+        run: docker compose build backend web
+
+      - name: Start database and redis
+        run: docker compose up -d db redis
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose exec -T db pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Migrate and seed
+        run: |
+          docker compose run --rm --no-deps backend python -m alembic upgrade head
+          docker compose run --rm --no-deps backend python -m app.core.reset_seed
+          docker compose run --rm --no-deps -e ENVIRONMENT=development backend python -m app.core.create_dev_admin
+
+      - name: Start backend and web
+        run: docker compose up -d backend web
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 40); do
+            if curl -sf http://localhost:8000/health | grep -qE '"database"\s*:\s*"ok"'; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose logs backend
+          exit 1
+
+      - name: HTTP runtime smoke
+        run: bash scripts/runtime-smoke.sh
+
+      - name: Upload logs on failure
+        if: failure()
+        run: |
+          mkdir -p /tmp/coderun-logs
+          docker compose logs > /tmp/coderun-logs/compose.log 2>&1 || true
+
+      - name: Upload compose logs artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-ci-logs
+          path: /tmp/coderun-logs/
+          if-no-files-found: ignore

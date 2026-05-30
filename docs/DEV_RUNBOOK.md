@@ -4,22 +4,29 @@ Güncel UI, **27 derslik** Python müfredatı ve tema sistemini görmek için a�
 
 ## Önemli: Docker ile çalışıyorsanız
 
-Web konteyneri **production build** kullanır (`npm run build` imaja gömülür). UI değişikliklerini görmek için imajı yeniden oluşturmanız gerekir:
+Web konteyneri **production build** kullanır. Fresh volume sonrası backend **migration olmadan** ayağa kalkarsa tablolar yoktur ve sağlıksız olur.
+
+**Önerilen tek komut (sıfırdan güvenilir):**
 
 ```powershell
-# Tam sıfırlama (DB + önbellek + imaj)
-docker compose down -v
-Remove-Item -Recurse -Force web/coderun-web/.next -ErrorAction SilentlyContinue
-docker compose build --no-cache web backend
-docker compose up -d db redis
-# DB hazır olunca (15 sn):
-cd backend
-python -m alembic upgrade head
-python -m app.core.reset_seed
-docker compose up -d backend web
+.\scripts\dev-docker-rebuild.ps1
 ```
 
-Alternatif (en hızlı geliştirme): Web'i Docker dışında `npm run dev` ile çalıştırın; backend+db Docker'da kalabilir.
+Unix:
+
+```bash
+bash scripts/dev-docker-rebuild.sh
+```
+
+Script sırası: `down -v` → build → db/redis → **alembic** → **reset_seed** → **create_dev_admin** → backend/web → health bekler.
+
+Hızlı geliştirme: Web'i Docker dışında `npm run dev`; backend+db Docker'da.
+
+### Backend unhealthy (fresh volume)
+
+1. Log: `docker logs coderun-backend-1` — `relation "modules" does not exist` → migration eksik
+2. Çözüm: `.\scripts\dev-docker-rebuild.ps1` (manuel adım atlamayın)
+3. Sadece migration: `docker compose run --rm --no-deps backend python -m alembic upgrade head`
 
 ## Tema localStorage
 
@@ -139,8 +146,28 @@ npm run capture
 
 Çıktı: `docs/qa/runtime-ui/*.png`
 
+## HTTP runtime smoke
+
+Stack ayaktayken:
+
+```bash
+bash scripts/runtime-smoke.sh
+```
+
+## Admin dersler
+
+`/admin/lessons?module=python` — gerçek `/admin/lessons` API (süper kullanıcı girişi gerekir).
+
+## Mobil bağımlılıklar
+
+`mobile/coderun_mobile/pubspec.lock` repoda tutulur. Değişiklikten sonra:
+
+```bash
+cd mobile/coderun_mobile && flutter pub get
+```
+
 ## Beklenen durum
 
-- Python modülünde **26 ders** (6 ünite, son ünite: Python Kodlama Ödevleri)
+- Python modülünde **27 ders** (Hızlı Pratik + Kodlama Ödevleri dahil)
 - Web temaları: `light`, `dark`, `coderun-comfort` — Profil sayfasından değiştirilir
 - Ghostie animasyonları aktif rotalarda görünür (öğrenme yolu, ders, rozetler, liderboard)

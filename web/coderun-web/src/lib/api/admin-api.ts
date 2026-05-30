@@ -114,9 +114,24 @@ export async function getAdminStats(): Promise<AdminStats> {
 // Paths (Modules)
 // ---------------------------------------------------------------------------
 
+function mapPathListItem(raw: Record<string, unknown>): PathListItem {
+  return {
+    id: String(raw.id),
+    title: String(raw.title ?? ''),
+    slug: String(raw.slug ?? ''),
+    description: String(raw.description ?? ''),
+    order: Number(raw.order ?? 0),
+    isActive: Boolean(raw.is_active),
+    isPublished: Boolean(raw.is_published),
+    lessonCount: Number(raw.lesson_count ?? 0),
+    unitCount: Number(raw.unit_count ?? 0),
+    completionRate: Number(raw.completion_rate ?? 0),
+  };
+}
+
 export async function getPaths(): Promise<PathListItem[]> {
-  const { data } = await axiosClient.get<PathListItem[]>(`${PREFIX}/paths`);
-  return data;
+  const { data } = await axiosClient.get<Record<string, unknown>[]>(`${PREFIX}/paths`);
+  return data.map(mapPathListItem);
 }
 
 export async function createPath(payload: PathCreateData): Promise<PathListItem> {
@@ -167,13 +182,30 @@ export async function deleteUnit(unitId: string): Promise<void> {
 // Lessons
 // ---------------------------------------------------------------------------
 
+function mapLessonAdminItem(raw: Record<string, unknown>): LessonAdminItem {
+  return {
+    id: String(raw.id),
+    moduleId: String(raw.module_id),
+    unitId: raw.unit_id != null ? String(raw.unit_id) : null,
+    title: String(raw.title ?? ''),
+    lessonType: String(raw.lesson_type ?? ''),
+    order: Number(raw.order ?? 0),
+    xpReward: Number(raw.xp_reward ?? 0),
+    isActive: Boolean(raw.is_active),
+    completionRate: Number(raw.completion_rate ?? 0),
+    avgScore: Number(raw.avg_score ?? 0),
+    wrongRate: Number(raw.wrong_rate ?? 0),
+    questionCount: Number(raw.question_count ?? 0),
+  };
+}
+
 export async function getLessonsAdmin(
   moduleId?: string
 ): Promise<LessonAdminItem[]> {
-  const { data } = await axiosClient.get<LessonAdminItem[]>(`${PREFIX}/lessons`, {
+  const { data } = await axiosClient.get<Record<string, unknown>[]>(`${PREFIX}/lessons`, {
     params: moduleId ? { module_id: moduleId } : undefined,
   });
-  return data;
+  return data.map(mapLessonAdminItem);
 }
 
 export async function createLesson(

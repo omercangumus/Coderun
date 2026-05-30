@@ -1,14 +1,15 @@
 # Coderun CI/CD
 
-Yetkili pipeline: **GitHub Actions** (`.github/workflows/`). GitLab CI kullanılmıyor.
+Yetkili pipeline: **GitHub Actions** (`.github/workflows/`).
 
 ## İşler
 
-| İş | Tetikleyici | Komutlar |
-|----|-------------|----------|
-| Backend CI | `backend/**` | `ruff check`, `compileall`, `alembic heads`, `pytest -q` |
-| Web CI | `web/**` | `npm ci`, `npm run lint`, `npm run build` |
-| Mobile CI | `mobile/**` | `flutter pub get`, `build_runner`, `flutter analyze`, `flutter test` |
+| İş | Tetikleyici | Ne doğrular |
+|----|-------------|-------------|
+| Backend CI | `backend/**` | ruff, compileall, alembic heads, pytest (SQLite) |
+| Web CI | `web/**` | `npm ci`, lint, production build |
+| Mobile CI | `mobile/**` | Flutter 3.29.3, build_runner, analyze, unit/widget test |
+| Runtime CI | backend/web/compose/scripts | Docker boot, migrate, seed, HTTP smoke |
 
 ## Ortam değişkenleri (Backend CI)
 
@@ -20,22 +21,38 @@ Yetkili pipeline: **GitHub Actions** (`.github/workflows/`). GitLab CI kullanıl
 | `ENVIRONMENT` | `test` |
 | `OPENROUTER_API_KEY` | test placeholder |
 
-Testler SQLite ile çalışır; Postgres servisi gerekmez. Redis servisi sağlık kontrolü ile ayağa kalkar (bazı testler bağlantı dener).
-
 ## Web CI
 
-`NEXT_PUBLIC_API_URL` build sırasında `http://localhost:8000/api/v1` olarak ayarlanır (statik build için güvenli varsayılan).
+`NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1` (build zamanı).
 
 ## Mobile CI
 
-- Flutter **3.29.3** (stable; `video_player` için Dart SDK ≥3.7 gerekir)
-- `dart run build_runner build --delete-conflicting-outputs` her koşuda çalışır
+- Flutter **3.29.3** (stable)
+- `video_player` pin: `>=2.10.1 <2.11.0` (Dart SDK uyumu)
+- **`mobile/coderun_mobile/pubspec.lock` commit edilir** — kök `.gitignore` içinde `*.lock` istisnası ile
+- `flutter analyze --no-fatal-infos` (speech_to_text deprecation uyarıları)
+- Kod lab sekmeleri: `test/widgets/code_assignment_widget_test.dart`
 
-## Code runner / Docker entegrasyonu
+## Runtime CI
 
-Tam sandbox (`docker run` ile kullanıcı kodu) CI'da **çalıştırılmaz**. `test_code_runner_service.py` Docker'ı mock'lar; birim testler deterministiktir.
+Workflow: `.github/workflows/runtime-ci.yml`
 
-## Yerelde CI ile aynı komutlar
+Sıra:
+
+1. `docker compose build backend web`
+2. `up db redis` → `pg_isready`
+3. `alembic upgrade head` → `reset_seed` → `create_dev_admin` (one-shot)
+4. `up backend web` → `/health` + `scripts/runtime-smoke.sh`
+
+Başarısızlıkta `runtime-ci-logs` artifact (compose log).
+
+Playwright ekran görüntüleri **CI'da çalışmaz** (ağır); yerelde `scripts/qa`.
+
+## Code runner
+
+Tam Docker sandbox CI'da yok; `test_code_runner_service.py` mock kullanır.
+
+## Yerelde CI komutları
 
 ```powershell
 # Backend
@@ -62,23 +79,22 @@ npm run build
 cd mobile/coderun_mobile
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-flutter analyze
+flutter analyze --no-fatal-infos
 flutter test
+
+# Runtime (Docker Desktop gerekir)
+.\scripts\dev-docker-rebuild.ps1
+bash scripts/runtime-smoke.sh
 ```
 
 ## Gizli anahtarlar
 
-CI için GitHub Secrets **gerekmez** (test env workflow içinde tanımlı). Production deploy ayrı yapılandırılır.
+Runtime CI için GitHub Secrets gerekmez (`.env` workflow içinde üretilir).
 
-## Runtime / E2E (isteğe bağlı, yerel)
+## Sorun giderme
 
-```powershell
-docker compose down -v
-docker compose build --no-cache backend web
-docker compose up -d db redis backend web
-cd backend
-python -m alembic upgrade head
-python -m app.core.reset_seed
-```
-
-Playwright: `scripts/qa` → `npm run capture`
+| Belirti | Çözüm |
+|---------|--------|
+| Backend `unhealthy`, `relation "modules" does not exist` | Migration önce: `dev-docker-rebuild.ps1` veya `alembic upgrade head` |
+| Mobile `pub get` drift | `pubspec.lock` commit edilmiş olmalı; `flutter pub get` |
+| Runtime CI timeout | Docker imaj cache; workflow 45 dk limit |
