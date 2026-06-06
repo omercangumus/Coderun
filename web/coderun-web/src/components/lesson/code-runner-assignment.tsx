@@ -4,7 +4,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { QuestionResponse } from '@/lib/types/module.types';
 import type { CodeRunResponse, CodeSubmitResponse, TestCaseResult } from '@/lib/types/code-runner.types';
-import { codeApi } from '@/lib/api/code-api';
+import {
+  runPython,
+  evaluateTestCases,
+  getPyodideStatus,
+  onPyodideStatusChange,
+  type PyodideStatus,
+} from '@/lib/utils/pyodide-runner';
 import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 import type { GhostieState } from '@/lib/ghostie-assets';
 import {
@@ -14,7 +20,6 @@ import {
 } from '@/components/coding-lab/CodingLabShell';
 import { FloatingGhostieMentor } from '@/components/coding-lab/FloatingGhostieMentor';
 import { cn } from '@/lib/utils/cn';
-import { parseCodeRunnerError, getCodeRunnerDevDetail } from '@/lib/utils/code-runner-errors';
 
 function formatRunDuration(ms: number): string {
   if (ms < 1000) return `${ms} ms`;
@@ -32,7 +37,7 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ),
 });
 
-type EditorState = 'idle' | 'running' | 'submitting';
+type EditorState = 'idle' | 'running' | 'submitting' | 'pyodide-loading';
 
 interface CodeRunnerAssignmentProps {
   question: QuestionResponse;
@@ -51,6 +56,7 @@ function getGhostieState(
   runResult: CodeRunResponse | null,
   submitResult: CodeSubmitResponse | null,
 ): GhostieState {
+  if (editorState === 'pyodide-loading') return 'thinking';
   if (editorState === 'running' || editorState === 'submitting') return 'thinking';
   if (submitResult !== null) return submitResult.passed ? 'very_happy' : 'wrong';
   if (runResult !== null) {
@@ -64,14 +70,18 @@ function getGhostieMessage(
   editorState: EditorState,
   runResult: CodeRunResponse | null,
   submitResult: CodeSubmitResponse | null,
+  pyodideStatus: PyodideStatus,
 ): string {
+  if (editorState === 'pyodide-loading' || pyodideStatus === 'loading') {
+    return 'Python çalıştırıcı yükleniyor... İlk seferde biraz sürebilir. ⏳';
+  }
   if (editorState === 'running') return 'Kodun çalıştırılıyor...';
   if (editorState === 'submitting') return 'Test senaryoları değerlendiriliyor...';
   if (submitResult !== null) return submitResult.feedback;
   if (runResult?.timedOut) return 'Zaman aşımı! Sonsuz döngü var mı?';
   if (runResult?.stderr && runResult.exitCode !== 0) return 'Bir hata oluştu. Kodu kontrol et!';
   if (runResult?.exitCode === 0) return 'Kod başarıyla çalıştı!';
-  return 'Kodunu yaz, Çalıştır’a bas.';
+  return 'Kodunu yaz, Çalıştır\'a bas.';
 }
 
 function inferDifficulty(index: number): ChallengeDifficulty {
@@ -85,7 +95,7 @@ function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
     return (
       <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
         <span className="mr-2 animate-pulse">$_</span>
-        Kodunu yaz, Çalıştır’a bas.
+        Kodunu yaz, Çalıştır&apos;a bas.
       </div>
     );
   }
@@ -155,6 +165,41 @@ function TestResultsPanel({ results }: { results: TestCaseResult[] }) {
   );
 }
 
+// Pyodide loading indicator component
+function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
+  if (status === 'ready' || status === 'idle') return null;
+
+  return (
+    <div
+      className={cn(
+        'rounded-xl border px-4 py-3 text-sm flex items-center gap-3',
+        status === 'loading'
+          ? 'border-primary/30 bg-primary/5 text-primary'
+          : 'border-error/30 bg-error-container text-error',
+      )}
+    >
+      {status === 'loading' && (
+        <>
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div>
+            <p className="font-semibold">Python çalıştırıcı yükleniyor...</p>
+            <p className="text-xs opacity-70">İlk seferde ~10 saniye sürebilir, sonraki çalıştırmalar anlık olacak.</p>
+          </div>
+        </>
+      )}
+      {status === 'error' && (
+        <>
+          <span className="text-lg">⚠</span>
+          <div>
+            <p className="font-semibold">Python çalıştırıcı yüklenemedi</p>
+            <p className="text-xs opacity-70">İnternet bağlantınızı kontrol edin ve sayfayı yenileyin.</p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function CodeRunnerAssignment({
   question,
   currentAnswer,
@@ -174,11 +219,16 @@ export function CodeRunnerAssignment({
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [errorDev, setErrorDev] = useState<string | null>(null);
   const [useTextarea, setUseTextarea] = useState(false);
+  const [pyodideStatus, setPyodideStatus] = useState<PyodideStatus>(getPyodideStatus());
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) setUseTextarea(true);
+  }, []);
+
+  // Listen to Pyodide status changes
+  useEffect(() => {
+    return onPyodideStatusChange(setPyodideStatus);
   }, []);
 
   const publicExamples =
@@ -196,6 +246,7 @@ export function CodeRunnerAssignment({
     [onChange],
   );
 
+  // Pyodide-based run (no Docker needed!)
   const handleRun = async () => {
     if (editorState !== 'idle') return;
     setEditorState('running');
@@ -204,41 +255,60 @@ export function CodeRunnerAssignment({
     setError(null);
     setEditorTab('terminal');
     setResultTab('output');
+
     try {
-      const result = await codeApi.runCode({
-        language: question.language ?? 'python',
+      const result = await runPython(
         code,
-        timeoutMs: question.maxRuntimeMs ?? 5000,
-        memoryLimitMb: question.memoryLimitMb ?? 128,
-      });
+        '',
+        question.maxRuntimeMs ?? 5000,
+      );
       setRunResult(result);
       setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
       setEditorTab('terminal');
     } catch (err: unknown) {
-      setError(parseCodeRunnerError(err, 'Kod çalıştırılamadı.'));
-      setErrorDev(getCodeRunnerDevDetail(err));
+      const msg = err instanceof Error ? err.message : 'Kod çalıştırılamadı.';
+      setError(msg);
     } finally {
       setEditorState('idle');
     }
   };
 
+  // Pyodide-based submit (client-side test evaluation)
   const handleSubmit = async () => {
     if (editorState !== 'idle') return;
     setEditorState('submitting');
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
+
     try {
-      const result = await codeApi.submitCode({
-        questionId: question.id,
-        code,
-        language: question.language ?? 'python',
-      });
-      setSubmitResult(result);
-      setResultTab('tests');
+      const testCases = question.testCases ?? [];
+      if (testCases.length === 0) {
+        // No test cases — just run the code and mark as submitted
+        const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
+        setSubmitResult({
+          passed: result.exitCode === 0,
+          score: result.exitCode === 0 ? 100 : 0,
+          stdout: result.stdout,
+          stderr: result.stderr,
+          testResults: [],
+          feedback: result.exitCode === 0
+            ? 'Kod başarıyla çalıştı! ✓'
+            : 'Kodda hata var, kontrol et.',
+        });
+        setResultTab('output');
+      } else {
+        const result = await evaluateTestCases(
+          code,
+          testCases,
+          question.maxRuntimeMs ?? 5000,
+        );
+        setSubmitResult(result);
+        setResultTab('tests');
+      }
     } catch (err: unknown) {
-      setError(parseCodeRunnerError(err, 'Gönderim başarısız.'));
-      setErrorDev(getCodeRunnerDevDetail(err));
+      const msg = err instanceof Error ? err.message : 'Gönderim başarısız.';
+      setError(msg);
     } finally {
       setEditorState('idle');
     }
@@ -250,7 +320,6 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
-    setErrorDev(null);
   };
 
   const isLoading = editorState !== 'idle';
@@ -271,8 +340,9 @@ export function CodeRunnerAssignment({
     }
     return <TerminalOutput result={null} />;
   };
+
   const ghostieState = getGhostieState(editorState, runResult, submitResult);
-  const ghostieMessage = getGhostieMessage(editorState, runResult, submitResult);
+  const ghostieMessage = getGhostieMessage(editorState, runResult, submitResult, pyodideStatus);
 
   const toolbar = (
     <>
@@ -373,12 +443,12 @@ export function CodeRunnerAssignment({
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Pyodide loading status */}
+      <PyodideLoadingBanner status={pyodideStatus} />
+
       {error && (
         <div className="rounded-xl border border-error/30 bg-error-container p-4 text-sm text-error">
           <p className="font-semibold">⚠ {error}</p>
-          {errorDev && (
-            <p className="mt-2 font-mono text-[10px] opacity-70">{errorDev}</p>
-          )}
         </div>
       )}
 

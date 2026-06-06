@@ -1,0 +1,290 @@
+// Coderun — Pyodide tabanlı tarayıcı içi Python çalıştırıcı.
+// Docker bağımlılığını ortadan kaldırır, tamamen client-side çalışır.
+
+import type { CodeRunResponse } from '@/lib/types/code-runner.types';
+
+// Pyodide global type (CDN'den yüklenir)
+interface PyodideInterface {
+  runPythonAsync(code: string, options?: { globals?: unknown }): Promise<unknown>;
+  setStdin(options: { stdin(): string }): void;
+  setStdout(options: { batched(text: string): void }): void;
+  setStderr(options: { batched(text: string): void }): void;
+  globals: Map<string, unknown>;
+}
+
+// Pyodide CDN URL
+const PYODIDE_CDN = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const PYODIDE_INDEX_URL = PYODIDE_CDN;
+
+// Singleton Pyodide instance
+let pyodideInstance: PyodideInterface | null = null;
+let pyodideLoading: Promise<PyodideInterface> | null = null;
+
+export type PyodideStatus = 'idle' | 'loading' | 'ready' | 'error';
+
+let statusListeners: ((status: PyodideStatus) => void)[] = [];
+let currentStatus: PyodideStatus = 'idle';
+
+function setStatus(s: PyodideStatus) {
+  currentStatus = s;
+  statusListeners.forEach((fn) => fn(s));
+}
+
+export function getPyodideStatus(): PyodideStatus {
+  return currentStatus;
+}
+
+export function onPyodideStatusChange(listener: (status: PyodideStatus) => void): () => void {
+  statusListeners.push(listener);
+  return () => {
+    statusListeners = statusListeners.filter((fn) => fn !== listener);
+  };
+}
+
+/**
+ * Pyodide'ı lazy-load eder. İlk çağrıda CDN'den WASM indirir (~10MB),
+ * sonraki çağrılarda cached instance döner.
+ */
+async function loadPyodide(): Promise<PyodideInterface> {
+  if (pyodideInstance) return pyodideInstance;
+  if (pyodideLoading) return pyodideLoading;
+
+  setStatus('loading');
+
+  pyodideLoading = (async () => {
+    try {
+      // Pyodide script'ini dinamik olarak yükle
+      if (typeof window !== 'undefined' && !(window as Record<string, unknown>).loadPyodide) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `${PYODIDE_CDN}pyodide.js`;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Pyodide script yüklenemedi'));
+          document.head.appendChild(script);
+        });
+      }
+
+      // loadPyodide fonksiyonunu çağır
+      const loadFn = (window as Record<string, unknown>).loadPyodide as (
+        options: { indexURL: string }
+      ) => Promise<PyodideInterface>;
+
+      if (!loadFn) throw new Error('loadPyodide fonksiyonu bulunamadı');
+
+      const pyodide = await loadFn({ indexURL: PYODIDE_INDEX_URL });
+      pyodideInstance = pyodide;
+      setStatus('ready');
+      return pyodide;
+    } catch (err) {
+      setStatus('error');
+      pyodideLoading = null;
+      throw err;
+    }
+  })();
+
+  return pyodideLoading;
+}
+
+/**
+ * Python kodunu Pyodide ile tarayıcıda çalıştırır.
+ */
+export async function runPython(
+  code: string,
+  stdin: string = '',
+  timeoutMs: number = 5000,
+): Promise<CodeRunResponse> {
+  const startTime = performance.now();
+
+  try {
+    const pyodide = await loadPyodide();
+
+    let stdoutBuffer = '';
+    let stderrBuffer = '';
+
+    // stdin desteği
+    const stdinLines = stdin.split('\n');
+    let stdinIndex = 0;
+
+    pyodide.setStdin({
+      stdin() {
+        if (stdinIndex < stdinLines.length) {
+          return stdinLines[stdinIndex++];
+        }
+        return '';
+      },
+    });
+
+    pyodide.setStdout({
+      batched(text: string) {
+        stdoutBuffer += text + '\n';
+      },
+    });
+
+    pyodide.setStderr({
+      batched(text: string) {
+        stderrBuffer += text + '\n';
+      },
+    });
+
+    // Timeout mekanizması
+    let timedOut = false;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        timedOut = true;
+        reject(new Error(`Execution timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    });
+
+    try {
+      await Promise.race([pyodide.runPythonAsync(code), timeoutPromise]);
+    } catch (err: unknown) {
+      if (timedOut) {
+        const durationMs = Math.round(performance.now() - startTime);
+        return {
+          stdout: stdoutBuffer.trimEnd(),
+          stderr: `Zaman aşımı: ${timeoutMs}ms içinde tamamlanmadı.`,
+          exitCode: -1,
+          durationMs,
+          timedOut: true,
+        };
+      }
+
+      // Python hatası — kullanıcı dostu hata mesajı oluştur
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      const cleanError = cleanPythonError(errorMessage);
+      stderrBuffer += cleanError;
+    }
+
+    const durationMs = Math.round(performance.now() - startTime);
+
+    return {
+      stdout: stdoutBuffer.trimEnd(),
+      stderr: stderrBuffer.trimEnd(),
+      exitCode: stderrBuffer.trim() ? 1 : 0,
+      durationMs,
+      timedOut: false,
+    };
+  } catch (err: unknown) {
+    const durationMs = Math.round(performance.now() - startTime);
+    const errorMessage = err instanceof Error ? err.message : String(err);
+
+    return {
+      stdout: '',
+      stderr: `Python çalıştırıcı hatası: ${errorMessage}`,
+      exitCode: -1,
+      durationMs,
+      timedOut: false,
+    };
+  }
+}
+
+/**
+ * Python hata mesajını temizler — traceback'ten sadece son (kullanıcıya yönelik) kısmı gösterir.
+ */
+function cleanPythonError(error: string): string {
+  const lines = error.split('\n');
+
+  // "File "<exec>", line X" ile başlayan satırları ve sonrasını bul
+  const relevantLines: string[] = [];
+  let foundUserFile = false;
+
+  for (const line of lines) {
+    // Skip internal Pyodide/frozen module traceback lines
+    if (
+      line.includes('File "<frozen') ||
+      line.includes('File "<string>"') ||
+      line.includes('_get_code_from_file') ||
+      line.includes('run_path') ||
+      line.includes('in <module>')
+    ) {
+      continue;
+    }
+
+    // Keep user code references and error messages
+    if (line.includes('File "<exec>"') || line.includes('File "/tmp/')) {
+      foundUserFile = true;
+      // Simplify the file reference
+      const simplified = line
+        .replace('File "<exec>",', 'Satır')
+        .replace(/File "\/tmp\/\w+\.py",/, 'Satır');
+      relevantLines.push(simplified);
+      continue;
+    }
+
+    // Error type lines (e.g., "IndentationError: unexpected indent")
+    if (foundUserFile || /^[A-Z]\w*Error:/.test(line) || /^[A-Z]\w*Warning:/.test(line)) {
+      relevantLines.push(line);
+      foundUserFile = true;
+    }
+  }
+
+  if (relevantLines.length > 0) {
+    return relevantLines.join('\n');
+  }
+
+  // Fallback: return last 3 lines
+  return lines.slice(-3).join('\n');
+}
+
+/**
+ * Test case'leri Pyodide ile client-side değerlendirir.
+ */
+export async function evaluateTestCases(
+  code: string,
+  testCases: Array<{ name: string; stdin: string; expectedStdout: string; hidden: boolean }>,
+  timeoutMs: number = 5000,
+) {
+  const results = [];
+  let lastStdout = '';
+  let lastStderr = '';
+
+  for (const tc of testCases) {
+    const result = await runPython(code, tc.stdin, timeoutMs);
+
+    const actual = result.stdout.trim();
+    const expected = tc.expectedStdout.trim();
+    const passed = actual === expected && !result.timedOut;
+
+    lastStdout = result.stdout;
+    lastStderr = result.stderr;
+
+    results.push({
+      name: tc.name,
+      passed,
+      stdout: result.stdout,
+      stderr: result.stderr,
+      durationMs: result.durationMs,
+      hidden: tc.hidden,
+      expectedStdout: tc.hidden ? null : tc.expectedStdout,
+    });
+  }
+
+  const total = results.length;
+  const passedCount = results.filter((r) => r.passed).length;
+  const score = total > 0 ? Math.floor((passedCount / total) * 100) : 0;
+  const allPassed = passedCount === total && total > 0;
+
+  let feedback: string;
+  if (total === 0) {
+    feedback = 'Bu ödev için test senaryosu bulunamadı.';
+  } else if (score === 100) {
+    feedback = `Harika! Tüm ${total} test geçti. Mükemmel iş! 🎉`;
+  } else if (score >= 75) {
+    feedback = `${passedCount}/${total} test geçti. Çok yakınsın, küçük bir düzeltme yeterli! 💪`;
+  } else if (score >= 50) {
+    feedback = `${passedCount}/${total} test geçti. İyi bir başlangıç, devam et! 🔍`;
+  } else if (score > 0) {
+    feedback = `${passedCount}/${total} test geçti. Tekrar dene, her denemede öğreniyorsun! 📚`;
+  } else {
+    feedback = 'Henüz hiçbir test geçmedi. Soruyu dikkatlice oku ve tekrar dene! 🤔';
+  }
+
+  return {
+    passed: allPassed,
+    score,
+    stdout: lastStdout,
+    stderr: lastStderr,
+    testResults: results,
+    feedback,
+  };
+}
