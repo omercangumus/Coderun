@@ -2,6 +2,7 @@
 // DioException'ları anlamlı Türkçe mesajlara dönüştürür.
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -34,8 +35,8 @@ class ApiException implements Exception {
       case DioExceptionType.badResponse:
         return _handleBadResponse(error);
       case DioExceptionType.connectionError:
-        return const ApiException(
-          message: 'İnternet bağlantınızı kontrol edin',
+        return ApiException(
+          message: _connectionErrorMessage(error),
           errorCode: 'CONNECTION_ERROR',
         );
       case DioExceptionType.cancel:
@@ -109,6 +110,18 @@ class ApiException implements Exception {
       return detail?.toString();
     }
     return null;
+  }
+
+  static String _connectionErrorMessage(DioException error) {
+    final base = error.requestOptions.baseUrl;
+    if (kDebugMode &&
+        (base.contains('127.0.0.1') ||
+            base.contains('10.0.2.2') ||
+            base.contains('localhost'))) {
+      return 'Backend\'e bağlanılamadı ($base). '
+          'USB ile bağlıysan dev-mobile-usb.ps1 çalıştır ve backend\'in açık olduğundan emin ol.';
+    }
+    return 'İnternet bağlantınızı kontrol edin';
   }
 
   @override
