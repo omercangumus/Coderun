@@ -54,17 +54,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final tabs = [
-      HomeTab(onTabChange: _onTabChange),
-      const LearnTab(),
-      const LeaderboardTab(),
-      const ProfileTab(),
-    ];
-
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: tabs,
+        sizing: StackFit.expand,
+        children: [
+          TickerMode(
+            enabled: _currentIndex == 0,
+            child: HomeTab(onTabChange: _onTabChange),
+          ),
+          TickerMode(
+            enabled: _currentIndex == 1,
+            child: const LearnTab(),
+          ),
+          TickerMode(
+            enabled: _currentIndex == 2,
+            child: LeaderboardTab(isActive: _currentIndex == 2),
+          ),
+          TickerMode(
+            enabled: _currentIndex == 3,
+            child: const ProfileTab(),
+          ),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,

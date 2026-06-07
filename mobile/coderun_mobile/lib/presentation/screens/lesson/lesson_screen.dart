@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/assets/ghostie_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/question_model.dart';
 import '../../../providers/lesson_provider.dart';
 import '../../../providers/mentor_provider.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/app_error_widget.dart';
-import '../../widgets/ghostie_reaction.dart';
+import '../../widgets/app_brand_icon.dart';
 import 'widgets/multiple_choice_widget.dart';
 import 'widgets/code_completion_widget.dart';
 import 'widgets/mini_project_widget.dart';
@@ -36,8 +35,22 @@ class LessonScreen extends ConsumerStatefulWidget {
 }
 
 class _LessonScreenState extends ConsumerState<LessonScreen> {
+  bool _navigatedToResult = false;
+
   @override
   Widget build(BuildContext context) {
+    ref.listen(lessonNotifierProvider(widget.lessonId), (previous, next) {
+      if (next.result == null || _navigatedToResult) return;
+      _navigatedToResult = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.push(
+          '/home/learn/${widget.moduleSlug}/lesson/${widget.lessonId}/result',
+          extra: next.result,
+        );
+      });
+    });
+
     ref.listen<PendingMentorSuggestion?>(pendingMentorSuggestionProvider,
         (previous, next) {
       if (next == null || next.lessonId != widget.lessonId || !mounted) return;
@@ -56,18 +69,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     final lessonState = ref.watch(lessonNotifierProvider(widget.lessonId));
     final notifier =
         ref.read(lessonNotifierProvider(widget.lessonId).notifier);
-
-    // Result gelince sonuç ekranına geç
-    if (lessonState.result != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.push(
-            '/home/learn/${widget.moduleSlug}/lesson/${widget.lessonId}/result',
-            extra: lessonState.result,
-          );
-        }
-      });
-    }
 
     return lessonAsync.when(
       data: (lesson) {
@@ -102,13 +103,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // Ghostie sad_wrong state
-                  const GhostieReaction(
-                    state: GhostieState.reinforcement,
-                    message: 'Endişelenme! Bu kavramı birlikte pekiştirelim. 💪',
-                    size: 80,
-                  ),
-                  const SizedBox(height: 20),
                   ReinforcementCardWidget(
                     questionText: lessonState.reinforcementQuestion!.questionText,
                     questionType: lessonState.reinforcementQuestion!.questionType,
@@ -143,11 +137,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             actions: [
               // Ghostie AI Mentor butonu
               IconButton(
-                icon: const GhostieReaction(
-                  state: GhostieState.idle,
-                  size: 28,
-                ),
-                tooltip: 'AI Mentor',
+                icon: const AppBrandIcon(size: 24, borderRadius: 12),
+                tooltip: 'Ghostie AI Mentor',
                 onPressed: () => context.push('/mentor', extra: {
                   'moduleSlug': widget.moduleSlug,
                   'lessonTitle': lesson.title,

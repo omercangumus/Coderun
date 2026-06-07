@@ -2,12 +2,13 @@
 // Light theme matching approved Stitch designs
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_spacing.dart';
 
 abstract class AppTheme {
   static ThemeData _buildTheme(ColorScheme colorScheme, Color scaffoldBackgroundColor) {
-    return ThemeData(
+    final base = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: scaffoldBackgroundColor,
@@ -180,6 +181,23 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    final textTheme = GoogleFonts.lexendTextTheme(base.textTheme).apply(
+      bodyColor: colorScheme.onSurface,
+      displayColor: colorScheme.onSurface,
+    );
+
+    return base.copyWith(
+      textTheme: textTheme,
+      primaryTextTheme: textTheme,
+      appBarTheme: base.appBarTheme.copyWith(
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
       ),
     );
   }

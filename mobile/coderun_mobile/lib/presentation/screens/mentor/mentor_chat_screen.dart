@@ -230,7 +230,11 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _applySuggestion,
                   icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: Text('Öneriyi kutuya yaz: "${state.lastSuggestion}"'),
+                  label: Text(
+                    'Öneriyi kutuya yaz: "${state.lastSuggestion}"',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
@@ -238,8 +242,12 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
           Container(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -252,9 +260,13 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                     textInputAction: TextInputAction.newline,
                     decoration: InputDecoration(
                       hintText: 'Ghostie\'ye sor...',
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -323,7 +335,9 @@ class _MessageBubble extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isUser ? AppColors.primary : Colors.grey.shade100,
+                color: isUser
+                    ? AppColors.primary
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
@@ -334,7 +348,9 @@ class _MessageBubble extends StatelessWidget {
               child: Text(
                 content,
                 style: TextStyle(
-                  color: isUser ? Colors.white : Colors.grey.shade800,
+                  color: isUser
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurface,
                   fontSize: 14,
                   height: 1.4,
                 ),

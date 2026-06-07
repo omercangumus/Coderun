@@ -61,8 +61,9 @@ class _ReinforcementCardWidgetState extends State<ReinforcementCardWidget> {
           // Header with Ghostie
           const GhostieReaction(
             state: GhostieState.reinforcement,
-            message: 'Hadi bunu küçük bir tekrar ile güçlendirelim.',
-            size: 64,
+            message: 'Endişelenme! Bu kavramı birlikte pekiştirelim.',
+            size: 72,
+            preferAnimation: false,
           ),
           const SizedBox(height: 16),
 

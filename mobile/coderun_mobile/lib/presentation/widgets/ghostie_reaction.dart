@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../../../core/assets/ghostie_assets.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+
+/// Küçük boyutlarda ve düşük performanslı cihazlarda video yerine PNG kullan.
+const double _kVideoMinSize = 96.0;
 
 class GhostieReaction extends StatefulWidget {
   final GhostieState state;
@@ -25,55 +27,74 @@ class GhostieReaction extends StatefulWidget {
 class _GhostieReactionState extends State<GhostieReaction> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
+  GhostieState? _loadedState;
+
+  bool get _useVideo =>
+      widget.preferAnimation && widget.size >= _kVideoMinSize;
 
   @override
   void initState() {
     super.initState();
-    _initVideo();
+    if (_useVideo) _initVideo();
   }
 
   @override
   void didUpdateWidget(GhostieReaction oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.state != widget.state || oldWidget.preferAnimation != widget.preferAnimation) {
+    final shouldUseVideo = _useVideo;
+    final oldShouldUseVideo =
+        oldWidget.preferAnimation && oldWidget.size >= _kVideoMinSize;
+
+    if (!shouldUseVideo) {
+      _disposeVideo();
+      return;
+    }
+
+    if (!oldShouldUseVideo || oldWidget.state != widget.state) {
       _initVideo();
     }
   }
 
   Future<void> _initVideo() async {
-    // Dispose previous controller
-    if (_videoController != null) {
-      await _videoController!.dispose();
-      _videoController = null;
-    }
-    _isVideoInitialized = false;
+    if (!_useVideo) return;
+    if (_loadedState == widget.state && _isVideoInitialized) return;
 
-    if (!widget.preferAnimation) {
-      if (mounted) setState(() {});
-      return;
-    }
+    await _disposeVideo();
 
     final assetPath = GhostieAssets.animationForState(widget.state);
-    
-    _videoController = VideoPlayerController.asset(assetPath);
-    
+    final controller = VideoPlayerController.asset(assetPath);
+
     try {
-      await _videoController!.initialize();
-      await _videoController!.setLooping(true);
-      await _videoController!.setVolume(0.0);
-      if (mounted) {
-        setState(() {
-          _isVideoInitialized = true;
-        });
-        _videoController!.play();
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.setVolume(0.0);
+      if (!mounted || !_useVideo) {
+        await controller.dispose();
+        return;
       }
+      _videoController = controller;
+      _loadedState = widget.state;
+      setState(() => _isVideoInitialized = true);
+      controller.play();
     } catch (e) {
-      debugPrint("Ghostie video initialization failed for $assetPath: $e");
+      debugPrint('Ghostie video init failed for $assetPath: $e');
+      await controller.dispose();
       if (mounted) {
         setState(() {
           _isVideoInitialized = false;
+          _loadedState = null;
         });
       }
+    }
+  }
+
+  Future<void> _disposeVideo() async {
+    final controller = _videoController;
+    _videoController = null;
+    _isVideoInitialized = false;
+    _loadedState = null;
+    if (controller != null) {
+      await controller.dispose();
     }
   }
 
@@ -85,72 +106,77 @@ class _GhostieReactionState extends State<GhostieReaction> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final imageFallbackPath = GhostieAssets.imageFallbackForState(widget.state);
 
     Widget visualWidget;
 
-    if (widget.preferAnimation && _isVideoInitialized && _videoController != null) {
-      visualWidget = SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: AspectRatio(
-          aspectRatio: _videoController!.value.aspectRatio,
-          child: VideoPlayer(_videoController!),
+    if (_useVideo && _isVideoInitialized && _videoController != null) {
+      visualWidget = RepaintBoundary(
+        child: SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: ClipOval(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _videoController!.value.size.width,
+                height: _videoController!.value.size.height,
+                child: VideoPlayer(_videoController!),
+              ),
+            ),
+          ),
         ),
       );
     } else {
-      // Fallback to static image
       visualWidget = Image.asset(
         imageFallbackPath,
         width: widget.size,
         height: widget.size,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => SizedBox(
+        gaplessPlayback: true,
+        errorBuilder: (_, __, ___) => SizedBox(
           width: widget.size,
           height: widget.size,
-          child: Center(
-            child: Icon(Icons.error_outline, size: widget.size * 0.5, color: Colors.grey),
+          child: Icon(
+            Icons.emoji_emotions_outlined,
+            size: widget.size * 0.5,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       );
     }
 
-    // Apply purple glow to the visual widget
-    final glowingVisual = Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.15),
-            blurRadius: 24,
-            spreadRadius: 8,
+    final showGlow = widget.size >= 64;
+    final glowingVisual = showGlow
+        ? Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.primary.withValues(alpha: 0.12),
+                  blurRadius: 16,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: visualWidget,
           )
-        ],
-      ),
-      child: visualWidget,
-    );
+        : visualWidget;
 
     if (widget.message == null || widget.message!.isEmpty) {
       return glowingVisual;
     }
 
-    // With message bubble
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: const [
-            AppColors.primaryFixed,
-            AppColors.surfaceContainerLowest,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.15)),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           glowingVisual,
           const SizedBox(width: AppSpacing.md),
@@ -159,22 +185,24 @@ class _GhostieReactionState extends State<GhostieReaction> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Ghostie AI',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.message!,
-                  style: const TextStyle(
-                    fontFamily: 'Lexend',
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.onSurfaceVariant,
+                    color: colorScheme.onSurfaceVariant,
                     height: 1.4,
                   ),
                 ),

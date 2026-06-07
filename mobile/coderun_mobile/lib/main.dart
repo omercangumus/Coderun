@@ -33,18 +33,31 @@ class CoderunApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
 
-    ThemeData appTheme;
+    final ThemeData appTheme;
+    final ThemeMode materialThemeMode;
     if (themeMode == 'dark') {
       appTheme = AppTheme.darkTheme;
+      materialThemeMode = ThemeMode.dark;
     } else if (themeMode == 'coderun-comfort') {
       appTheme = AppTheme.comfortTheme;
+      materialThemeMode = ThemeMode.light;
     } else {
       appTheme = AppTheme.lightTheme;
+      materialThemeMode = ThemeMode.light;
     }
 
     return MaterialApp.router(
       title: AppConstants.appName,
-      theme: appTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: materialThemeMode,
+      // Comfort teması seçiliyken light/dark yerine özel palet kullan.
+      builder: (context, child) {
+        if (themeMode == 'coderun-comfort') {
+          return Theme(data: appTheme, child: child ?? const SizedBox.shrink());
+        }
+        return child ?? const SizedBox.shrink();
+      },
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: const Locale('tr', 'TR'),

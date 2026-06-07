@@ -10,7 +10,9 @@ import '../../../widgets/leaderboard_card.dart';
 import '../../../widgets/loading_widget.dart';
 
 class LeaderboardTab extends ConsumerStatefulWidget {
-  const LeaderboardTab({super.key});
+  final bool isActive;
+
+  const LeaderboardTab({super.key, this.isActive = true});
 
   @override
   ConsumerState<LeaderboardTab> createState() => _LeaderboardTabState();
@@ -48,10 +50,22 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab>
     });
 
     _podiumController.forward();
-    _startCountdown();
+    if (widget.isActive) _startCountdown();
+  }
+
+  @override
+  void didUpdateWidget(LeaderboardTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _startCountdown();
+    } else if (!widget.isActive && oldWidget.isActive) {
+      _countdownTimer?.cancel();
+      _countdownTimer = null;
+    }
   }
 
   void _startCountdown() {
+    if (_countdownTimer != null) return;
     _updateTimeLeft();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) _updateTimeLeft();

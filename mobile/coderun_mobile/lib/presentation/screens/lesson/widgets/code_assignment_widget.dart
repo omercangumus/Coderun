@@ -55,6 +55,9 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _controller = TextEditingController(
       text: (widget.currentAnswer != null && widget.currentAnswer!.isNotEmpty)
           ? widget.currentAnswer
@@ -510,6 +513,7 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget>
             state: _ghostieState,
             message: _ghostieMessage,
             size: 120,
+            preferAnimation: _tabController.index == 3,
           ),
           const SizedBox(height: 20),
           Text(

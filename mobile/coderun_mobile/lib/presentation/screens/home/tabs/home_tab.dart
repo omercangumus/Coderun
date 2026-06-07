@@ -10,6 +10,7 @@ import '../../../../providers/auth_provider.dart';
 import '../../../../providers/gamification_provider.dart';
 import '../../../../providers/module_provider.dart';
 import '../../../widgets/app_error_widget.dart';
+import '../../../widgets/app_brand_icon.dart';
 import '../../../widgets/ghostie_avatar.dart';
 import '../../../widgets/xp_streak_header.dart';
 
@@ -46,25 +47,16 @@ class HomeTab extends ConsumerWidget {
               scrolledUnderElevation: 1,
               title: Row(
                 children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    ),
-                    child: const Center(
-                      child: Text('👻', style: TextStyle(fontSize: 14)),
-                    ),
-                  ),
+                  const AppBrandIcon(size: 28),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Coderun',
-                    style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.onSurface,
+                  Flexible(
+                    child: Text(
+                      'Coderun',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
                 ],
@@ -72,23 +64,27 @@ class HomeTab extends ConsumerWidget {
               actions: [
                 statsAsync.when(
                   data: (stats) => Padding(
-                    padding: const EdgeInsets.only(right: AppSpacing.md),
-                    child: Row(
-                      children: [
-                        _StatPill(
-                          icon: '⚡',
-                          value: '${stats.totalXp}',
-                          color: AppColors.primary,
-                          bg: AppColors.primaryFixed,
-                        ),
-                        const SizedBox(width: 6),
-                        _StatPill(
-                          icon: '🔥',
-                          value: '${stats.streak}',
-                          color: AppColors.streakOrange,
-                          bg: AppColors.streakOrange.withValues(alpha: 0.1),
-                        ),
-                      ],
+                    padding: const EdgeInsets.only(right: AppSpacing.sm),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _StatPill(
+                            icon: '⚡',
+                            value: '${stats.totalXp}',
+                            color: AppColors.primary,
+                            bg: AppColors.primaryFixed,
+                          ),
+                          const SizedBox(width: 4),
+                          _StatPill(
+                            icon: '🔥',
+                            value: '${stats.streak}',
+                            color: AppColors.streakOrange,
+                            bg: AppColors.streakOrange.withValues(alpha: 0.1),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   loading: () => const SizedBox.shrink(),
@@ -659,15 +655,15 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'PlusJakartaSans',
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.onSurface,
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ),
         if (action != null) action!,

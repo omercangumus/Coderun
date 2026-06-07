@@ -161,12 +161,26 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(username,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text(email,
-                        style: const TextStyle(
-                            fontSize: 13, color: AppColors.grey)),
+                    Text(
+                      username,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      email,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
