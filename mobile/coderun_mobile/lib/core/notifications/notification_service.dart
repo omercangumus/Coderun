@@ -6,30 +6,50 @@ import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 
 class NotificationService {
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging? _messaging;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-  final Dio? _dio;
+  Dio? _dio;
+  final bool _firebaseEnabled;
   GlobalKey<NavigatorState>? _navigatorKey;
 
-  NotificationService({Dio? dio}) : _dio = dio;
+  NotificationService({Dio? dio, bool firebaseEnabled = false})
+      : _dio = dio,
+        _firebaseEnabled = firebaseEnabled,
+        _messaging = firebaseEnabled ? FirebaseMessaging.instance : null;
+
+  /// Riverpod Dio provider hazır olduğunda FCM token kaydı için bağlanır.
+  void bindDio(Dio dio) {
+    _dio = dio;
+    final messaging = _messaging;
+    if (!_firebaseEnabled || messaging == null) return;
+    messaging.getToken().then((token) {
+      if (token != null) {
+        _registerTokenToBackend(token);
+      }
+    });
+  }
 
   void setNavigatorKey(GlobalKey<NavigatorState> key) {
     _navigatorKey = key;
   }
 
   Future<void> initialize() async {
-    await _requestPermission();
     await _initializeLocalNotifications();
 
-    // FCM token al ve backend'e kaydet
+    if (!_firebaseEnabled || _messaging == null) {
+      debugPrint('FCM devre dışı — yerel bildirimler kullanılabilir.');
+      return;
+    }
+
+    await _requestPermission();
+
     final token = await _messaging.getToken();
     if (token != null) {
       debugPrint('FCM Token alındı, backend\'e kaydediliyor...');
       await _registerTokenToBackend(token);
     }
 
-    // Token yenilendiğinde backend'i güncelle
     _messaging.onTokenRefresh.listen(_registerTokenToBackend);
 
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
@@ -42,7 +62,10 @@ class NotificationService {
   }
 
   Future<void> _requestPermission() async {
-    final settings = await _messaging.requestPermission(
+    final messaging = _messaging;
+    if (messaging == null) return;
+
+    final settings = await messaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -80,12 +103,10 @@ class NotificationService {
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {
-    // Bildirime tıklandığında ilgili ekrana yönlendir
     debugPrint('Bildirime tıklandı: ${message.data}');
-    
+
     final route = message.data['route'] as String?;
     if (route != null && _navigatorKey?.currentContext != null) {
-      // go_router ile yönlendirme
       final context = _navigatorKey!.currentContext!;
       // ignore: use_build_context_synchronously
       GoRouter.of(context).push(route);
@@ -114,13 +135,14 @@ class NotificationService {
   }
 
   Future<void> _registerTokenToBackend(String token) async {
-    if (_dio == null) {
+    final dio = _dio;
+    if (dio == null) {
       debugPrint('Dio client yok, FCM token kaydedilemedi');
       return;
     }
 
     try {
-      await _dio.post(
+      await dio.post(
         ApiConstants.registerFcmToken,
         data: {'fcm_token': token},
       );

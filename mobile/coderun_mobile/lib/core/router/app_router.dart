@@ -89,6 +89,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             moduleSlug: extra?['moduleSlug'] as String?,
             lessonTitle: extra?['lessonTitle'] as String?,
             questionText: extra?['questionText'] as String?,
+            questionType: extra?['questionType'] as String?,
+            codeBlock: extra?['codeBlock'] as String?,
+            lessonId: extra?['lessonId'] as String?,
+            questionId: extra?['questionId'] as String?,
             context: (extra?['context'] as String?) ?? 'general',
           );
         },

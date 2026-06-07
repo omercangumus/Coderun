@@ -13,6 +13,7 @@ import '../../../widgets/loading_widget.dart';
 import '../../../widgets/stat_card.dart';
 import '../../../widgets/streak_widget.dart';
 import '../../../widgets/xp_progress_bar.dart';
+import '../../../widgets/dev_api_settings_card.dart';
 import '../../../../providers/providers.dart';
 
 
@@ -450,6 +451,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
                   ),
                 ),
               ),
+              const DevApiSettingsCard(),
               const SizedBox(height: 20),
 
               // Çıkış butonu

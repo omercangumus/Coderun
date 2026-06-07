@@ -54,6 +54,10 @@ class MentorAskRequestModel with _$MentorAskRequestModel {
     @Default('beginner') String userLevel,
     String? learningPath,
     @Default(1) int attemptCount,
+    String? questionText,
+    String? lessonTitle,
+    String? questionType,
+    String? codeBlock,
   }) = _MentorAskRequestModel;
 
   factory MentorAskRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -65,7 +69,7 @@ class MentorAskRequestModel with _$MentorAskRequestModel {
 class MentorAskResponseModel with _$MentorAskResponseModel {
   const factory MentorAskResponseModel({
     required String answer,
-    required String model,
+    @Default('') String model,
   }) = _MentorAskResponseModel;
 
   factory MentorAskResponseModel.fromJson(Map<String, dynamic> json) =>

@@ -5,6 +5,7 @@ import '../../../core/assets/ghostie_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/question_model.dart';
 import '../../../providers/lesson_provider.dart';
+import '../../../providers/mentor_provider.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/app_error_widget.dart';
 import '../../widgets/ghostie_reaction.dart';
@@ -37,6 +38,20 @@ class LessonScreen extends ConsumerStatefulWidget {
 class _LessonScreenState extends ConsumerState<LessonScreen> {
   @override
   Widget build(BuildContext context) {
+    ref.listen<PendingMentorSuggestion?>(pendingMentorSuggestionProvider,
+        (previous, next) {
+      if (next == null || next.lessonId != widget.lessonId || !mounted) return;
+
+      ref.read(lessonNotifierProvider(widget.lessonId).notifier).answerQuestion(
+            next.questionId,
+            next.suggestion,
+          );
+      ref.read(pendingMentorSuggestionProvider.notifier).state = null;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ghostie önerisi cevap kutusuna yazıldı')),
+      );
+    });
     final lessonAsync = ref.watch(lessonDetailProvider(widget.lessonId));
     final lessonState = ref.watch(lessonNotifierProvider(widget.lessonId));
     final notifier =
@@ -136,8 +151,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 onPressed: () => context.push('/mentor', extra: {
                   'moduleSlug': widget.moduleSlug,
                   'lessonTitle': lesson.title,
-                  if (currentQuestion != null)
+                  'lessonId': widget.lessonId,
+                  if (currentQuestion != null) ...{
                     'questionText': currentQuestion.questionText,
+                    'questionType': currentQuestion.questionType,
+                    'questionId': currentQuestion.id,
+                    if (currentQuestion.codeBlock != null)
+                      'codeBlock': currentQuestion.codeBlock,
+                  },
                   'context': 'lesson',
                 }),
               ),

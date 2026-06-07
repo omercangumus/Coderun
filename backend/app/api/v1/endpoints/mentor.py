@@ -168,6 +168,10 @@ async def ask_mentor(
             user_level=request.user_level,
             learning_path=request.learning_path,
             attempt_count=request.attempt_count,
+            question_text=request.question_text,
+            lesson_title=request.lesson_title,
+            question_type=request.question_type,
+            code_block=request.code_block,
         )
         return LlmMentorResponse(answer=answer)
 

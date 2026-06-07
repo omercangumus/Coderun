@@ -634,6 +634,10 @@ mixin _$MentorAskRequestModel {
   String get userLevel => throw _privateConstructorUsedError;
   String? get learningPath => throw _privateConstructorUsedError;
   int get attemptCount => throw _privateConstructorUsedError;
+  String? get questionText => throw _privateConstructorUsedError;
+  String? get lessonTitle => throw _privateConstructorUsedError;
+  String? get questionType => throw _privateConstructorUsedError;
+  String? get codeBlock => throw _privateConstructorUsedError;
 
   /// Serializes this MentorAskRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -655,7 +659,11 @@ abstract class $MentorAskRequestModelCopyWith<$Res> {
       {String message,
       String userLevel,
       String? learningPath,
-      int attemptCount});
+      int attemptCount,
+      String? questionText,
+      String? lessonTitle,
+      String? questionType,
+      String? codeBlock});
 }
 
 /// @nodoc
@@ -678,6 +686,10 @@ class _$MentorAskRequestModelCopyWithImpl<$Res,
     Object? userLevel = null,
     Object? learningPath = freezed,
     Object? attemptCount = null,
+    Object? questionText = freezed,
+    Object? lessonTitle = freezed,
+    Object? questionType = freezed,
+    Object? codeBlock = freezed,
   }) {
     return _then(_value.copyWith(
       message: null == message
@@ -696,6 +708,22 @@ class _$MentorAskRequestModelCopyWithImpl<$Res,
           ? _value.attemptCount
           : attemptCount // ignore: cast_nullable_to_non_nullable
               as int,
+      questionText: freezed == questionText
+          ? _value.questionText
+          : questionText // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lessonTitle: freezed == lessonTitle
+          ? _value.lessonTitle
+          : lessonTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      questionType: freezed == questionType
+          ? _value.questionType
+          : questionType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      codeBlock: freezed == codeBlock
+          ? _value.codeBlock
+          : codeBlock // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -713,7 +741,11 @@ abstract class _$$MentorAskRequestModelImplCopyWith<$Res>
       {String message,
       String userLevel,
       String? learningPath,
-      int attemptCount});
+      int attemptCount,
+      String? questionText,
+      String? lessonTitle,
+      String? questionType,
+      String? codeBlock});
 }
 
 /// @nodoc
@@ -734,6 +766,10 @@ class __$$MentorAskRequestModelImplCopyWithImpl<$Res>
     Object? userLevel = null,
     Object? learningPath = freezed,
     Object? attemptCount = null,
+    Object? questionText = freezed,
+    Object? lessonTitle = freezed,
+    Object? questionType = freezed,
+    Object? codeBlock = freezed,
   }) {
     return _then(_$MentorAskRequestModelImpl(
       message: null == message
@@ -752,6 +788,22 @@ class __$$MentorAskRequestModelImplCopyWithImpl<$Res>
           ? _value.attemptCount
           : attemptCount // ignore: cast_nullable_to_non_nullable
               as int,
+      questionText: freezed == questionText
+          ? _value.questionText
+          : questionText // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lessonTitle: freezed == lessonTitle
+          ? _value.lessonTitle
+          : lessonTitle // ignore: cast_nullable_to_non_nullable
+              as String?,
+      questionType: freezed == questionType
+          ? _value.questionType
+          : questionType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      codeBlock: freezed == codeBlock
+          ? _value.codeBlock
+          : codeBlock // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -763,7 +815,11 @@ class _$MentorAskRequestModelImpl implements _MentorAskRequestModel {
       {required this.message,
       this.userLevel = 'beginner',
       this.learningPath,
-      this.attemptCount = 1});
+      this.attemptCount = 1,
+      this.questionText,
+      this.lessonTitle,
+      this.questionType,
+      this.codeBlock});
 
   factory _$MentorAskRequestModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$MentorAskRequestModelImplFromJson(json);
@@ -778,10 +834,18 @@ class _$MentorAskRequestModelImpl implements _MentorAskRequestModel {
   @override
   @JsonKey()
   final int attemptCount;
+  @override
+  final String? questionText;
+  @override
+  final String? lessonTitle;
+  @override
+  final String? questionType;
+  @override
+  final String? codeBlock;
 
   @override
   String toString() {
-    return 'MentorAskRequestModel(message: $message, userLevel: $userLevel, learningPath: $learningPath, attemptCount: $attemptCount)';
+    return 'MentorAskRequestModel(message: $message, userLevel: $userLevel, learningPath: $learningPath, attemptCount: $attemptCount, questionText: $questionText, lessonTitle: $lessonTitle, questionType: $questionType, codeBlock: $codeBlock)';
   }
 
   @override
@@ -795,13 +859,21 @@ class _$MentorAskRequestModelImpl implements _MentorAskRequestModel {
             (identical(other.learningPath, learningPath) ||
                 other.learningPath == learningPath) &&
             (identical(other.attemptCount, attemptCount) ||
-                other.attemptCount == attemptCount));
+                other.attemptCount == attemptCount) &&
+            (identical(other.questionText, questionText) ||
+                other.questionText == questionText) &&
+            (identical(other.lessonTitle, lessonTitle) ||
+                other.lessonTitle == lessonTitle) &&
+            (identical(other.questionType, questionType) ||
+                other.questionType == questionType) &&
+            (identical(other.codeBlock, codeBlock) ||
+                other.codeBlock == codeBlock));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, message, userLevel, learningPath, attemptCount);
+  int get hashCode => Object.hash(runtimeType, message, userLevel, learningPath,
+      attemptCount, questionText, lessonTitle, questionType, codeBlock);
 
   /// Create a copy of MentorAskRequestModel
   /// with the given fields replaced by the non-null parameter values.
@@ -825,7 +897,11 @@ abstract class _MentorAskRequestModel implements MentorAskRequestModel {
       {required final String message,
       final String userLevel,
       final String? learningPath,
-      final int attemptCount}) = _$MentorAskRequestModelImpl;
+      final int attemptCount,
+      final String? questionText,
+      final String? lessonTitle,
+      final String? questionType,
+      final String? codeBlock}) = _$MentorAskRequestModelImpl;
 
   factory _MentorAskRequestModel.fromJson(Map<String, dynamic> json) =
       _$MentorAskRequestModelImpl.fromJson;
@@ -838,6 +914,14 @@ abstract class _MentorAskRequestModel implements MentorAskRequestModel {
   String? get learningPath;
   @override
   int get attemptCount;
+  @override
+  String? get questionText;
+  @override
+  String? get lessonTitle;
+  @override
+  String? get questionType;
+  @override
+  String? get codeBlock;
 
   /// Create a copy of MentorAskRequestModel
   /// with the given fields replaced by the non-null parameter values.
@@ -954,8 +1038,7 @@ class __$$MentorAskResponseModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$MentorAskResponseModelImpl implements _MentorAskResponseModel {
-  const _$MentorAskResponseModelImpl(
-      {required this.answer, required this.model});
+  const _$MentorAskResponseModelImpl({required this.answer, this.model = ''});
 
   factory _$MentorAskResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$MentorAskResponseModelImplFromJson(json);
@@ -963,6 +1046,7 @@ class _$MentorAskResponseModelImpl implements _MentorAskResponseModel {
   @override
   final String answer;
   @override
+  @JsonKey()
   final String model;
 
   @override
@@ -1003,7 +1087,7 @@ class _$MentorAskResponseModelImpl implements _MentorAskResponseModel {
 abstract class _MentorAskResponseModel implements MentorAskResponseModel {
   const factory _MentorAskResponseModel(
       {required final String answer,
-      required final String model}) = _$MentorAskResponseModelImpl;
+      final String model}) = _$MentorAskResponseModelImpl;
 
   factory _MentorAskResponseModel.fromJson(Map<String, dynamic> json) =
       _$MentorAskResponseModelImpl.fromJson;

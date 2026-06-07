@@ -7,35 +7,43 @@ import { useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 
 import { mentorApi, ChatMessage } from '@/lib/api/mentor-api';
+import { parseMentorSuggestion } from '@/lib/utils/mentor-suggestion';
 
 interface UseMentorOptions {
   moduleSlug?: string;
   lessonTitle?: string;
   questionText?: string;
+  questionType?: string;
+  codeBlock?: string | null;
   context?: 'lesson' | 'lab' | 'general';
+  initialGreeting?: string;
 }
 
 interface UseMentorReturn {
   messages: ChatMessage[];
   isLoading: boolean;
   attemptCount: number;
+  lastSuggestion: string | null;
   sendMessage: (userMessage: string) => Promise<void>;
   clearChat: () => void;
 }
 
+const DEFAULT_GREETING =
+  'Merhaba! Ben Ghostie 👻 Takıldığın bir yer mi var? Soruyu birlikte çözelim — hemen cevabı vermem, önce konuşuruz!';
+
 export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
+  const greeting = options.initialGreeting ?? DEFAULT_GREETING;
+
   const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content:
-        'Merhaba! Ben Ghostie 👻 Takıldığın bir yer mi var? Yardımcı olmaya hazırım!',
-    },
+    { role: 'assistant', content: greeting },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [attemptCount, setAttemptCount] = useState(1);
+  const [lastSuggestion, setLastSuggestion] = useState<string | null>(null);
 
-  // Stale closure'ı önlemek için ref kullan
   const attemptRef = useRef(1);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const sendMessage = useCallback(
     async (userMessage: string) => {
@@ -46,26 +54,33 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
       setIsLoading(true);
 
       const currentAttempt = attemptRef.current;
+      const ctx = optionsRef.current;
 
       try {
-        // /mentor/ask endpoint'i — attempt_count destekli, daha akıllı ipucu mantığı
         const response = await mentorApi.ask({
           message: userMessage,
           user_level: 'beginner',
-          learning_path: options.moduleSlug,
+          learning_path: ctx.moduleSlug,
           attempt_count: currentAttempt,
+          question_text: ctx.questionText,
+          lesson_title: ctx.lessonTitle,
+          question_type: ctx.questionType,
+          code_block: ctx.codeBlock ?? undefined,
         });
+
+        const { displayText, suggestion } = parseMentorSuggestion(response.answer);
+        if (suggestion) {
+          setLastSuggestion(suggestion);
+        }
 
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: response.answer },
+          { role: 'assistant', content: displayText },
         ]);
 
-        // Her başarılı soruda attempt_count artır (max 3'te sabit)
-        const nextAttempt = Math.min(currentAttempt + 1, 3);
+        const nextAttempt = currentAttempt + 1;
         attemptRef.current = nextAttempt;
         setAttemptCount(nextAttempt);
-
       } catch (err: unknown) {
         const status = (err as { response?: { status?: number } })?.response?.status;
 
@@ -83,7 +98,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
             ...prev,
             {
               role: 'assistant',
-              content: 'Üzgünüm, şu an yanıt veremiyorum. 😔',
+              content: 'Üzgünüm, şu an yanıt veremiyorum. 😔 Biraz sonra tekrar dene.',
             },
           ]);
         }
@@ -91,19 +106,15 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
         setIsLoading(false);
       }
     },
-    [isLoading, options.moduleSlug],
+    [isLoading],
   );
 
   const clearChat = useCallback(() => {
     attemptRef.current = 1;
     setAttemptCount(1);
-    setMessages([
-      {
-        role: 'assistant',
-        content: 'Merhaba! Ben Ghostie 👻 Takıldığın bir yer mi var?',
-      },
-    ]);
-  }, []);
+    setLastSuggestion(null);
+    setMessages([{ role: 'assistant', content: greeting }]);
+  }, [greeting]);
 
-  return { messages, isLoading, attemptCount, sendMessage, clearChat };
+  return { messages, isLoading, attemptCount, lastSuggestion, sendMessage, clearChat };
 }

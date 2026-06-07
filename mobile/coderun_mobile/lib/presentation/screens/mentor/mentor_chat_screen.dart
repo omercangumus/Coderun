@@ -1,7 +1,8 @@
-// AI Mentor sohbet ekranı — Phantom ile gerçek zamanlı sohbet.
+// AI Mentor sohbet ekranı — Ghostie ile quiz odaklı sohbet.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../providers/mentor_provider.dart';
@@ -11,6 +12,10 @@ class MentorChatScreen extends ConsumerStatefulWidget {
   final String? moduleSlug;
   final String? lessonTitle;
   final String? questionText;
+  final String? questionType;
+  final String? codeBlock;
+  final String? lessonId;
+  final String? questionId;
   final String context;
 
   const MentorChatScreen({
@@ -18,6 +23,10 @@ class MentorChatScreen extends ConsumerStatefulWidget {
     this.moduleSlug,
     this.lessonTitle,
     this.questionText,
+    this.questionType,
+    this.codeBlock,
+    this.lessonId,
+    this.questionId,
     this.context = 'general',
   });
 
@@ -38,6 +47,10 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
       moduleSlug: widget.moduleSlug,
       lessonTitle: widget.lessonTitle,
       questionText: widget.questionText,
+      questionType: widget.questionType,
+      codeBlock: widget.codeBlock,
+      lessonId: widget.lessonId,
+      questionId: widget.questionId,
       context: widget.context,
     );
   }
@@ -61,12 +74,69 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
     });
   }
 
-  Future<void> _sendMessage() async {
-    final text = _controller.text.trim();
+  Future<void> _sendMessage([String? preset]) async {
+    final text = (preset ?? _controller.text).trim();
     if (text.isEmpty) return;
-    _controller.clear();
+    if (preset == null) _controller.clear();
     await ref.read(mentorProvider(_config).notifier).sendMessage(text);
     _scrollToBottom();
+  }
+
+  void _applySuggestion() {
+    final state = ref.read(mentorProvider(_config));
+    final notifier = ref.read(mentorProvider(_config).notifier);
+    final suggestion = state.lastSuggestion;
+    if (!notifier.canApplySuggestion || suggestion == null) return;
+
+    ref.read(pendingMentorSuggestionProvider.notifier).state =
+        PendingMentorSuggestion(
+      lessonId: widget.lessonId!,
+      questionId: widget.questionId!,
+      suggestion: suggestion,
+    );
+    if (mounted) context.pop();
+  }
+
+  List<({String label, String message})> get _quickPrompts {
+    if (widget.questionType == 'code_completion') {
+      return [
+        (
+          label: 'Soruyu açıkla',
+          message: 'Bu kod tamamlama sorusunu adım adım açıklar mısın?',
+        ),
+        (
+          label: 'Nasıl düşünmeliyim?',
+          message: 'Bu boşluğu doldurmak için hangi kavramlara bakmalıyım?',
+        ),
+        (
+          label: 'Boşluk ipucu',
+          message: '___ işaretli yere ne tür bir ifade gelmeli? Cevabı verme.',
+        ),
+        (
+          label: 'Mini örnek',
+          message: 'Benzer ama farklı küçük bir kod örneği gösterir misin?',
+        ),
+      ];
+    }
+
+    return [
+      (
+        label: 'Soruyu açıkla',
+        message: 'Bu soruyu daha sade bir dille açıklar mısın?',
+      ),
+      (
+        label: 'Nasıl düşünmeliyim?',
+        message: 'Bu soruyu çözmek için hangi adımları izlemeliyim?',
+      ),
+      (
+        label: 'Kavram hatırlat',
+        message: 'Bu soru hangi Python kavramını ölçüyor?',
+      ),
+      (
+        label: 'Yanlışları ele',
+        message: 'Hangi seçenekler elenebilir? Doğru şıkkı söyleme.',
+      ),
+    ];
   }
 
   @override
@@ -74,18 +144,35 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
     final state = ref.watch(mentorProvider(_config));
     final notifier = ref.read(mentorProvider(_config).notifier);
 
-    // Yeni mesaj gelince scroll
     ref.listen(mentorProvider(_config), (_, next) {
       if (!next.isLoading) _scrollToBottom();
     });
 
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Text('👻', style: TextStyle(fontSize: 20)),
-            SizedBox(width: 8),
-            Text('Phantom AI Mentor'),
+            const Text('👻', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Ghostie AI Mentor',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  if (_config.isLessonQuiz)
+                    Text(
+                      notifier.attemptLabel(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
         actions: [
@@ -98,7 +185,25 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
       ),
       body: Column(
         children: [
-          // Mesaj listesi
+          if (_config.isLessonQuiz)
+            SizedBox(
+              height: 44,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                itemCount: _quickPrompts.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final chip = _quickPrompts[index];
+                  return ActionChip(
+                    label: Text(chip.label, style: const TextStyle(fontSize: 12)),
+                    onPressed:
+                        state.isLoading ? null : () => _sendMessage(chip.message),
+                  );
+                },
+              ),
+            ),
+
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -106,7 +211,6 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
               itemCount: state.messages.length + (state.isLoading ? 1 : 0),
               itemBuilder: (ctx, index) {
                 if (index == state.messages.length) {
-                  // Yükleniyor göstergesi
                   return const _TypingIndicator();
                 }
                 final msg = state.messages[index];
@@ -118,19 +222,28 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
             ),
           ),
 
-          // Alt input alanı
+          if (notifier.canApplySuggestion)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _applySuggestion,
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: Text('Öneriyi kutuya yaz: "${state.lastSuggestion}"'),
+                ),
+              ),
+            ),
+
           Container(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              border: Border(
-                top: BorderSide(color: Colors.grey.shade200),
-              ),
+              border: Border(top: BorderSide(color: Colors.grey.shade200)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Metin girişi
                 Expanded(
                   child: TextField(
                     controller: _controller,
@@ -138,7 +251,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                     minLines: 1,
                     textInputAction: TextInputAction.newline,
                     decoration: InputDecoration(
-                      hintText: 'Phantom\'a sor...',
+                      hintText: 'Ghostie\'ye sor...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -152,8 +265,6 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-
-                // Mikrofon butonu
                 SpeechButton(
                   onResult: (text) {
                     _controller.text = text;
@@ -163,12 +274,10 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                   },
                 ),
                 const SizedBox(width: 4),
-
-                // Gönder butonu
                 IconButton(
                   onPressed: state.isLoading || _controller.text.trim().isEmpty
                       ? null
-                      : _sendMessage,
+                      : () => _sendMessage(),
                   icon: const Icon(Icons.send_rounded),
                   color: AppColors.primary,
                   style: IconButton.styleFrom(
@@ -185,7 +294,6 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
   }
 }
 
-/// Tek bir sohbet balonu.
 class _MessageBubble extends StatelessWidget {
   final String role;
   final String content;
@@ -213,12 +321,9 @@ class _MessageBubble extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isUser
-                    ? AppColors.primary
-                    : Colors.grey.shade100,
+                color: isUser ? AppColors.primary : Colors.grey.shade100,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
@@ -243,7 +348,6 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
-/// "Phantom düşünüyor..." animasyonu.
 class _TypingIndicator extends StatefulWidget {
   const _TypingIndicator();
 
@@ -283,8 +387,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
           ),
           const SizedBox(width: 8),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
               borderRadius: const BorderRadius.only(
@@ -299,7 +402,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
               builder: (_, __) {
                 final dots = '.' * ((_controller.value * 3).floor() + 1);
                 return Text(
-                  'Phantom düşünüyor$dots',
+                  'Ghostie düşünüyor$dots',
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 13,

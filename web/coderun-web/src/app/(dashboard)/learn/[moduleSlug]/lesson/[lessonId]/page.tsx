@@ -11,6 +11,7 @@ import { QuestionRouter } from '@/components/lesson/question-router';
 import { ReinforcementQuestion } from '@/components/lesson/reinforcement-question';
 import { LearningCard } from '@/components/lesson/learning-card';
 import { QuestionProgress } from '@/components/lesson/question-progress';
+import { QuizGhostieMentor } from '@/components/lesson/quiz-ghostie-mentor';
 import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -90,15 +91,11 @@ export default function LessonPage({
     return 'idle';
   })();
 
-  const ghostieMessage = (() => {
-    if (phase === 'intro') return `Merhaba! "${lesson?.title}" dersine hoş geldin. Başlamaya hazır mısın? 🚀`;
-    if (phase === 'reinforcement') return 'Endişelenme! Bu kavramı birlikte pekiştirelim. 💪';
-    if (lastAnswerCorrect === true) return 'Harika! Doğru cevap! 🎉';
-    if (lastAnswerCorrect === false) return 'Üzülme, bir dahaki sefere! Açıklamayı oku. 📖';
-    return currentQuestion?.hint
-      ? `İpucu: ${currentQuestion.hint}`
-      : 'Soruyu dikkatlice oku ve en iyi cevabı seç!';
-  })();
+  const showInteractiveMentor =
+    lesson &&
+    phase === 'answering' &&
+    !showingLearningCard &&
+    currentQuestion;
 
   const handleSubmit = async (skipReinforcement = false) => {
     if (!lesson) return;
@@ -382,22 +379,34 @@ export default function LessonPage({
         </main>
 
         {/* RIGHT COLUMN — Ghostie AI Mentor */}
-        <aside className="col-span-3 flex flex-col gap-4 overflow-y-auto">
-          <Card className="p-4 bg-gradient-to-b from-primary/5 to-surface-container-lowest">
-            <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wider">
-              Ghostie AI Mentor
-            </p>
-            <div className="flex flex-col items-center gap-3">
-              <GhostieReaction
-                state={ghostieState}
-                size={100}
-                preferAnimation={true}
-              />
-              <p className="text-xs text-on-surface-variant text-center leading-relaxed">
-                {ghostieMessage}
+        <aside className="col-span-3 flex flex-col gap-4 overflow-y-auto min-h-0">
+          {showInteractiveMentor ? (
+            <QuizGhostieMentor
+              key={currentQuestion.id}
+              moduleSlug={moduleSlug}
+              lessonTitle={lesson.title}
+              question={currentQuestion}
+              ghostieState={ghostieState}
+              onSuggestionFill={
+                currentQuestion.questionType === 'code_completion'
+                  ? (value) => answerQuestion(currentQuestion.id, value)
+                  : undefined
+              }
+            />
+          ) : (
+            <Card className="p-4 bg-gradient-to-b from-primary/5 to-surface-container-lowest">
+              <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wider">
+                Ghostie AI Mentor
               </p>
-            </div>
-          </Card>
+              <p className="text-xs text-on-surface-variant text-center leading-relaxed">
+                {phase === 'reinforcement'
+                  ? 'Pekiştirme sorusundasın — odaklan ve dene!'
+                  : showingLearningCard
+                    ? 'Kavram kartını okuduktan sonra Ghostie ile soru üzerinde konuşabilirsin.'
+                    : 'Ghostie mentor bu soruda yanında — sağ panelde sohbet başlayacak.'}
+              </p>
+            </Card>
+          )}
 
           {reinforcementDone && (
             <Card className="p-4 border-secondary/30 bg-secondary-container/10">

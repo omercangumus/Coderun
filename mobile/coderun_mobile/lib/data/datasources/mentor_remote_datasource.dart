@@ -60,6 +60,10 @@ class MentorRemoteDataSourceImpl implements MentorRemoteDataSource {
           'user_level': request.userLevel,
           if (request.learningPath != null) 'learning_path': request.learningPath,
           'attempt_count': request.attemptCount,
+          if (request.questionText != null) 'question_text': request.questionText,
+          if (request.lessonTitle != null) 'lesson_title': request.lessonTitle,
+          if (request.questionType != null) 'question_type': request.questionType,
+          if (request.codeBlock != null) 'code_block': request.codeBlock,
         },
       );
       final data = response.data;

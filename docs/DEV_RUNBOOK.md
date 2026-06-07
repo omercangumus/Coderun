@@ -126,11 +126,34 @@ Tarayıcıda açın:
 
 ## 4. Mobile
 
-```bash
-cd mobile/coderun_mobile
-flutter pub get
-flutter run
+### Emülatör
+
+```powershell
+.\scripts\dev-mobile-emulator.ps1
 ```
+
+### USB ile fiziksel tablet/telefon (önerilen)
+
+1. Backend'i tüm arayüzlerde dinlet (tablet aynı makineye adb reverse ile bağlanır):
+
+```powershell
+cd backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+2. USB hata ayıklama açık, cihaz bağlı (`adb devices`)
+
+3. Tek komut:
+
+```powershell
+.\scripts\dev-mobile-usb.ps1
+```
+
+Script `adb reverse tcp:8000 tcp:8000` yapar; mobil uygulama `http://127.0.0.1:8000/api/v1` kullanır.
+
+**Web ↔ mobil senkron:** İkisi de aynı backend'e bağlıdır. Web'de ders/ilerleme değişince mobilde sekme değiştirince veya uygulamayı öne alınca veri yenilenir. Profil → **Geliştirici — Backend Bağlantısı** → **Test** ile bağlantıyı doğrula.
+
+> **Not:** `google-services.json` olmadan uygulama artık çökmez (Firebase debug'da atlanır). FCM bildirimleri yerel geliştirmede opsiyoneldir.
 
 Tema seçici: **Profil** sekmesi → **Görünüm Teması** (Açık / Koyu / Comfort)
 

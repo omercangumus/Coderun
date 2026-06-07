@@ -29,6 +29,25 @@ class LlmMentorRequest(BaseModel):
         ge=1,
         description="Kullanıcının bu soruyu kaçıncı kez sorduğu. 1=ilk ipucu, 2=daha açık, 3+=örnek.",
     )
+    question_text: str | None = Field(
+        default=None,
+        max_length=8000,
+        description="Kullanıcının çözdüğü quiz sorusunun metni.",
+    )
+    lesson_title: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Ders başlığı (ör. Python Hızlı Pratik).",
+    )
+    question_type: str | None = Field(
+        default=None,
+        description="Soru tipi: multiple_choice, code_completion vb.",
+    )
+    code_block: str | None = Field(
+        default=None,
+        max_length=4000,
+        description="Kod tamamlama sorusundaki kod bloğu.",
+    )
 
 
 class LlmMentorResponse(BaseModel):

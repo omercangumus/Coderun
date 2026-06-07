@@ -28,6 +28,10 @@ export interface MentorAskRequest {
   user_level?: string;
   learning_path?: string;
   attempt_count?: number;
+  question_text?: string;
+  lesson_title?: string;
+  question_type?: string;
+  code_block?: string;
 }
 
 export interface MentorAskResponse {
@@ -62,6 +66,10 @@ export const mentorApi = {
       user_level: request.user_level ?? 'beginner',
       learning_path: request.learning_path,
       attempt_count: request.attempt_count ?? 1,
+      question_text: request.question_text,
+      lesson_title: request.lesson_title,
+      question_type: request.question_type,
+      code_block: request.code_block,
     });
     return response.data as MentorAskResponse;
   },

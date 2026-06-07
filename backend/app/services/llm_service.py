@@ -16,33 +16,51 @@ logger = logging.getLogger(__name__)
 # Sistem promptu
 # ---------------------------------------------------------------------------
 
-MENTOR_SYSTEM_PROMPT = """Sen Coderun platformunda çalışan bir AI mentorsun.
+MENTOR_SYSTEM_PROMPT = """Sen Coderun platformunda çalışan Ghostie adlı bir AI mentorsun.
 Coderun; Python, DevOps, Cloud ve Infrastructure as Code öğrenme yolları sunan bir eğitim platformudur.
-Görevin kullanıcıya direkt cevabı vermek değil, öğrenmesini sağlamaktır.
+Görevin kullanıcıya doğrudan sınav cevabını vermek değil, onunla kısa bir diyalog kurarak öğrenmesini sağlamaktır.
 
-Kurallar:
-- Türkçe konuş.
-- Kısa, net ve öğretici cevap ver.
-- Kullanıcı soru çözerken final cevabı doğrudan verme.
-- Önce hangi konuyu çalışması gerektiğini söyle.
-- Sonra küçük bir ipucu ver.
-- Kullanıcı tekrar takılırsa daha açık anlat.
-- Kullanıcı çok zorlanırsa küçük örnek göster.
-- Python konularında sade anlat.
-- DevOps, Cloud ve IaC konularında pratik örneklerle açıkla.
-- Gereksiz akademik veya uzun cevap verme."""
+Genel kurallar:
+- Türkçe, samimi ve öğretici konuş.
+- Önce kullanıcının neyi anlamadığını anlamaya çalış; tek cümlelik sorular sor.
+- Kullanıcıyla tartış: "Şunu düşün...", "Önce şu kavramı hatırla..." gibi yönlendir.
+- Final cevabı (doğru şık, boşluktaki tam kelime) hemen verme.
+- İpucu → biraz daha açık ipucu → benzer mini örnek sırasını izle.
+- Python'da sade anlat; gereksiz akademik dil kullanma.
+
+Quiz / çoktan seçmeli:
+- Doğru şıkkın harfini veya metnini ASLA söyleme.
+- Yanlış seçenekleri eleyebilirsin ama doğruyu işaret etme.
+
+Kod tamamlama:
+- Önce boşluğun ne tür bir ifade beklediğini (fonksiyon, operatör, sayı vb.) açıkla.
+- Çok zorlanırsa benzer ama farklı mini kod örneği göster; asıl sorunun cevabını kopyalama.
+- Sadece kullanıcı 4+ kez yardım istediyse ve kod tamamlama sorusundaysa, yanıtının SON satırında
+  tam olarak şu formatta öneri verebilirsin: ÖNERİ: <sadece_boşluğa_yazılacak_metin>
+  Bu satırdan önce mutlaka kısa açıklama yap."""
 
 # ---------------------------------------------------------------------------
 # Attempt count'a göre yönlendirme talimatları
 # ---------------------------------------------------------------------------
 
 _ATTEMPT_HINTS: dict[int, str] = {
-    1: "Kullanıcı bu soruyu ilk kez soruyor. Sadece küçük bir ipucu ver, cevabı verme.",
-    2: "Kullanıcı ikinci kez soruyor. Biraz daha açık bir ipucu verebilirsin ama yine de cevabı doğrudan verme.",
+    1: (
+        "Kullanıcı ilk kez yardım istiyor. Soruyu yeniden özetleme; "
+        "hangi kavrama odaklanması gerektiğini söyle ve tek küçük ipucu ver. Cevabı verme."
+    ),
+    2: (
+        "Kullanıcı ikinci kez soruyor. Bir adım daha açık anlat, "
+        "belki bir karşı-örnek veya yanlış yaklaşımı düzelt. Yine de final cevabı verme."
+    ),
+    3: (
+        "Kullanıcı üçüncü kez takıldı. Mantığı adım adım anlat ve "
+        "asıl sorudan farklı küçük bir örnek göster. Kullanıcıdan kendi cevabını denemesini iste."
+    ),
 }
 _ATTEMPT_HINT_DEFAULT = (
-    "Kullanıcı birden fazla kez takıldı. "
-    "Mantığı açıklayan küçük bir örnek gösterebilirsin, ama yine de kullanıcının kendisinin tamamlamasını iste."
+    "Kullanıcı defalarca yardım istedi. Önce kısa tartışma yap; "
+    "kod tamamlama sorusundaysa ve hâlâ takılıysa son satırda ÖNERİ: formatında "
+    "sadece boşluğa yazılacak parçayı önerebilirsin. Çoktan seçmelide doğru şıkkı verme."
 )
 
 
@@ -61,6 +79,11 @@ def build_user_message(
     user_level: str,
     learning_path: str | None,
     attempt_count: int,
+    *,
+    question_text: str | None = None,
+    lesson_title: str | None = None,
+    question_type: str | None = None,
+    code_block: str | None = None,
 ) -> str:
     """Bağlam bilgilerini kullanıcı mesajına ekler.
 
@@ -69,15 +92,27 @@ def build_user_message(
         user_level: Kullanıcı seviyesi ("beginner", "intermediate", "advanced").
         learning_path: Öğrenme yolu ("python", "devops", "cloud", "iac").
         attempt_count: Kaçıncı deneme olduğu.
+        question_text: Aktif quiz sorusunun metni.
+        lesson_title: Ders başlığı.
+        question_type: Soru tipi.
+        code_block: Kod tamamlama bloğu.
 
     Returns:
         Bağlam bilgileriyle zenginleştirilmiş mesaj.
     """
-    parts = [f"Kullanıcı sorusu: {message}"]
+    parts = [f"Kullanıcı mesajı: {message}"]
     parts.append(f"Kullanıcı seviyesi: {user_level}")
     if learning_path:
         parts.append(f"Öğrenme yolu: {learning_path}")
-    parts.append(f"Deneme sayısı: {attempt_count}")
+    if lesson_title:
+        parts.append(f"Ders: {lesson_title}")
+    if question_type:
+        parts.append(f"Soru tipi: {question_type}")
+    if question_text:
+        parts.append(f"Aktif soru metni:\n{question_text}")
+    if code_block:
+        parts.append(f"Kod bloğu (___ boşlukları doldurulacak):\n{code_block}")
+    parts.append(f"Mentor etkileşim sayısı (attempt_count): {attempt_count}")
     parts.append(_get_attempt_instruction(attempt_count))
     return "\n".join(parts)
 
@@ -92,6 +127,11 @@ async def call_llm(
     user_level: str = "beginner",
     learning_path: str | None = None,
     attempt_count: int = 1,
+    *,
+    question_text: str | None = None,
+    lesson_title: str | None = None,
+    question_type: str | None = None,
+    code_block: str | None = None,
 ) -> tuple[str, str]:
     """OpenRouter API'ye httpx ile istek gönderir.
 
@@ -100,6 +140,10 @@ async def call_llm(
         user_level: Kullanıcı seviyesi.
         learning_path: Öğrenme yolu.
         attempt_count: Kaçıncı deneme.
+        question_text: Aktif quiz sorusu.
+        lesson_title: Ders başlığı.
+        question_type: Soru tipi.
+        code_block: Kod bloğu.
 
     Returns:
         (answer, model_name) tuple'ı.
@@ -116,7 +160,16 @@ async def call_llm(
         )
 
     model = settings.OPENROUTER_MODEL
-    user_content = build_user_message(message, user_level, learning_path, attempt_count)
+    user_content = build_user_message(
+        message,
+        user_level,
+        learning_path,
+        attempt_count,
+        question_text=question_text,
+        lesson_title=lesson_title,
+        question_type=question_type,
+        code_block=code_block,
+    )
 
     payload = {
         "model": model,

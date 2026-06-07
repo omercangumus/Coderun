@@ -30,8 +30,12 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   );
 });
 
+/// API URL değişince Dio yeniden oluşturulur (profil → geliştirici ayarı).
+final apiConfigRevisionProvider = StateProvider<int>((ref) => 0);
+
 /// Dio HTTP istemci provider'ı.
 final dioProvider = Provider<Dio>((ref) {
+  ref.watch(apiConfigRevisionProvider);
   final storage = ref.watch(secureStorageProvider);
   return DioClient.createDio(storage);
 });

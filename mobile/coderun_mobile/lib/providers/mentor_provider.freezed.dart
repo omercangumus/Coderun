@@ -18,6 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MentorChatState {
   List<ChatMessageModel> get messages => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  int get attemptCount => throw _privateConstructorUsedError;
+  String? get lastSuggestion => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
   /// Create a copy of MentorChatState
@@ -33,7 +35,12 @@ abstract class $MentorChatStateCopyWith<$Res> {
           MentorChatState value, $Res Function(MentorChatState) then) =
       _$MentorChatStateCopyWithImpl<$Res, MentorChatState>;
   @useResult
-  $Res call({List<ChatMessageModel> messages, bool isLoading, String? error});
+  $Res call(
+      {List<ChatMessageModel> messages,
+      bool isLoading,
+      int attemptCount,
+      String? lastSuggestion,
+      String? error});
 }
 
 /// @nodoc
@@ -53,6 +60,8 @@ class _$MentorChatStateCopyWithImpl<$Res, $Val extends MentorChatState>
   $Res call({
     Object? messages = null,
     Object? isLoading = null,
+    Object? attemptCount = null,
+    Object? lastSuggestion = freezed,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
@@ -64,6 +73,14 @@ class _$MentorChatStateCopyWithImpl<$Res, $Val extends MentorChatState>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      attemptCount: null == attemptCount
+          ? _value.attemptCount
+          : attemptCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastSuggestion: freezed == lastSuggestion
+          ? _value.lastSuggestion
+          : lastSuggestion // ignore: cast_nullable_to_non_nullable
+              as String?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -80,7 +97,12 @@ abstract class _$$MentorChatStateImplCopyWith<$Res>
       __$$MentorChatStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<ChatMessageModel> messages, bool isLoading, String? error});
+  $Res call(
+      {List<ChatMessageModel> messages,
+      bool isLoading,
+      int attemptCount,
+      String? lastSuggestion,
+      String? error});
 }
 
 /// @nodoc
@@ -98,6 +120,8 @@ class __$$MentorChatStateImplCopyWithImpl<$Res>
   $Res call({
     Object? messages = null,
     Object? isLoading = null,
+    Object? attemptCount = null,
+    Object? lastSuggestion = freezed,
     Object? error = freezed,
   }) {
     return _then(_$MentorChatStateImpl(
@@ -109,6 +133,14 @@ class __$$MentorChatStateImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      attemptCount: null == attemptCount
+          ? _value.attemptCount
+          : attemptCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastSuggestion: freezed == lastSuggestion
+          ? _value.lastSuggestion
+          : lastSuggestion // ignore: cast_nullable_to_non_nullable
+              as String?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -123,6 +155,8 @@ class _$MentorChatStateImpl implements _MentorChatState {
   const _$MentorChatStateImpl(
       {final List<ChatMessageModel> messages = const [],
       this.isLoading = false,
+      this.attemptCount = 1,
+      this.lastSuggestion,
       this.error})
       : _messages = messages;
 
@@ -139,11 +173,16 @@ class _$MentorChatStateImpl implements _MentorChatState {
   @JsonKey()
   final bool isLoading;
   @override
+  @JsonKey()
+  final int attemptCount;
+  @override
+  final String? lastSuggestion;
+  @override
   final String? error;
 
   @override
   String toString() {
-    return 'MentorChatState(messages: $messages, isLoading: $isLoading, error: $error)';
+    return 'MentorChatState(messages: $messages, isLoading: $isLoading, attemptCount: $attemptCount, lastSuggestion: $lastSuggestion, error: $error)';
   }
 
   @override
@@ -154,12 +193,21 @@ class _$MentorChatStateImpl implements _MentorChatState {
             const DeepCollectionEquality().equals(other._messages, _messages) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.attemptCount, attemptCount) ||
+                other.attemptCount == attemptCount) &&
+            (identical(other.lastSuggestion, lastSuggestion) ||
+                other.lastSuggestion == lastSuggestion) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_messages), isLoading, error);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_messages),
+      isLoading,
+      attemptCount,
+      lastSuggestion,
+      error);
 
   /// Create a copy of MentorChatState
   /// with the given fields replaced by the non-null parameter values.
@@ -175,12 +223,18 @@ abstract class _MentorChatState implements MentorChatState {
   const factory _MentorChatState(
       {final List<ChatMessageModel> messages,
       final bool isLoading,
+      final int attemptCount,
+      final String? lastSuggestion,
       final String? error}) = _$MentorChatStateImpl;
 
   @override
   List<ChatMessageModel> get messages;
   @override
   bool get isLoading;
+  @override
+  int get attemptCount;
+  @override
+  String? get lastSuggestion;
   @override
   String? get error;
 

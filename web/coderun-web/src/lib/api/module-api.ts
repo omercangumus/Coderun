@@ -163,7 +163,14 @@ function mapQuestion(raw: any): QuestionResponse {
     // Code assignment fields
     language: raw.language ?? null,
     starterCode: raw.starter_code ?? null,
-    testCases: raw.test_cases ?? null,
+    testCases: raw.test_cases
+      ? raw.test_cases.map((tc: any) => ({
+          name: tc.name,
+          stdin: tc.stdin ?? '',
+          expectedStdout: tc.expected_stdout ?? tc.expectedStdout ?? '',
+          hidden: tc.hidden ?? false,
+        }))
+      : null,
     assignmentInstructions: raw.assignment_instructions ?? null,
     maxRuntimeMs: raw.max_runtime_ms ?? null,
     memoryLimitMb: raw.memory_limit_mb ?? null,

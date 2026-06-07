@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../providers/gamification_provider.dart';
+import '../../../../providers/module_provider.dart';
 import 'tabs/home_tab.dart';
 import 'tabs/learn_tab.dart';
 import 'tabs/leaderboard_tab.dart';
@@ -12,11 +14,42 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with WidgetsBindingObserver {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Web'de yapılan değişiklikler aynı backend'e gider — uygulama öne gelince veriyi yenile.
+    if (state == AppLifecycleState.resumed) {
+      _refreshSyncedData();
+    }
+  }
+
+  void _refreshSyncedData() {
+    ref.invalidate(modulesProvider);
+    ref.invalidate(userStatsProvider);
+    ref.invalidate(leaderboardProvider);
+    ref.invalidate(streakProvider);
+  }
 
   void _onTabChange(int index) {
     setState(() => _currentIndex = index);
+    if (index == 0 || index == 1) {
+      _refreshSyncedData();
+    }
   }
 
   @override

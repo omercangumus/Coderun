@@ -48,6 +48,25 @@ def test_build_user_message_no_learning_path():
     assert "Öğrenme yolu" not in msg
 
 
+def test_build_user_message_includes_quiz_context():
+    """Quiz bağlam alanları mesaja eklenmeli."""
+    msg = build_user_message(
+        message="Boşluğa ne gelir?",
+        user_level="beginner",
+        learning_path="python",
+        attempt_count=4,
+        question_text="len() sorusu",
+        lesson_title="Python Hızlı Pratik",
+        question_type="code_completion",
+        code_block="sonuc = ___('Coderun')",
+    )
+    assert "Python Hızlı Pratik" in msg
+    assert "code_completion" in msg
+    assert "len() sorusu" in msg
+    assert "sonuc = ___('Coderun')" in msg
+    assert "4" in msg
+
+
 def test_attempt_instruction_first_attempt():
     """İlk denemede sadece ipucu talimatı gelmeli."""
     instruction = _get_attempt_instruction(1)
@@ -61,17 +80,23 @@ def test_attempt_instruction_second_attempt():
     assert "ikinci" in instruction.lower()
 
 
-def test_attempt_instruction_third_or_more():
-    """3. ve sonraki denemelerde örnek gösterme talimatı gelmeli."""
-    for count in [3, 4, 10]:
+def test_attempt_instruction_third_attempt():
+    """Üçüncü denemede örnek gösterme talimatı gelmeli."""
+    instruction = _get_attempt_instruction(3)
+    assert "örnek" in instruction.lower()
+
+
+def test_attempt_instruction_fourth_or_more():
+    """4+ denemelerde öneri modu talimatı gelmeli."""
+    for count in [4, 10]:
         instruction = _get_attempt_instruction(count)
-        assert "örnek" in instruction.lower()
+        assert "öneri" in instruction.lower()
 
 
 def test_system_prompt_contains_rules():
     """Sistem promptu temel kuralları içermeli."""
     assert "Türkçe" in MENTOR_SYSTEM_PROMPT
-    assert "direkt cevabı vermek değil" in MENTOR_SYSTEM_PROMPT
+    assert "doğrudan sınav cevabını vermek değil" in MENTOR_SYSTEM_PROMPT
     assert "Python" in MENTOR_SYSTEM_PROMPT
     assert "DevOps" in MENTOR_SYSTEM_PROMPT
 
