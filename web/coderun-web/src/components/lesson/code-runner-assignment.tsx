@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import type { QuestionResponse } from '@/lib/types/module.types';
 import type { CodeRunResponse, CodeSubmitResponse, TestCaseResult } from '@/lib/types/code-runner.types';
@@ -21,9 +21,25 @@ import {
 import { FloatingGhostieMentor } from '@/components/coding-lab/FloatingGhostieMentor';
 import { cn } from '@/lib/utils/cn';
 
+type RunState = 'idle' | 'loading' | 'success' | 'error';
+
 function formatRunDuration(ms: number): string {
   if (ms < 1000) return `${ms} ms`;
   return `${(ms / 1000).toFixed(2)} sn`;
+}
+
+function getButtonClass(state: RunState) {
+  switch (state) {
+    case 'loading':
+      return "rounded-xl px-4 py-2 text-xs font-bold bg-gray-600 cursor-not-allowed text-gray-300 flex items-center justify-center transition-all duration-200";
+    case 'success':
+      return "rounded-xl px-4 py-2 text-xs font-bold bg-green-600 text-white flex items-center justify-center transition-all duration-200";
+    case 'error':
+      return "rounded-xl px-4 py-2 text-xs font-bold bg-red-600 text-white flex items-center justify-center transition-all duration-200";
+    case 'idle':
+    default:
+      return "rounded-xl px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center transition-all duration-200";
+  }
 }
 
 type ResultTab = 'output' | 'errors' | 'tests';
@@ -249,6 +265,11 @@ export function CodeRunnerAssignment({
   const [useTextarea, setUseTextarea] = useState(false);
   const [pyodideStatus, setPyodideStatus] = useState<PyodideStatus>(getPyodideStatus());
 
+  const [runState, setRunState] = useState<RunState>('idle');
+  const [submitState, setSubmitState] = useState<RunState>('idle');
+  const isRunningRef = useRef(false);
+  const isSubmittingRef = useRef(false);
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) setUseTextarea(true);
   }, []);
@@ -275,7 +296,9 @@ export function CodeRunnerAssignment({
 
   // Pyodide-based run (no Docker needed!)
   const handleRun = async () => {
-    if (editorState !== 'idle') return;
+    if (isRunningRef.current || isSubmittingRef.current) return;
+    isRunningRef.current = true;
+    setRunState('loading');
     setEditorState('running');
     setRunResult(null);
     setSubmitResult(null);
@@ -292,17 +315,30 @@ export function CodeRunnerAssignment({
       setRunResult(result);
       setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
       setEditorTab('terminal');
+
+      if (result.error || (result.stderr && result.exitCode !== 0)) {
+        setRunState('error');
+        setTimeout(() => setRunState('idle'), 1500);
+      } else {
+        setRunState('success');
+        setTimeout(() => setRunState('idle'), 1500);
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Kod çalıştırılamadı.';
       setError(msg);
+      setRunState('error');
+      setTimeout(() => setRunState('idle'), 1500);
     } finally {
+      isRunningRef.current = false;
       setEditorState('idle');
     }
   };
 
   // Pyodide-based submit (client-side test evaluation)
   const handleSubmit = async () => {
-    if (editorState !== 'idle') return;
+    if (isRunningRef.current || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setSubmitState('loading');
     setEditorState('submitting');
     setRunResult(null);
     setSubmitResult(null);
@@ -337,11 +373,19 @@ export function CodeRunnerAssignment({
       }
       if (outcome.passed) {
         onChange('__code_editor__');
+        setSubmitState('success');
+        setTimeout(() => setSubmitState('idle'), 1500);
+      } else {
+        setSubmitState('error');
+        setTimeout(() => setSubmitState('idle'), 1500);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gönderim başarısız.';
       setError(msg);
+      setSubmitState('error');
+      setTimeout(() => setSubmitState('idle'), 1500);
     } finally {
+      isSubmittingRef.current = false;
       setEditorState('idle');
     }
   };
@@ -381,23 +425,41 @@ export function CodeRunnerAssignment({
       <button
         type="button"
         onClick={handleRun}
-        disabled={isLoading}
-        className="rounded-xl bg-secondary px-4 py-2 text-xs font-bold text-on-secondary transition-opacity hover:opacity-90 disabled:opacity-50"
+        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
+        className={getButtonClass(runState)}
       >
-        {editorState === 'running' ? '⟳ Çalışıyor...' : '▶ Çalıştır'}
+        {runState === 'loading' && (
+          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        )}
+        {runState === 'loading' && 'Çalışıyor...'}
+        {runState === 'success' && '✓ Tamamlandı'}
+        {runState === 'error' && '✗ Hata'}
+        {runState === 'idle' && '▶ Çalıştır'}
       </button>
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={isLoading}
-        className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
+        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
+        className={getButtonClass(submitState)}
       >
-        {editorState === 'submitting' ? '⟳ Gönderiliyor...' : '✓ Gönder'}
+        {submitState === 'loading' && (
+          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        )}
+        {submitState === 'loading' && 'Gönderiliyor...'}
+        {submitState === 'success' && '✓ Tamamlandı'}
+        {submitState === 'error' && '✗ Hata'}
+        {submitState === 'idle' && '✓ Gönder'}
       </button>
       <button
         type="button"
         onClick={handleReset}
-        disabled={isLoading}
+        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
         className="rounded-xl border border-outline-variant px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container disabled:opacity-50"
       >
         ↺ Sıfırla
