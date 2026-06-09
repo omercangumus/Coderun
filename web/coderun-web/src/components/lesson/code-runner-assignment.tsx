@@ -105,30 +105,45 @@ function inferDifficulty(index: number): ChallengeDifficulty {
 function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
   if (!result) {
     return (
-      <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
+      <div className="min-h-[150px] overflow-y-auto bg-gray-900 rounded p-4 font-mono text-sm text-slate-500 flex items-center">
         <span className="mr-2 animate-pulse">$_</span>
         Kodunu yaz, Çalıştır&apos;a bas.
       </div>
     );
   }
 
+  const { stdout, stderr, exitCode } = result;
+  const hasStdout = !!stdout;
+  const hasStderr = !!stderr;
+  const bothEmpty = !hasStdout && !hasStderr;
+
   return (
-    <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs">
+    <div className="min-h-[150px] overflow-y-auto bg-gray-900 rounded p-4 font-mono text-sm">
       {result.timedOut && (
-        <div className="mb-2 rounded-lg border border-orange-500/40 bg-orange-950/60 px-3 py-1.5 text-orange-400">
+        <div className="mb-2 rounded-lg border border-orange-500/40 bg-orange-950/60 px-3 py-1.5 text-orange-400 text-xs">
           ⏱ Zaman aşımı
         </div>
       )}
-      {result.stdout && <pre className="whitespace-pre-wrap text-[#39ff14]">{result.stdout}</pre>}
-      {result.stderr && <pre className="mt-1 whitespace-pre-wrap text-rose-400">{result.stderr}</pre>}
-      {!result.stdout && !result.stderr && (
-        <span className="italic text-slate-500">(çıktı yok)</span>
+      {bothEmpty && (
+        <div className="text-slate-500 italic">Program herhangi bir çıktı üretmedi.</div>
+      )}
+      {hasStdout && (
+        <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{stdout}</pre>
+      )}
+      {hasStdout && hasStderr && (
+        <div className="border-t border-gray-600 my-2 opacity-50" />
+      )}
+      {hasStderr && (
+        <div className="text-red-400 font-mono text-sm">
+          <span className="font-bold">⚠ Hata Çıktısı:</span>
+          <pre className="text-red-400 font-mono text-sm whitespace-pre-wrap mt-1">{stderr}</pre>
+        </div>
       )}
       <div className="mt-3 flex gap-4 border-t border-slate-800/80 pt-2 text-[10px] text-slate-500">
         <span>
           EXIT:{' '}
-          <span className={result.exitCode === 0 ? 'font-bold text-green-400' : 'font-bold text-red-400'}>
-            {result.exitCode}
+          <span className={exitCode === 0 ? 'font-bold text-green-400' : 'font-bold text-red-400'}>
+            {exitCode}
           </span>
         </span>
         <span>
