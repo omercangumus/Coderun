@@ -16,6 +16,7 @@ export interface CodeRunResponse {
   exitCode: number;
   durationMs: number;
   timedOut: boolean;
+  error?: boolean;
 }
 
 export interface TestCaseResult {

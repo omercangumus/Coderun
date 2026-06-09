@@ -148,12 +148,12 @@ export async function runPython(
           exitCode: -1,
           durationMs,
           timedOut: true,
+          error: true,
         };
       }
 
       // Python hatası — kullanıcı dostu hata mesajı oluştur
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const cleanError = cleanPythonError(errorMessage);
+      const cleanError = turkceJsHatasi(err);
       stderrBuffer += cleanError;
     }
 
@@ -165,6 +165,7 @@ export async function runPython(
       exitCode: stderrBuffer.trim() ? 1 : 0,
       durationMs,
       timedOut: false,
+      error: !!stderrBuffer.trim(),
     };
   } catch (err: unknown) {
     const durationMs = Math.round(performance.now() - startTime);
@@ -176,8 +177,35 @@ export async function runPython(
       exitCode: -1,
       durationMs,
       timedOut: false,
+      error: true,
     };
   }
+}
+
+function turkceJsHatasi(error: unknown): string {
+  const msg = error instanceof Error ? error.message : String(error);
+  
+  const donusumler: [RegExp, string][] = [
+    [/Traceback \(most recent call last\):/g, "Hata izleme (son çağrı en altta):"],
+    [/File "<exec>", line (\d+)/g, "Satır $1"],
+    [/SyntaxError: (.+)/g, "Sözdizimi Hatası: $1"],
+    [/NameError: (.+)/g, "İsim Hatası: $1"],
+    [/TypeError: (.+)/g, "Tür Hatası: $1"],
+    [/ValueError: (.+)/g, "Değer Hatası: $1"],
+    [/IndexError: (.+)/g, "İndeks Hatası: $1"],
+    [/KeyError: (.+)/g, "Anahtar Hatası: $1"],
+    [/AttributeError: (.+)/g, "Özellik Hatası: $1"],
+    [/ImportError: (.+)/g, "Modül Hatası: $1"],
+    [/ModuleNotFoundError: (.+)/g, "Modül Bulunamadı: $1"],
+    [/ZeroDivisionError: (.+)/g, "Sıfıra Bölme Hatası: $1"],
+    [/IndentationError: (.+)/g, "Girinti Hatası: $1"],
+    [/RecursionError: (.+)/g, "Özyineleme Hatası: $1"],
+    [/MemoryError/g, "Bellek Yetersiz"],
+    [/RuntimeError: (.+)/g, "Çalışma Zamanı Hatası: $1"],
+  ];
+
+  return donusumler.reduce((acc, [pattern, replacement]) => 
+    acc.replace(pattern, replacement), msg);
 }
 
 /**
