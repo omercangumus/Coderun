@@ -6,6 +6,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import logging
+import re
 from math import floor
 
 from fastapi import HTTPException, status
@@ -259,6 +260,7 @@ def _truncate_output(stdout: str, stderr: str) -> tuple[str, str]:
     return stdout, stderr
 
 
+# Türkçeleştirme fonksiyonu
 def turkce_hata_mesaji(stderr: str) -> str:
     """Python traceback ve hata mesajlarını Türkçeleştirir."""
     if not stderr:
