@@ -173,7 +173,7 @@ class ApiEndpointConfig {
           return 'http://localhost:8000/api/v1';
         }
         if (Platform.isAndroid) {
-          return 'http://127.0.0.1:8000/api/v1';
+          return emulatorDevUrl;
         }
         if (Platform.isIOS) {
           return 'http://127.0.0.1:8000/api/v1';

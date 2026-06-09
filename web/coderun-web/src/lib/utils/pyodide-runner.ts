@@ -53,8 +53,12 @@ async function loadPyodide(): Promise<PyodideInterface> {
 
   pyodideLoading = (async () => {
     try {
+      const w = window as unknown as {
+        loadPyodide?: (options: { indexURL: string }) => Promise<PyodideInterface>;
+      };
+
       // Pyodide script'ini dinamik olarak yükle
-      if (typeof window !== 'undefined' && !(window as Record<string, unknown>).loadPyodide) {
+      if (typeof window !== 'undefined' && !w.loadPyodide) {
         await new Promise<void>((resolve, reject) => {
           const script = document.createElement('script');
           script.src = `${PYODIDE_CDN}pyodide.js`;
@@ -65,9 +69,7 @@ async function loadPyodide(): Promise<PyodideInterface> {
       }
 
       // loadPyodide fonksiyonunu çağır
-      const loadFn = (window as Record<string, unknown>).loadPyodide as (
-        options: { indexURL: string }
-      ) => Promise<PyodideInterface>;
+      const loadFn = w.loadPyodide;
 
       if (!loadFn) throw new Error('loadPyodide fonksiyonu bulunamadı');
 
@@ -183,10 +185,13 @@ export async function runPython(
  */
 function cleanPythonError(error: string): string {
   const lines = error.split('\n');
-
-  // "File "<exec>", line X" ile başlayan satırları ve sonrasını bul
   const relevantLines: string[] = [];
   let foundUserFile = false;
+
+  // Keep the traceback header if present
+  if (lines.length > 0 && lines[0].startsWith('Traceback (most recent call last):')) {
+    relevantLines.push(lines[0]);
+  }
 
   for (const line of lines) {
     // Skip internal Pyodide/frozen module traceback lines
@@ -194,31 +199,46 @@ function cleanPythonError(error: string): string {
       line.includes('File "<frozen') ||
       line.includes('File "<string>"') ||
       line.includes('_get_code_from_file') ||
-      line.includes('run_path') ||
-      line.includes('in <module>')
+      line.includes('run_path')
     ) {
+      continue;
+    }
+    // Skip "in <module>" only for non-user-code frames (frozen/string), not exec frames (user code)
+    if (line.includes('in <module>') && !line.includes('File "<exec>"') && !line.includes('File "/tmp/')) {
       continue;
     }
 
     // Keep user code references and error messages
-    if (line.includes('File "<exec>"') || line.includes('File "/tmp/')) {
+    if (line.includes('File "<exec>"') || line.includes('File "/tmp/') || line.includes('File "solution.py"')) {
       foundUserFile = true;
-      // Simplify the file reference
+      // Simplify the file reference for the UI
       const simplified = line
-        .replace('File "<exec>",', 'Satır')
-        .replace(/File "\/tmp\/\w+\.py",/, 'Satır');
+        .replace(/File "<exec>",\s*line\s*(\d+)/, 'Satır $1')
+        .replace(/File "\/tmp\/\w+\.py",\s*line\s*(\d+)/, 'Satır $1')
+        .replace(/File "solution\.py",\s*line\s*(\d+)/, 'Satır $1')
+        .replace(', in <module>', '')
+        .replace(/, in (\w+)/, ' ($1 fonksiyonunda)');
       relevantLines.push(simplified);
       continue;
     }
 
     // Error type lines (e.g., "IndentationError: unexpected indent")
-    if (foundUserFile || /^[A-Z]\w*Error:/.test(line) || /^[A-Z]\w*Warning:/.test(line)) {
+    if (
+      foundUserFile ||
+      /^[A-Z]\w*Error:/.test(line) ||
+      /^[A-Z]\w*Warning:/.test(line) ||
+      line.includes('Error:')
+    ) {
       relevantLines.push(line);
       foundUserFile = true;
     }
   }
 
   if (relevantLines.length > 0) {
+    // Avoid returning just the header
+    if (relevantLines.length === 1 && relevantLines[0].startsWith('Traceback')) {
+      return error;
+    }
     return relevantLines.join('\n');
   }
 

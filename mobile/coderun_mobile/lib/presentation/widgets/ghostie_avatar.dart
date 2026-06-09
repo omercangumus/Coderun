@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/assets/ghostie_assets.dart';
+import 'ghostie_reaction.dart';
 
 enum GhostieSize { small, medium, large, xlarge }
 
@@ -33,52 +35,32 @@ class GhostieAvatar extends StatelessWidget {
     }
   }
 
-  String get _emoji {
-    switch (mood) {
-      case GhostieMood.happy:
-        return '👻';
-      case GhostieMood.thinking:
-        return '🤔';
-      case GhostieMood.celebrating:
-        return '🎉';
-      case GhostieMood.helping:
-        return '💡';
-      case GhostieMood.neutral:
-        return '👻';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final dim = _dimension;
-    final fontSize = dim * 0.55;
+    GhostieState state;
+    switch (mood) {
+      case GhostieMood.happy:
+        state = GhostieState.idle;
+        break;
+      case GhostieMood.thinking:
+        state = GhostieState.thinking;
+        break;
+      case GhostieMood.celebrating:
+        state = GhostieState.celebrating;
+        break;
+      case GhostieMood.helping:
+        state = GhostieState.hint;
+        break;
+      case GhostieMood.neutral:
+        state = GhostieState.idle;
+        break;
+    }
 
-    Widget ghost = Container(
-      width: dim,
-      height: dim,
-      decoration: BoxDecoration(
-        color: AppColors.primaryFixed,
-        shape: BoxShape.circle,
-        boxShadow: showGlow
-            ? [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  spreadRadius: 4,
-                ),
-              ]
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          _emoji,
-          style: TextStyle(fontSize: fontSize),
-          textAlign: TextAlign.center,
-        ),
-      ),
+    return GhostieReaction(
+      state: state,
+      size: _dimension,
+      preferAnimation: showGlow,
     );
-
-    return ghost;
   }
 }
 
@@ -97,10 +79,45 @@ class GhostieSpeechBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GhostieState state;
+    switch (mood) {
+      case GhostieMood.happy:
+        state = GhostieState.idle;
+        break;
+      case GhostieMood.thinking:
+        state = GhostieState.thinking;
+        break;
+      case GhostieMood.celebrating:
+        state = GhostieState.celebrating;
+        break;
+      case GhostieMood.helping:
+        state = GhostieState.hint;
+        break;
+      case GhostieMood.neutral:
+        state = GhostieState.idle;
+        break;
+    }
+
+    double size;
+    switch (ghostSize) {
+      case GhostieSize.small:
+        size = 40;
+        break;
+      case GhostieSize.medium:
+        size = 64;
+        break;
+      case GhostieSize.large:
+        size = 96;
+        break;
+      case GhostieSize.xlarge:
+        size = 140;
+        break;
+    }
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GhostieAvatar(size: ghostSize, mood: mood),
+        GhostieReaction(state: state, size: size, preferAnimation: false),
         const SizedBox(width: 8),
         Flexible(
           child: Container(

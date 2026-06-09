@@ -50,25 +50,48 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
       if (!userMessage.trim() || isLoading) return;
 
       const userMsg: ChatMessage = { role: 'user', content: userMessage };
+      const historyForApi = messages;
       setMessages((prev) => [...prev, userMsg]);
       setIsLoading(true);
 
       const currentAttempt = attemptRef.current;
       const ctx = optionsRef.current;
+      const isLessonQuiz =
+        ctx.context === 'lesson' &&
+        Boolean(ctx.questionText?.trim());
 
       try {
-        const response = await mentorApi.ask({
-          message: userMessage,
-          user_level: 'beginner',
-          learning_path: ctx.moduleSlug,
-          attempt_count: currentAttempt,
-          question_text: ctx.questionText,
-          lesson_title: ctx.lessonTitle,
-          question_type: ctx.questionType,
-          code_block: ctx.codeBlock ?? undefined,
-        });
+        let replyText: string;
 
-        const { displayText, suggestion } = parseMentorSuggestion(response.answer);
+        if (isLessonQuiz) {
+          const response = await mentorApi.ask({
+            message: userMessage,
+            user_level: 'beginner',
+            learning_path: ctx.moduleSlug,
+            attempt_count: currentAttempt,
+            question_text: ctx.questionText,
+            lesson_title: ctx.lessonTitle,
+            question_type: ctx.questionType,
+            code_block: ctx.codeBlock ?? undefined,
+          });
+          replyText = response.answer;
+
+          const nextAttempt = currentAttempt + 1;
+          attemptRef.current = nextAttempt;
+          setAttemptCount(nextAttempt);
+        } else {
+          const response = await mentorApi.sendMessage({
+            message: userMessage,
+            context: ctx.context ?? 'general',
+            history: historyForApi,
+            lessonTitle: ctx.lessonTitle,
+            moduleSlug: ctx.moduleSlug,
+            questionText: ctx.questionText,
+          });
+          replyText = response.reply;
+        }
+
+        const { displayText, suggestion } = parseMentorSuggestion(replyText);
         if (suggestion) {
           setLastSuggestion(suggestion);
         }
@@ -77,10 +100,6 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
           ...prev,
           { role: 'assistant', content: displayText },
         ]);
-
-        const nextAttempt = currentAttempt + 1;
-        attemptRef.current = nextAttempt;
-        setAttemptCount(nextAttempt);
       } catch (err: unknown) {
         const status = (err as { response?: { status?: number } })?.response?.status;
 
@@ -106,7 +125,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
         setIsLoading(false);
       }
     },
-    [isLoading],
+    [isLoading, messages],
   );
 
   const clearChat = useCallback(() => {

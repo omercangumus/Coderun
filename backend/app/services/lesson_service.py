@@ -214,6 +214,10 @@ def _evaluate_answer(question: Question, user_answer: str) -> bool:
             return False
 
     elif q_type == "code_editor":
+        # İstemci test geçince __code_editor__ gönderir; geriye dönük uyumluluk için marker kontrolü
+        marker = "__code_editor__"
+        if correct.lower() == marker.lower():
+            return answer.strip().lower() == marker.lower()
         return answer.lower() == correct.lower()
 
     else:

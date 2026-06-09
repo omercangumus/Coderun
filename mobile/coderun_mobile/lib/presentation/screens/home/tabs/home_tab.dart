@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/assets/ghostie_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../providers/auth_provider.dart';
@@ -11,7 +12,7 @@ import '../../../../providers/gamification_provider.dart';
 import '../../../../providers/module_provider.dart';
 import '../../../widgets/app_error_widget.dart';
 import '../../../widgets/app_brand_icon.dart';
-import '../../../widgets/ghostie_avatar.dart';
+import '../../../widgets/ghostie_reaction.dart';
 import '../../../widgets/xp_streak_header.dart';
 
 class HomeTab extends ConsumerWidget {
@@ -493,54 +494,10 @@ class _GhostieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.cardPadding),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            AppColors.primaryFixed,
-            AppColors.surfaceContainerLowest,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
-      child: const Row(
-        children: [
-          GhostieAvatar(size: GhostieSize.medium, mood: GhostieMood.happy),
-          SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Ghostie AI',
-                  style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Takıldığın bir yer mi var? Sana yardım etmekten mutluluk duyarım!',
-                  style: TextStyle(
-                    fontFamily: 'Lexend',
-                    fontSize: 13,
-                    color: AppColors.onSurfaceVariant,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return const GhostieReaction(
+      state: GhostieState.idle,
+      size: 56,
+      message: 'Takıldığın bir yer mi var? Sana yardım etmekten mutluluk duyarım!',
     );
   }
 }

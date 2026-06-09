@@ -2,6 +2,20 @@
 // Tüm hata mesajları Türkçe döner.
 
 abstract class Validators {
+  static String? validateLoginIdentifier(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'E-posta adresi boş bırakılamaz';
+    }
+    return null;
+  }
+
+  static String? validateLoginPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Şifre boş bırakılamaz';
+    }
+    return null;
+  }
+
   /// Email adresi doğrulama.
   static String? validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {

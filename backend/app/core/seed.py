@@ -6,9 +6,12 @@ from uuid import uuid4, UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
+from app.core.security import hash_password
 from app.models.lesson import Lesson
 from app.models.module import Module
 from app.models.question import Question
+from app.models.user import User
 from app.core.seed_data import SEED_DATA, CODING_ASSIGNMENTS_LESSON, PYTHON_EXTRA_QUIZ_LESSON
 
 logger = logging.getLogger(__name__)
@@ -22,6 +25,43 @@ INTERACTIVE_LESSON_SEED = {
     "questions": []
 }
 
+_PINNED_USER_EMAIL = "1"
+_PINNED_USER_PASSWORD = "1"
+_PINNED_USER_USERNAME = "1"
+_PINNED_USER_ALLOWED_ENVS = frozenset({"development", "local", "test"})
+
+
+async def _ensure_pinned_user(db: AsyncSession) -> None:
+    env = (settings.ENVIRONMENT or "").lower()
+    if env not in _PINNED_USER_ALLOWED_ENVS:
+        return
+
+    result = await db.execute(select(User).where(User.email == _PINNED_USER_EMAIL))
+    user = result.scalars().first()
+    if user is not None:
+        user.hashed_password = hash_password(_PINNED_USER_PASSWORD)
+        user.username = _PINNED_USER_USERNAME
+        user.is_active = True
+        user.is_verified = True
+        user.is_superuser = True
+        await db.flush()
+        return
+
+    db.add(
+        User(
+            email=_PINNED_USER_EMAIL,
+            username=_PINNED_USER_USERNAME,
+            hashed_password=hash_password(_PINNED_USER_PASSWORD),
+            is_active=True,
+            is_verified=True,
+            is_superuser=True,
+            xp=0,
+            level=1,
+            streak=0,
+        )
+    )
+    await db.flush()
+
 
 async def seed_database(db: AsyncSession) -> None:
     """Veritabanına başlangıç verilerini ekler.
@@ -32,15 +72,18 @@ async def seed_database(db: AsyncSession) -> None:
     Args:
         db: Aktif async veritabanı oturumu.
     """
-    # Modül var mı kontrol et (idempotent)
-    existing = await db.execute(select(Module).limit(1))
-    if existing.scalars().first() is not None:
-        logger.info("Seed verisi zaten mevcut, atlanıyor.")
-        return
-
-    logger.info("Seed verisi ekleniyor...")
-
     try:
+        await _ensure_pinned_user(db)
+        await db.commit()
+
+        # Modül var mı kontrol et (idempotent)
+        existing = await db.execute(select(Module).limit(1))
+        if existing.scalars().first() is not None:
+            logger.info("Seed verisi zaten mevcut, atlanıyor.")
+            return
+
+        logger.info("Seed verisi ekleniyor...")
+
         for module_data in SEED_DATA:
             # Python modülüne kodlama ödevleri dersini ekle
             lessons_data = list(module_data.get("lessons", []))
@@ -135,3 +178,4 @@ async def seed_database(db: AsyncSession) -> None:
         await db.rollback()
         logger.error("Seed verisi eklenirken hata oluştu: %s", exc)
         raise
+

@@ -139,6 +139,9 @@ class _CodeAssignmentWidgetState extends ConsumerState<CodeAssignmentWidget>
         response.when(
           success: (data) {
             _submitResult = data;
+            if (data.passed) {
+              widget.onAnswerChanged('__code_editor__');
+            }
             _goToOutputTab();
           },
           error: (msg, _) {

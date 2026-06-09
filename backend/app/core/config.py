@@ -43,7 +43,10 @@ class Settings(BaseSettings):
 
     # --- Uygulama ---
     ENVIRONMENT: str = "development"
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     APP_TITLE: str = "Coderun"
     APP_VERSION: str = "0.1.0"
 

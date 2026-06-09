@@ -118,3 +118,19 @@ class UserRepository(BaseRepository[User]):
         if user is None:
             raise ValueError(f"User not found: {user_id}")
         return user
+
+    async def delete(self, id: UUID) -> bool:
+        """Kullanıcıyı veritabanından siler.
+
+        E-postası "1" olan pinned (sabitlenmiş/admin) kullanıcının silinmesini engeller.
+
+        Args:
+            id: Silinecek kullanıcının UUID'si.
+
+        Returns:
+            Silme işlemi başarılıysa ``True``, aksi halde (pinned kullanıcı veya bulunamadıysa) ``False``.
+        """
+        user = await self.get_by_id(id)
+        if user is not None and user.email == "1":
+            return False
+        return await super().delete(id)

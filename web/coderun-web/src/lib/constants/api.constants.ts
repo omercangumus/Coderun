@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === 'production' && !_configuredApiUrl) {
   );
 }
 
-export const API_BASE_URL = _configuredApiUrl || 'http://localhost:8000/api/v1';
+export const API_BASE_URL = _configuredApiUrl || '/api/v1';
 
 export const AUTH_ENDPOINTS = {
   register: '/auth/register',

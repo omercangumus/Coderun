@@ -99,13 +99,17 @@ def _configure_cors(application: FastAPI, allow_origins: list[str]) -> None:
         allow_origins: İzin verilen origin listesi.
     """
     if "*" in allow_origins:
-        # Development: localhost'a geniş izin, wildcard origin yerine regex
+        # Development: localhost + 127.0.0.1 + Android emülatör (10.0.2.2) + Expo DevTools
         application.add_middleware(
             CORSMiddleware,
-            allow_origin_regex=r"http://localhost:\d+",
+            allow_origin_regex=(
+                r"http://(localhost|127\.0\.0\.1|10\.0\.2\.2):\d+"
+                r"|http://10\.\d+\.\d+\.\d+:\d+"   # WiFi geliştirme (LAN IP)
+            ),
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
+            expose_headers=["Authorization", "Content-Type"],
         )
     else:
         # Production: yalnızca gerekli method ve header'lar
@@ -115,6 +119,7 @@ def _configure_cors(application: FastAPI, allow_origins: list[str]) -> None:
             allow_credentials=True,
             allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
+            expose_headers=["Authorization"],
         )
 
 

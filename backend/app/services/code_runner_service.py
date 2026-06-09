@@ -169,6 +169,9 @@ async def run_code(
 
     stdout_str, stderr_str = _truncate_output(stdout_str, stderr_str)
 
+    if language == "python" and stderr_str:
+        stderr_str = _clean_python_traceback(stderr_str)
+
     exit_code = proc.returncode if proc.returncode is not None else -1
     if timed_out:
         exit_code = -1
@@ -224,6 +227,61 @@ def _truncate_output(stdout: str, stderr: str) -> tuple[str, str]:
         stderr = stderr.encode("utf-8")[:half].decode("utf-8", errors="replace")
     stderr += "\n... (output truncated)"
     return stdout, stderr
+
+
+def _clean_python_traceback(stderr: str) -> str:
+    """Python traceback'ten internal sandbox gürültüsünü (runpy, <string>, bootstrap) temizler."""
+    lines = stderr.splitlines()
+    clean_lines = []
+    found_user_code = False
+
+    # Traceback başlığını her zaman tut
+    if lines and lines[0].startswith("Traceback (most recent call last):"):
+        clean_lines.append(lines[0])
+
+    for line in lines:
+        # Internal sandbox dosyalarını atla (kullanıcı kodu değil)
+        if any(
+            marker in line
+            for marker in [
+                'File "<string>"',
+                'File "<frozen runpy>"',
+                "_get_code_from_file",
+                "run_path",
+            ]
+        ):
+            continue
+        # <string> veya <frozen runpy> bağlamındaki "in <module>" satırlarını atla
+        # ama solution.py içindeki "in <module>" satırlarını koru
+        if "in <module>" in line and "/tmp/solution.py" not in line and "solution.py" not in line:
+            continue
+
+        # Kullanıcı dosyasına (solution.py) gelindiğini işaretle
+        if "/tmp/solution.py" in line or "solution.py" in line:
+            found_user_code = True
+            import re
+            simplified = re.sub(r'File ".*?solution\.py",\s*line\s*(\d+)', r'Satır \1', line)
+            simplified = simplified.replace(", in <module>", "")
+            simplified = re.sub(r', in (\w+)', r' (\1 fonksiyonunda)', simplified)
+            clean_lines.append(simplified)
+            continue
+
+        # Kullanıcı kodundan sonraki her şeyi veya hata tiplerini (IndentationError vb.) ekle
+        if (
+            found_user_code
+            or any(line.startswith(err) for err in ["IndentationError:", "SyntaxError:", "NameError:", "TypeError:"])
+            or "Error:" in line
+        ):
+            clean_lines.append(line)
+
+    if not clean_lines:
+        return stderr
+
+    # Eğer sadece traceback başlığı kaldıysa (nadiren), temizlemeyi iptal et
+    if len(clean_lines) == 1 and clean_lines[0].startswith("Traceback"):
+        return stderr
+
+    return "\n".join(clean_lines)
 
 
 # ---------------------------------------------------------------------------

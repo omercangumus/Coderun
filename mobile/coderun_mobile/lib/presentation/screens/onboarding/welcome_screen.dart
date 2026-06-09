@@ -3,9 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/assets/ghostie_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../widgets/ghostie_avatar.dart';
+import '../../widgets/ghostie_reaction.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -60,11 +61,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 children: [
                   const Spacer(flex: 2),
 
-                  // Ghostie mascot
-                  GhostieAvatar(
-                    size: GhostieSize.xlarge,
-                    mood: GhostieMood.celebrating,
-                    showGlow: true,
+                  // Ghostie mascot (high fidelity)
+                  const GhostieReaction(
+                    state: GhostieState.celebrating,
+                    size: 160,
                   ),
                   const SizedBox(height: AppSpacing.xl),
 

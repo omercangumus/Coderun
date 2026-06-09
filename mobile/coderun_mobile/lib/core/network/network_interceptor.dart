@@ -46,9 +46,16 @@ class NetworkInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
+    final path = err.requestOptions.path;
+
     // Sadece 401 hatalarını yakala; refresh endpoint'i değilse işle
-    if (err.response?.statusCode != 401 ||
-        err.requestOptions.path.contains(ApiConstants.refresh)) {
+    if (err.response?.statusCode != 401 || path.contains(ApiConstants.refresh)) {
+      return handler.next(err);
+    }
+
+    // Yanlış şifre/login — token yenileme veya storage silme yapma
+    if (path.contains(ApiConstants.login) ||
+        path.contains(ApiConstants.register)) {
       return handler.next(err);
     }
 

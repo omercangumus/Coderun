@@ -139,7 +139,7 @@ class ChoosePathScreen extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
                 itemBuilder: (context, i) => _PathCard(
                   path: _paths[i],
-                  onTap: () => context.go('/home/learn/${_paths[i].slug}'),
+                  onTap: () => context.push('/register'),
                 ),
               ),
             ),

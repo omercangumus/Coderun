@@ -79,7 +79,19 @@ function getGhostieMessage(
   if (editorState === 'submitting') return 'Test senaryoları değerlendiriliyor...';
   if (submitResult !== null) return submitResult.feedback;
   if (runResult?.timedOut) return 'Zaman aşımı! Sonsuz döngü var mı?';
-  if (runResult?.stderr && runResult.exitCode !== 0) return 'Bir hata oluştu. Kodu kontrol et!';
+  if (runResult?.stderr && runResult.exitCode !== 0) {
+    const error = runResult.stderr.toLowerCase();
+    if (error.includes('indentationerror')) {
+      return 'Girinti hatası (IndentationError)! Python\'da boşluklar çok önemlidir. Satır başındaki fazla boşlukları silmelisin.';
+    }
+    if (error.includes('syntaxerror')) {
+      return 'Yazım hatası (SyntaxError) var. Parantezleri veya tırnak işaretlerini kontrol etmeyi unutma!';
+    }
+    if (error.includes('nameerror')) {
+      return 'Tanımlanmamış bir isim (NameError) kullandın. Değişken ismini doğru yazdığından emin ol.';
+    }
+    return 'Bir hata oluştu. Kodu ve hata mesajını kontrol et!';
+  }
   if (runResult?.exitCode === 0) return 'Kod başarıyla çalıştı!';
   return 'Kodunu yaz, Çalıştır\'a bas.';
 }
@@ -283,10 +295,11 @@ export function CodeRunnerAssignment({
 
     try {
       const testCases = question.testCases ?? [];
+      let outcome;
       if (testCases.length === 0) {
         // No test cases — just run the code and mark as submitted
         const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
-        setSubmitResult({
+        outcome = {
           passed: result.exitCode === 0,
           score: result.exitCode === 0 ? 100 : 0,
           stdout: result.stdout,
@@ -295,16 +308,20 @@ export function CodeRunnerAssignment({
           feedback: result.exitCode === 0
             ? 'Kod başarıyla çalıştı! ✓'
             : 'Kodda hata var, kontrol et.',
-        });
+        };
+        setSubmitResult(outcome);
         setResultTab('output');
       } else {
-        const result = await evaluateTestCases(
+        outcome = await evaluateTestCases(
           code,
           testCases,
           question.maxRuntimeMs ?? 5000,
         );
-        setSubmitResult(result);
+        setSubmitResult(outcome);
         setResultTab('tests');
+      }
+      if (outcome.passed) {
+        onChange('__code_editor__');
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gönderim başarısız.';
