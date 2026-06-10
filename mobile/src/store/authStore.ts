@@ -1,6 +1,7 @@
 // Auth Zustand store
 
 import { create } from 'zustand';
+import axios from 'axios';
 import * as authApi from '../api/auth';
 import { clearTokens, getAccessToken } from '../api/client';
 import type { User } from '../types/auth';
@@ -48,9 +49,16 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = await authApi.getCurrentUser();
       set({ status: 'authenticated', user, error: null });
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Giriş yapılamadı';
-      set({ status: 'error', error: message });
+      console.error('[AuthStore] Login failed:', err);
+      if (axios.isAxiosError(err)) {
+        console.error('[AuthStore] Login API response:', err.response?.data);
+        const detail = err.response?.data?.detail;
+        const message = typeof detail === 'string' ? detail : (typeof detail === 'object' ? JSON.stringify(detail) : (err.response?.data?.message || err.message));
+        set({ status: 'error', error: message });
+      } else {
+        const message = err instanceof Error ? err.message : 'Giriş yapılamadı';
+        set({ status: 'error', error: message });
+      }
     }
   },
 
@@ -62,9 +70,16 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = await authApi.getCurrentUser();
       set({ status: 'authenticated', user, error: null });
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Kayıt olunamadı';
-      set({ status: 'error', error: message });
+      console.error('[AuthStore] Register failed:', err);
+      if (axios.isAxiosError(err)) {
+        console.error('[AuthStore] Register API response:', err.response?.data);
+        const detail = err.response?.data?.detail;
+        const message = typeof detail === 'string' ? detail : (typeof detail === 'object' ? JSON.stringify(detail) : (err.response?.data?.message || err.message));
+        set({ status: 'error', error: message });
+      } else {
+        const message = err instanceof Error ? err.message : 'Kayıt olunamadı';
+        set({ status: 'error', error: message });
+      }
     }
   },
 

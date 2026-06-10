@@ -27,16 +27,25 @@ export const QuizOption: React.FC<QuizOptionProps> = ({
   const getBorderColor = () => {
     if (isCorrect) return '#22C55E';
     if (isWrong) return '#EF4444';
-    if (isSelected) return '#7C3AED';
-    return '#2D2D44';
+    if (isSelected) return '#A78BFA';
+    return '#2D2D4B';
   };
 
   const getBackgroundColor = () => {
     if (isCorrect) return 'rgba(34,197,94,0.12)';
     if (isWrong) return 'rgba(239,68,68,0.12)';
-    if (isSelected) return 'rgba(124,58,237,0.12)';
-    return '#1A1A2E';
+    if (isSelected) return 'rgba(124,58,237,0.15)';
+    return '#111124';
   };
+
+  const getShadowColor = () => {
+    if (isCorrect) return '#22C55E';
+    if (isWrong) return '#EF4444';
+    if (isSelected) return '#7C3AED';
+    return 'transparent';
+  };
+
+  const hasStatus = isSelected || isCorrect || isWrong;
 
   return (
     <TouchableOpacity
@@ -45,11 +54,16 @@ export const QuizOption: React.FC<QuizOptionProps> = ({
         {
           borderColor: getBorderColor(),
           backgroundColor: getBackgroundColor(),
+          shadowColor: getShadowColor(),
+          shadowOffset: hasStatus ? { width: 0, height: 3 } : { width: 0, height: 0 },
+          shadowOpacity: hasStatus ? 0.25 : 0,
+          shadowRadius: hasStatus ? 8 : 0,
+          elevation: hasStatus ? 4 : 0,
         },
       ]}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
     >
       <Text style={[styles.label, isSelected && styles.selectedLabel]}>
         {label}
@@ -61,19 +75,21 @@ export const QuizOption: React.FC<QuizOptionProps> = ({
 const styles = StyleSheet.create({
   option: {
     borderWidth: 2,
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    borderRadius: 14,
+    paddingVertical: 15,
+    paddingHorizontal: 18,
     marginBottom: 10,
+    borderStyle: 'solid',
   },
   label: {
     fontSize: 15,
-    color: '#FFFFFF',
+    color: '#E5E7EB',
     fontWeight: '500',
     lineHeight: 22,
   },
   selectedLabel: {
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
+

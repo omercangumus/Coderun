@@ -22,7 +22,13 @@ export interface MentorStatus {
 export const askMentor = async (
   data: MentorAskRequest,
 ): Promise<MentorResponse> => {
-  const response = await apiClient.post<MentorResponse>(MENTOR_ASK, data);
+  const payload = {
+    message: data.question,
+    user_level: 'beginner',
+    learning_path: data.context || null,
+    attempt_count: data.attempt_count || 1,
+  };
+  const response = await apiClient.post<MentorResponse>(MENTOR_ASK, payload);
   return response.data;
 };
 

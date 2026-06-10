@@ -47,6 +47,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="mentor"
+        options={{
+          title: 'AI Mentor',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji="👻" focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="leaderboard"
         options={{
           title: 'Sıralama',

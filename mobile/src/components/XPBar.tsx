@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface XPBarProps {
   currentXp: number;
@@ -29,9 +30,14 @@ export const XPBar: React.FC<XPBarProps> = ({
         </Text>
       </View>
       <View style={styles.barBackground}>
-        <View
-          style={[styles.barFill, { width: `${clampedProgress * 100}%` }]}
-        />
+        {clampedProgress > 0 && (
+          <LinearGradient
+            colors={['#A78BFA', '#7C3AED']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[styles.barFill, { width: `${clampedProgress * 100}%` }]}
+          />
+        )}
       </View>
     </View>
   );
@@ -47,32 +53,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   levelBadge: {
-    backgroundColor: 'rgba(124,58,237,0.2)',
+    backgroundColor: 'rgba(124,58,237,0.15)',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: 'rgba(124,58,237,0.4)',
   },
   levelText: {
     color: '#A78BFA',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   xpText: {
-    color: '#9CA3AF',
+    color: '#E5E7EB',
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   barBackground: {
-    height: 8,
-    backgroundColor: '#2D2D44',
-    borderRadius: 4,
+    height: 10,
+    backgroundColor: '#1F1F35',
+    borderRadius: 5,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#2D2D44',
   },
   barFill: {
     height: '100%',
-    backgroundColor: '#7C3AED',
-    borderRadius: 4,
+    borderRadius: 5,
   },
 });
+

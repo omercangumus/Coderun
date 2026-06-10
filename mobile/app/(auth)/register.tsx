@@ -21,12 +21,10 @@ import { useHaptic } from '../../src/hooks/useHaptic';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { register, isLoading, error, clearError } = useAuthStore((s) => ({
-    register: s.register,
-    isLoading: s.status === 'loading',
-    error: s.error,
-    clearError: s.clearError,
-  }));
+  const register = useAuthStore((s) => s.register);
+  const isLoading = useAuthStore((s) => s.status === 'loading');
+  const error = useAuthStore((s) => s.error);
+  const clearError = useAuthStore((s) => s.clearError);
   const { errorNotification, successNotification } = useHaptic();
 
   const [email, setEmail] = useState('');
@@ -41,12 +39,28 @@ export default function RegisterScreen() {
       setLocalError('Geçerli bir e-posta adresi girin');
       return false;
     }
-    if (!username.trim() || username.length < 3) {
-      setLocalError('Kullanıcı adı en az 3 karakter olmalı');
+    if (!username.trim()) {
+      setLocalError('Kullanıcı adı gerekli');
       return false;
     }
-    if (password.length < 6) {
-      setLocalError('Şifre en az 6 karakter olmalı');
+    if (username.length < 3 || username.length > 30) {
+      setLocalError('Kullanıcı adı 3 ila 30 karakter arasında olmalı');
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setLocalError('Kullanıcı adı sadece harf, rakam ve alt çizgi (_) içerebilir');
+      return false;
+    }
+    if (password.length < 8) {
+      setLocalError('Şifre en az 8 karakter olmalı');
+      return false;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setLocalError('Şifre en az bir büyük harf içermelidir');
+      return false;
+    }
+    if (!/\d/.test(password)) {
+      setLocalError('Şifre en az bir rakam içermelidir');
       return false;
     }
     setLocalError(null);

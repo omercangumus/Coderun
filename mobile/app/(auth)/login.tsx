@@ -21,12 +21,10 @@ import { useHaptic } from '../../src/hooks/useHaptic';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading, error, clearError } = useAuthStore((s) => ({
-    login: s.login,
-    isLoading: s.status === 'loading',
-    error: s.error,
-    clearError: s.clearError,
-  }));
+  const login = useAuthStore((s) => s.login);
+  const isLoading = useAuthStore((s) => s.status === 'loading');
+  const error = useAuthStore((s) => s.error);
+  const clearError = useAuthStore((s) => s.clearError);
   const { errorNotification, successNotification } = useHaptic();
 
   const [email, setEmail] = useState('');
@@ -44,8 +42,8 @@ export default function LoginScreen() {
       setLocalError('Şifre gerekli');
       return false;
     }
-    if (password.length < 6) {
-      setLocalError('Şifre en az 6 karakter olmalı');
+    if (password.length < 8) {
+      setLocalError('Şifre en az 8 karakter olmalı');
       return false;
     }
     setLocalError(null);
