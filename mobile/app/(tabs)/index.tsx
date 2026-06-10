@@ -157,7 +157,7 @@ export default function HomeScreen() {
           <View style={styles.welcomeRow}>
             <View style={styles.welcomeLeft}>
               <Text style={styles.greetingText}>{greeting},</Text>
-              <Text style={styles.usernameText}>
+              <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
                 {user?.username ?? 'Geliştirici'}! 👋
               </Text>
               <Text style={styles.welcomeSub}>
@@ -345,17 +345,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
     borderBottomColor: '#1E1E30',
     backgroundColor: '#0F0F1A',
+    gap: 8,
   },
-  appBarLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  appBarLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 },
   appBarLogo: {
     color: '#A78BFA',
     fontSize: 20,
     fontWeight: '900',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  appBarTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '900' },
-  appBarSub: { color: '#6B7280', fontSize: 11, fontWeight: '600', marginTop: 1 },
-  pillsRow: { flexDirection: 'row', gap: 8 },
+  appBarTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '900', flexShrink: 1 },
+  appBarSub: { color: '#6B7280', fontSize: 11, fontWeight: '600', marginTop: 1, flexShrink: 1 },
+  pillsRow: { flexDirection: 'row', gap: 8, flexShrink: 0 },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -19,6 +19,15 @@ function TabIcon({
   );
 }
 
+function GhostTabIcon({ focused }: { focused: boolean }) {
+  return (
+    <View style={[styles.iconWrapper, focused && styles.iconWrapperFocused]}>
+      <Text style={[styles.ghostEmoji, !focused && styles.ghostEmojiDim]}>👻</Text>
+      <Text style={[styles.label, focused && styles.labelFocused]}>Mentor</Text>
+    </View>
+  );
+}
+
 export default function TabsLayout() {
   return (
     <Tabs
@@ -50,9 +59,7 @@ export default function TabsLayout() {
         name="mentor"
         options={{
           title: 'Mentor',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'sparkles' : 'sparkles-outline'} label="Mentor" focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <GhostTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -111,5 +118,12 @@ const styles = StyleSheet.create({
   labelFocused: {
     color: '#A78BFA',
     fontWeight: '700',
+  },
+  ghostEmoji: {
+    fontSize: 22,
+    lineHeight: 26,
+  },
+  ghostEmojiDim: {
+    opacity: 0.5,
   },
 });

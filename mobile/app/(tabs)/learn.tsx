@@ -1,4 +1,4 @@
-// Öğren — Modül kartları + genişletilebilir ders yol haritası
+// Öğren — Modül kartları + Duolingo tarzı zigzag ders yolu
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -24,72 +24,73 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const TYPE_ICON: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
-  multiple_choice: 'help-circle-outline',
-  true_false: 'checkmark-circle-outline',
-  fill_in_blank: 'create-outline',
-  code_editor: 'code-slash',
-  reorder: 'swap-vertical-outline',
-  multi_select: 'checkbox-outline',
-  spot_the_bug: 'bug-outline',
-  code_completion: 'construct-outline',
-  true_false_reason: 'chatbubble-outline',
-  default: 'book-outline',
-};
+const ZIGZAG: Array<'flex-start' | 'center' | 'flex-end'> = [
+  'flex-start', 'center', 'flex-end', 'center',
+];
 
-function LessonRow({ lesson, onPress }: { lesson: Lesson; onPress: () => void }) {
+function LessonNode({
+  lesson,
+  index,
+  isNext,
+  onPress,
+}: {
+  lesson: Lesson;
+  index: number;
+  isNext: boolean;
+  onPress: () => void;
+}) {
   const completed = lesson.is_completed;
   const locked = lesson.is_locked;
   const active = !completed && !locked;
 
   return (
-    <TouchableOpacity
-      style={[styles.lessonRow, active && styles.lessonRowActive]}
-      onPress={!locked ? onPress : undefined}
-      disabled={locked}
-      activeOpacity={0.7}
-    >
-      <View style={[
-        styles.lessonDot,
-        completed && styles.dotCompleted,
-        active && styles.dotActive,
-        locked && styles.dotLocked,
-      ]}>
-        {completed ? (
-          <Ionicons name="checkmark" size={13} color="#fff" />
-        ) : locked ? (
-          <Ionicons name="lock-closed" size={11} color="#374151" />
-        ) : (
-          <View style={styles.dotActiveInner} />
+    <View style={[styles.nodeOuter, { alignItems: ZIGZAG[index % 4] }]}>
+      <View style={styles.nodeInner}>
+        {isNext && (
+          <View style={styles.nextBadge}>
+            <Text style={styles.nextBadgeText}>SIRADAKİ</Text>
+            <Text style={styles.nextArrow}>▼</Text>
+          </View>
         )}
-      </View>
 
-      <View style={styles.lessonRowInfo}>
+        <TouchableOpacity
+          style={[
+            styles.node,
+            completed && styles.nodeCompleted,
+            active && styles.nodeActive,
+            locked && styles.nodeLocked,
+          ]}
+          onPress={!locked ? onPress : undefined}
+          disabled={locked}
+          activeOpacity={0.75}
+        >
+          {active && <View style={styles.nodeGlowRing} />}
+          {completed ? (
+            <Ionicons name="checkmark" size={30} color="#fff" />
+          ) : locked ? (
+            <Ionicons name="lock-closed" size={22} color="#374151" />
+          ) : (
+            <Text style={styles.nodeStarIcon}>⭐</Text>
+          )}
+        </TouchableOpacity>
+
         <Text
-          style={[styles.lessonTitle, locked && styles.lessonTitleLocked]}
+          style={[styles.nodeLabel, locked && styles.nodeLabelLocked]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {lesson.title}
         </Text>
-        <Text style={[styles.lessonType, locked && { opacity: 0.4 }]}>
-          {lesson.lesson_type?.replace(/_/g, ' ') ?? 'ders'}
-        </Text>
-      </View>
 
-      <View style={styles.lessonRowRight}>
         {!locked && (
-          <View style={[styles.xpPill, completed && styles.xpPillDone]}>
-            <Text style={[styles.xpPillText, completed && styles.xpPillTextDone]}>
-              +{lesson.xp_reward}
+          <View style={[styles.nodeXpPill, completed && styles.nodeXpPillDone]}>
+            <Text style={[styles.nodeXpText, completed && styles.nodeXpTextDone]}>
+              +{lesson.xp_reward} XP
             </Text>
           </View>
         )}
-        {active && (
-          <Ionicons name="chevron-forward" size={14} color="#7C3AED" style={{ marginLeft: 4 }} />
-        )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }
 
@@ -114,6 +115,7 @@ function ModuleCard({
   const pct = total > 0 ? (completed / total) * 100 : 0;
   const allDone = total > 0 && completed === total;
   const hasActive = lessons?.some((l) => !l.is_completed && !l.is_locked);
+  const firstActiveIdx = lessons?.findIndex((l) => !l.is_completed && !l.is_locked) ?? -1;
 
   const toggle = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -124,7 +126,13 @@ function ModuleCard({
     <View style={[styles.moduleCard, hasActive && !expanded && styles.moduleCardActive]}>
       <TouchableOpacity onPress={toggle} activeOpacity={0.8} style={styles.moduleHeader}>
         <LinearGradient
-          colors={allDone ? ['#052E16', '#064E3B'] : hasActive ? ['#1C1040', '#130E38'] : ['#111124', '#0F0F1A']}
+          colors={
+            allDone
+              ? ['#052E16', '#064E3B']
+              : hasActive
+              ? ['#1C1040', '#130E38']
+              : ['#111124', '#0F0F1A']
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.moduleHeaderGradient}
@@ -158,27 +166,36 @@ function ModuleCard({
           </View>
         </LinearGradient>
 
-        {/* İlerleme çubuğu */}
         {total > 0 && (
           <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${pct}%` as any }, allDone && styles.progressBarDone]} />
+            <View
+              style={[
+                styles.progressBarFill,
+                { width: `${pct}%` as any },
+                allDone && styles.progressBarDone,
+              ]}
+            />
           </View>
         )}
       </TouchableOpacity>
 
-      {/* Ders listesi — genişlemiş */}
       {expanded && (
-        <View style={styles.lessonListWrap}>
+        <View style={styles.lessonPathWrap}>
           {isLoading ? (
-            <ActivityIndicator size="small" color="#7C3AED" style={{ paddingVertical: 20 }} />
+            <ActivityIndicator size="small" color="#7C3AED" style={{ paddingVertical: 32 }} />
           ) : !lessons?.length ? (
             <Text style={styles.emptyText}>Bu modülde henüz ders yok.</Text>
           ) : (
             lessons.map((lesson, idx) => (
-              <View key={lesson.id}>
-                <LessonRow lesson={lesson} onPress={() => onLessonPress(lesson.id)} />
-                {idx < lessons.length - 1 && <View style={styles.lessonDivider} />}
-              </View>
+              <React.Fragment key={lesson.id}>
+                <LessonNode
+                  lesson={lesson}
+                  index={idx}
+                  isNext={idx === firstActiveIdx}
+                  onPress={() => onLessonPress(lesson.id)}
+                />
+                {idx < lessons.length - 1 && <View style={styles.pathConnector} />}
+              </React.Fragment>
             ))
           )}
         </View>
@@ -280,7 +297,12 @@ const styles = StyleSheet.create({
   },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { color: '#EF4444', fontSize: 14, fontWeight: '600', textAlign: 'center' },
-  retryBtn: { backgroundColor: '#7C3AED', borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12 },
+  retryBtn: {
+    backgroundColor: '#7C3AED',
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
   retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
   scroll: { flex: 1 },
   content: { padding: 16, gap: 12 },
@@ -337,68 +359,121 @@ const styles = StyleSheet.create({
   },
   modulePillText: { color: '#A78BFA', fontSize: 12, fontWeight: '800' },
 
-  // Progress bar
-  progressBarBg: {
-    height: 3,
-    backgroundColor: '#1E1E35',
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#7C3AED',
-  },
+  progressBarBg: { height: 3, backgroundColor: '#1E1E35' },
+  progressBarFill: { height: '100%', backgroundColor: '#7C3AED' },
   progressBarDone: { backgroundColor: '#22C55E' },
 
-  // Lesson list
-  lessonListWrap: {
-    backgroundColor: '#0A0A10',
+  // Duolingo zigzag path
+  lessonPathWrap: {
+    backgroundColor: '#070710',
     borderTopWidth: 1,
     borderTopColor: '#1E1E30',
+    paddingVertical: 20,
+    paddingHorizontal: 4,
   },
-  lessonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 13,
+
+  // Full-width row — alignItems set dynamically for zigzag position
+  nodeOuter: {
+    width: '100%',
     paddingHorizontal: 16,
-    gap: 12,
   },
-  lessonRowActive: {
-    backgroundColor: 'rgba(124,58,237,0.04)',
+
+  // Column centered around the circle
+  nodeInner: {
+    alignItems: 'center',
+    gap: 6,
   },
-  lessonDot: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+
+  // Circle node
+  node: {
+    width: 66,
+    height: 66,
+    borderRadius: 33,
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
   },
-  dotCompleted: { backgroundColor: '#16A34A' },
-  dotActive: {
-    backgroundColor: 'rgba(124,58,237,0.2)',
+  nodeActive: {
+    backgroundColor: '#7C3AED',
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.85,
+    shadowRadius: 18,
+    elevation: 14,
+  },
+  nodeCompleted: {
+    backgroundColor: '#16A34A',
+    shadowColor: '#16A34A',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  nodeLocked: {
+    backgroundColor: '#0F0F1A',
     borderWidth: 2,
-    borderColor: '#7C3AED',
+    borderColor: '#1E1E35',
   },
-  dotLocked: { backgroundColor: '#111124', borderWidth: 1.5, borderColor: '#1E1E30' },
-  dotActiveInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#7C3AED' },
+  nodeGlowRing: {
+    position: 'absolute',
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    borderWidth: 3,
+    borderColor: 'rgba(167,139,250,0.35)',
+  },
+  nodeStarIcon: { fontSize: 28 },
 
-  lessonRowInfo: { flex: 1 },
-  lessonTitle: { color: '#E5E7EB', fontSize: 14, fontWeight: '700' },
-  lessonTitleLocked: { color: '#374151' },
-  lessonType: { color: '#6B7280', fontSize: 11, marginTop: 2, fontWeight: '500', textTransform: 'capitalize' },
+  nodeLabel: {
+    color: '#E5E7EB',
+    fontSize: 11,
+    fontWeight: '700',
+    textAlign: 'center',
+    maxWidth: 110,
+  },
+  nodeLabelLocked: { color: '#374151' },
 
-  lessonRowRight: { flexDirection: 'row', alignItems: 'center' },
-  xpPill: {
-    backgroundColor: 'rgba(124,58,237,0.12)',
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 3,
+  nodeXpPill: {
+    backgroundColor: 'rgba(124,58,237,0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderWidth: 1,
-    borderColor: 'rgba(124,58,237,0.2)',
+    borderColor: 'rgba(124,58,237,0.25)',
   },
-  xpPillDone: { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.2)' },
-  xpPillText: { color: '#A78BFA', fontSize: 11, fontWeight: '800' },
-  xpPillTextDone: { color: '#22C55E' },
+  nodeXpPillDone: {
+    backgroundColor: 'rgba(34,197,94,0.12)',
+    borderColor: 'rgba(34,197,94,0.25)',
+  },
+  nodeXpText: { color: '#A78BFA', fontSize: 10, fontWeight: '800' },
+  nodeXpTextDone: { color: '#22C55E' },
 
-  lessonDivider: { height: 1, backgroundColor: '#111124', marginHorizontal: 16 },
+  // SIRADAKI badge above active circle
+  nextBadge: {
+    backgroundColor: '#5B21B6',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.4)',
+  },
+  nextBadgeText: {
+    color: '#E9D5FF',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1.2,
+  },
+  nextArrow: { color: '#A78BFA', fontSize: 8, marginTop: 1 },
+
+  // Thin line connecting nodes
+  pathConnector: {
+    width: 2,
+    height: 18,
+    backgroundColor: '#1E1E35',
+    alignSelf: 'center',
+    borderRadius: 1,
+    marginVertical: 2,
+  },
+
   emptyText: { color: '#4B5563', fontSize: 13, textAlign: 'center', paddingVertical: 20 },
 });
