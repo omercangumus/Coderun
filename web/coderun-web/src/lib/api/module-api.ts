@@ -160,6 +160,7 @@ function mapQuestion(raw: any): QuestionResponse {
     reinforcementQuestion: raw.reinforcement_question
       ? mapQuestion(raw.reinforcement_question)
       : null,
+    difficulty: raw.difficulty ?? null,
     // Code assignment fields
     language: raw.language ?? null,
     starterCode: raw.starter_code ?? null,

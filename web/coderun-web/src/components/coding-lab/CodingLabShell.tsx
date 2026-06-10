@@ -166,7 +166,7 @@ export function CodingLabShell({
           )}
           <div className="min-h-0 flex-1 overflow-hidden">{editorPanel}</div>
           {resultsPanel && (
-            <div className="max-h-[min(40vh,320px)] shrink-0 overflow-hidden border-t border-outline-variant">
+            <div className="h-60 max-h-[40vh] shrink-0 overflow-hidden border-t border-outline-variant">
               {resultsPanel}
             </div>
           )}
