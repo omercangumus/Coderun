@@ -859,9 +859,19 @@ function LessonContent({
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
 
   const isQuestionAnswered = currentQuestion
-    ? currentQuestion.question_type === 'code_editor'
-      ? currentAnswer === '__code_editor__'
-      : currentAnswer !== undefined
+    ? (() => {
+        const type = currentQuestion.question_type;
+        if (type === 'code_editor') return currentAnswer === '__code_editor__';
+        if (type === 'spot_the_bug') {
+          const parts = typeof currentAnswer === 'string' ? currentAnswer.split('|') : [];
+          return parts.length === 2 && !!parts[0] && !!parts[1];
+        }
+        if (type === 'true_false_reason') {
+          const parts = typeof currentAnswer === 'string' ? currentAnswer.split('|') : [];
+          return parts.length === 2 && !!parts[0] && parts[1] !== '';
+        }
+        return currentAnswer !== undefined;
+      })()
     : false;
 
   const SUGGESTION_PATTERN = /ÖNERİ:\s*(.+?)(?:\n|$)/i;

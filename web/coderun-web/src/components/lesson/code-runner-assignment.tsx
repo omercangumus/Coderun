@@ -160,8 +160,11 @@ function SmartRunOutput({ result }: { result: CodeRunResponse }) {
 function SmartTestRow({ result, index }: { result: TestCaseResult; index: number }) {
   if (result.hidden) {
     return (
-      <div className="flex items-center justify-between border-b border-gray-800/60 px-4 py-3">
+      <div className={cn('flex items-center justify-between border-b border-gray-800/60 px-4 py-3', result.passed ? 'bg-green-950/10' : 'bg-red-950/5')}>
         <div className="flex items-center gap-2.5">
+          <span className={cn('text-base font-bold', result.passed ? 'text-green-400' : 'text-red-400')}>
+            {result.passed ? '✓' : '✗'}
+          </span>
           <span className="text-slate-500">🔒</span>
           <span className="text-sm text-slate-500">Gizli doğrulama</span>
         </div>

@@ -64,9 +64,19 @@ export default function LessonPage({
   const isLastQuestion = currentQuestionIndex === total - 1;
 
   const isQuestionAnswered = currentQuestion
-    ? currentQuestion.questionType === 'code_editor'
-      ? currentAnswer === '__code_editor__'
-      : !!currentAnswer
+    ? (() => {
+        const type = currentQuestion.questionType;
+        if (type === 'code_editor') return currentAnswer === '__code_editor__';
+        if (type === 'spot_the_bug') {
+          const parts = currentAnswer?.split('|') ?? [];
+          return parts.length === 2 && !!parts[0] && !!parts[1];
+        }
+        if (type === 'true_false_reason') {
+          const parts = currentAnswer?.split('|') ?? [];
+          return parts.length === 2 && !!parts[0] && parts[1] !== '';
+        }
+        return !!currentAnswer;
+      })()
     : false;
   const answeredIndices = lesson?.questions
     .map((q, i) => (answers[q.id] ? i : -1))
