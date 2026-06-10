@@ -291,7 +291,22 @@ export async function evaluateTestCases(
 
     const actual = result.stdout.trim();
     const expected = tc.expectedStdout.trim();
-    const passed = actual === expected && !result.timedOut;
+
+    const normalize = (str: string) => {
+      const turkishMap: Record<string, string> = {
+        'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c'
+      };
+      let s = str.toLowerCase();
+      for (const [search, replace] of Object.entries(turkishMap)) {
+        s = s.split(search).join(replace);
+      }
+      return s
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
+    const passed = normalize(actual) === normalize(expected) && !result.timedOut;
 
     lastStdout = result.stdout;
     lastStderr = result.stderr;
