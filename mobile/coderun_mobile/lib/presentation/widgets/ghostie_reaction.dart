@@ -116,14 +116,12 @@ class _GhostieReactionState extends State<GhostieReaction> {
         child: SizedBox(
           width: widget.size,
           height: widget.size,
-          child: ClipOval(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: _videoController!.value.size.width,
-                height: _videoController!.value.size.height,
-                child: VideoPlayer(_videoController!),
-              ),
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: SizedBox(
+              width: _videoController!.value.size.width,
+              height: _videoController!.value.size.height,
+              child: VideoPlayer(_videoController!),
             ),
           ),
         ),
@@ -151,6 +149,7 @@ class _GhostieReactionState extends State<GhostieReaction> {
     final glowingVisual = showGlow
         ? Container(
             decoration: BoxDecoration(
+              color: Colors.transparent,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(

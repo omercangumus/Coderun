@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/assets/ghostie_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/lesson_result_model.dart';
 import '../../../providers/gamification_provider.dart';
 import '../../../providers/lesson_provider.dart';
 import '../../../providers/module_provider.dart';
 import '../../widgets/badge_chip.dart';
+import '../../widgets/ghostie_reaction.dart';
 
 class LessonResultScreen extends ConsumerStatefulWidget {
   final LessonResultModel result;
@@ -100,17 +102,12 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
     return Column(
       children: [
         const SizedBox(height: 24),
-        // Tik animasyonu
         ScaleTransition(
           scale: _scaleAnim,
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.success,
-            ),
-            child: const Icon(Icons.check, color: Colors.white, size: 48),
+          child: const GhostieReaction(
+            state: GhostieState.veryHappy,
+            size: 120,
+            preferAnimation: true,
           ),
         ),
         const SizedBox(height: 16),
@@ -200,14 +197,10 @@ class _LessonResultScreenState extends ConsumerState<LessonResultScreen>
         const SizedBox(height: 24),
         ScaleTransition(
           scale: _scaleAnim,
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.error,
-            ),
-            child: const Icon(Icons.close, color: Colors.white, size: 48),
+          child: const GhostieReaction(
+            state: GhostieState.wrong,
+            size: 120,
+            preferAnimation: true,
           ),
         ),
         const SizedBox(height: 16),

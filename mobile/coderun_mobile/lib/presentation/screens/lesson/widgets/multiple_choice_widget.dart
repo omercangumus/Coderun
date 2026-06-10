@@ -49,6 +49,7 @@ class MultipleChoiceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final choices = _getChoices();
+    final surface = Theme.of(context).colorScheme.surface;
     const labels = ['A', 'B', 'C', 'D'];
 
     return Column(
@@ -56,10 +57,10 @@ class MultipleChoiceWidget extends StatelessWidget {
       children: [
         Text(
           question.questionText,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 24),
         ...List.generate(choices.length, (index) {
@@ -72,7 +73,7 @@ class MultipleChoiceWidget extends StatelessWidget {
               choice != correctAnswer;
 
           Color borderColor = AppColors.greyLight;
-          Color bgColor = Colors.white;
+          Color bgColor = surface;
           if (isCorrect) {
             borderColor = AppColors.success;
             bgColor = AppColors.success.withValues(alpha: 0.1);
