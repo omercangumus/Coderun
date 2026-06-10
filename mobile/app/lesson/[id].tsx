@@ -553,10 +553,23 @@ function QuestionCard({
         if (res.passed) {
           onAnswer('__code_editor__');
         } else {
-          onAnswer(code); // save code progress but don't mark as solved
+          onAnswer(code);
         }
-      } catch (err) {
-        setEditorError(err instanceof Error ? err.message : 'Kod çalıştırılamadı');
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (
+          msg.includes('503') ||
+          msg.includes('502') ||
+          msg.toLowerCase().includes('docker') ||
+          msg.toLowerCase().includes('network') ||
+          msg.toLowerCase().includes('unavailable')
+        ) {
+          setEditorError('Kod çalıştırıcı şu anda çevrimdışı. Docker çalışıyor mu? (docker compose up -d backend)');
+        } else if (msg.includes('422') || msg.toLowerCase().includes('test senaryosu')) {
+          setEditorError('Bu soru için test senaryosu yapılandırılmamış. Yöneticinizle iletişime geçin.');
+        } else {
+          setEditorError(`Kod çalıştırılamadı: ${msg}`);
+        }
       } finally {
         setRunning(false);
       }
@@ -597,38 +610,76 @@ function QuestionCard({
 
         {sandboxResult && (
           <View style={[styles.sandboxResultBox, sandboxResult.passed ? styles.resultPassed : styles.resultFailed]}>
+            {/* Header */}
             <View style={styles.resultBoxHeader}>
               <Text style={[styles.sandboxResultTitle, { color: sandboxResult.passed ? '#22C55E' : '#EF4444' }]}>
-                {sandboxResult.passed ? '● Testler Başarıyla Geçti!' : '● Testler Başarısız Oldu'}
+                {sandboxResult.passed ? '✓ Tüm Testler Geçti!' : '✗ Testler Başarısız Oldu'}
               </Text>
             </View>
-            {sandboxResult.stdout ? (
-              <View style={styles.outputConsole}>
-                <Text style={styles.outputTextLabel}>$ python solution.py (stdout)</Text>
-                <Text style={styles.outputText}>{sandboxResult.stdout}</Text>
+
+            {/* Per-test breakdown */}
+            {sandboxResult.test_results && sandboxResult.test_results.length > 0 && (
+              <View style={styles.testCasesWrap}>
+                {sandboxResult.test_results.map((tc, i) => (
+                  <View key={i} style={[styles.testCaseRow, !tc.passed && styles.testCaseRowFail]}>
+                    <Text style={[styles.testCaseIcon, { color: tc.passed ? '#22C55E' : '#EF4444' }]}>
+                      {tc.passed ? '✓' : '✗'}
+                    </Text>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={styles.testCaseName} numberOfLines={1}>{tc.name}</Text>
+                      {!tc.passed && tc.expected_stdout != null && (
+                        <Text style={styles.testCaseExpected} numberOfLines={2}>
+                          Beklenen: "{tc.expected_stdout}"
+                        </Text>
+                      )}
+                      {!tc.passed && !!tc.stdout && (
+                        <Text style={styles.testCaseActual} numberOfLines={2}>
+                          Alınan: "{tc.stdout.trim()}"
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                ))}
               </View>
-            ) : null}
-            {sandboxResult.stderr ? (
+            )}
+
+            {/* Feedback message */}
+            {!!sandboxResult.feedback && (
+              <Text style={[styles.sandboxFeedback, { color: sandboxResult.passed ? '#22C55E' : '#FB923C' }]}>
+                {sandboxResult.feedback}
+              </Text>
+            )}
+
+            {/* Stderr */}
+            {!!sandboxResult.stderr && !sandboxResult.passed && (
               <View style={styles.outputConsoleError}>
-                <Text style={styles.errorTextLabel}>$ traceback (stderr)</Text>
+                <Text style={styles.errorTextLabel}>Hata</Text>
                 <Text style={styles.errorConsoleText}>{sandboxResult.stderr}</Text>
               </View>
-            ) : null}
+            )}
           </View>
         )}
 
-        {!answered && (
+        {!answered ? (
           <TouchableOpacity
             style={[styles.runButton, running && styles.runButtonDisabled]}
             onPress={handleRunCode}
             disabled={running}
           >
             {running ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <ActivityIndicator color="#FFFFFF" size="small" />
+                <Text style={styles.runButtonText}>Çalıştırılıyor...</Text>
+              </View>
             ) : (
-              <Text style={styles.runButtonText}>⚙ Kodu Çalıştır & Test Et</Text>
+              <Text style={styles.runButtonText}>▶  Çalıştır & Test Et</Text>
             )}
           </TouchableOpacity>
+        ) : (
+          <View style={styles.codePassedBanner}>
+            <Text style={styles.codePassedIcon}>✓</Text>
+            <Text style={styles.codePassedText}>Testler geçti! "Devam Et →" butonuna bas.</Text>
+          </View>
         )}
       </View>
     );
@@ -744,6 +795,8 @@ function LessonContent({
   const [result, setResult] = useState<LessonResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [questionAnswered, setQuestionAnswered] = useState(false);
+
   const [mentorOpen, setMentorOpen] = useState(false);
   const [mentorMessages, setMentorMessages] = useState<Message[]>([]);
   const [mentorInput, setMentorInput] = useState('');
@@ -788,6 +841,7 @@ function LessonContent({
 
   useEffect(() => {
     setGhostieState('thinking');
+    setQuestionAnswered(false);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -826,6 +880,13 @@ function LessonContent({
     if (!currentQuestion) return;
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }));
     setGhostieState('happy');
+
+    const isCodeEditor = currentQuestion.question_type === 'code_editor';
+    if (!isCodeEditor && answer !== undefined) {
+      setQuestionAnswered(true);
+    } else if (isCodeEditor && answer === '__code_editor__') {
+      setQuestionAnswered(true);
+    }
   };
 
   const handleNext = () => {
@@ -955,7 +1016,7 @@ function LessonContent({
             question={currentQuestion}
             selectedAnswer={currentAnswer}
             onAnswer={handleAnswer}
-            answered={false}
+            answered={questionAnswered}
           />
         )}
 
@@ -974,33 +1035,46 @@ function LessonContent({
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.nextButton,
-            !canProceed && styles.nextButtonDisabled,
-          ]}
-          onPress={handleNext}
-          disabled={!canProceed || submitting}
-          activeOpacity={0.85}
-        >
-          <LinearGradient
-            colors={canProceed ? ['#7C3AED', '#5B21B6'] : ['#1E1E30', '#1A1A2E']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.nextButtonGradient}
+      {/* Footer — answered state */}
+      {canProceed ? (
+        <View style={styles.footerAnswered}>
+          <View style={styles.footerAnsweredHint}>
+            <Text style={styles.footerAnsweredLabel}>
+              {currentQuestion?.question_type === 'code_editor'
+                ? '✓ Testler geçti!'
+                : '✓ Cevap kaydedildi'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.nextButtonReady}
+            onPress={handleNext}
+            disabled={submitting}
+            activeOpacity={0.85}
           >
             {submitting ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
             ) : (
-              <Text style={styles.nextButtonText}>
-                {isLastQuestion ? 'Tamamla' : 'Devam Et →'}
+              <Text style={styles.nextButtonReadyText}>
+                {isLastQuestion ? 'Dersi Bitir 🎉' : 'Devam Et →'}
               </Text>
             )}
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.footerIdle}>
+          <TouchableOpacity
+            style={styles.nextButtonIdle}
+            disabled
+            activeOpacity={1}
+          >
+            <Text style={styles.nextButtonIdleText}>
+              {currentQuestion?.question_type === 'code_editor'
+                ? 'Kodu çalıştır ve testleri geç'
+                : 'Bir seçenek seç...'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Ghostie AI Mentor Modal */}
       <Modal
@@ -1584,15 +1658,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   runButtonDisabled: {
     opacity: 0.6,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   runButtonText: {
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
   },
+
+  // Code passed banner
+  codePassedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'rgba(34,197,94,0.1)',
+    borderRadius: 14,
+    padding: 14,
+    marginTop: 8,
+    borderWidth: 1.5,
+    borderColor: 'rgba(34,197,94,0.3)',
+  },
+  codePassedIcon: { fontSize: 20, color: '#22C55E' },
+  codePassedText: { color: '#22C55E', fontSize: 14, fontWeight: '700', flex: 1 },
+
+  // Test case breakdown
+  testCasesWrap: { gap: 8, marginTop: 4 },
+  testCaseRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 10,
+    padding: 10,
+  },
+  testCaseRowFail: { backgroundColor: 'rgba(239,68,68,0.06)' },
+  testCaseIcon: { fontSize: 14, fontWeight: '900', lineHeight: 20, flexShrink: 0 },
+  testCaseName: { color: '#D1D5DB', fontSize: 13, fontWeight: '700' },
+  testCaseExpected: { color: '#22C55E', fontSize: 11, fontFamily: 'monospace', marginTop: 3 },
+  testCaseActual: { color: '#EF4444', fontSize: 11, fontFamily: 'monospace', marginTop: 1 },
+  sandboxFeedback: { fontSize: 13, fontWeight: '600', marginTop: 4 },
   sandboxResultBox: {
     borderRadius: 14,
     padding: 16,
@@ -1664,18 +1779,61 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Result & Page Structure
-  footer: { padding: 20, paddingBottom: 24, backgroundColor: '#0F0F1A', borderTopWidth: 1.5, borderTopColor: '#1E1E30' },
-  nextButton: {
-    borderRadius: 16,
-    overflow: 'hidden',
+  // Footer states
+  footerAnswered: {
+    backgroundColor: '#0D1F12',
+    borderTopWidth: 2,
+    borderTopColor: '#16A34A',
+    padding: 16,
+    paddingBottom: 24,
+    gap: 10,
   },
-  nextButtonGradient: {
-    paddingVertical: 16,
+  footerAnsweredHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  footerAnsweredLabel: {
+    color: '#22C55E',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  nextButtonReady: {
+    backgroundColor: '#16A34A',
+    borderRadius: 16,
+    paddingVertical: 17,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
+    shadowColor: '#22C55E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
   },
+  nextButtonReadyText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900', letterSpacing: 0.3 },
+
+  footerIdle: {
+    backgroundColor: '#0F0F1A',
+    borderTopWidth: 1.5,
+    borderTopColor: '#1E1E30',
+    padding: 16,
+    paddingBottom: 24,
+  },
+  nextButtonIdle: {
+    backgroundColor: '#1A1A2A',
+    borderRadius: 16,
+    paddingVertical: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+  },
+  nextButtonIdleText: { color: '#4B5563', fontSize: 15, fontWeight: '700' },
+
+  // Legacy (keep for error screen)
+  nextButton: { borderRadius: 16, overflow: 'hidden' },
+  nextButtonGradient: { paddingVertical: 16, alignItems: 'center', justifyContent: 'center', borderRadius: 16 },
   nextButtonDisabled: { opacity: 0.5 },
   nextButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   errorText: { color: '#EF4444', fontSize: 15, fontFamily: 'monospace', fontWeight: '600' },
