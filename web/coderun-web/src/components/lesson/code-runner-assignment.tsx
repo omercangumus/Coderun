@@ -468,11 +468,13 @@ export function CodeRunnerAssignment({
     setFeedbackState('none');
 
     try {
-      const testCases = question.testCases ?? [];
+      const allTestCases = question.testCases ?? [];
+      const publicTests = allTestCases.filter((tc) => !tc.hidden);
+      const hasHiddenTests = allTestCases.some((tc) => tc.hidden);
       let outcome;
 
-      if (testCases.length === 0) {
-        // Test senaryosu yok: sadece kodun hata vermeden çalışıp çalışmadığını kontrol et
+      if (allTestCases.length === 0) {
+        // Test senaryosu yok: sadece kodun çalışıp çalışmadığını kontrol et
         const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
         outcome = {
           passed: result.exitCode === 0,
@@ -482,25 +484,33 @@ export function CodeRunnerAssignment({
           testResults: [],
           feedback: result.exitCode === 0 ? 'Kod başarıyla çalıştı! ✓' : 'Kodda hata var, kontrol et.',
         };
-        setSubmitResult(outcome);
+      } else if (!hasHiddenTests) {
+        // Sadece public testler: Pyodide ile değerlendir
+        outcome = await evaluateTestCases(code, publicTests, question.maxRuntimeMs ?? 5000);
       } else {
-        // Test senaryoları var: backend'e gönder (hidden testler sadece orada değerlendirilebilir)
-        const { codeApi } = await import('@/lib/api/code-api');
-        const backendResult = await codeApi.submitCode({
-          questionId: question.id,
-          code,
-          language: 'python',
-        });
-        outcome = {
-          passed: backendResult.passed,
-          score: backendResult.score,
-          stdout: backendResult.stdout,
-          stderr: backendResult.stderr,
-          testResults: backendResult.testResults,
-          feedback: backendResult.feedback,
-        };
-        setSubmitResult(outcome);
+        // Hidden test var: backend'e gönder
+        try {
+          const { codeApi } = await import('@/lib/api/code-api');
+          const backendResult = await codeApi.submitCode({
+            questionId: question.id,
+            code,
+            language: 'python',
+          });
+          outcome = {
+            passed: backendResult.passed,
+            score: backendResult.score,
+            stdout: backendResult.stdout,
+            stderr: backendResult.stderr,
+            testResults: backendResult.testResults,
+            feedback: backendResult.feedback,
+          };
+        } catch {
+          // Backend erişilemez: sadece public testleri değerlendir
+          outcome = await evaluateTestCases(code, publicTests, question.maxRuntimeMs ?? 5000);
+        }
       }
+
+      setSubmitResult(outcome);
 
       if (outcome.passed) {
         setFeedbackState('correct');
