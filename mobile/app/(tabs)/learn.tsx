@@ -1,6 +1,6 @@
 // Öğren ekranı — Flutter learn_tab.dart'tan, modül/ders listesi
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getModules, getLessons } from '../../src/api/lessons';
 import type { Module, Lesson } from '../../src/types/lesson';
@@ -184,10 +184,18 @@ function ModuleCard({ module }: { module: Module }) {
 }
 
 export default function LearnScreen() {
+  const queryClient = useQueryClient();
   const { data: modules, isLoading, error, refetch } = useQuery({
     queryKey: ['modules'],
     queryFn: getModules,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    }, [refetch, queryClient])
+  );
 
   return (
     <SafeAreaView style={styles.safe}>

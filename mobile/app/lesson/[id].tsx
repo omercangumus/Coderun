@@ -1,5 +1,4 @@
-// Ders/Quiz ekranı — Flutter lesson_screen.dart'tan, zengin UI/UX tasarımıyla yeniden yazıldı.
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -9,6 +8,10 @@ import {
   View,
   TextInput,
   Dimensions,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+  FlatList,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,12 +19,20 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { fetchLessonDetail, submitLessonAnswers } from '../../src/api/lessons';
 import { submitCode } from '../../src/api/sandbox';
+import { askMentor } from '../../src/api/mentor';
 import type { CodeRunResult } from '../../src/api/sandbox';
 import type { Question, LessonResult } from '../../src/types/lesson';
 import { QuizOption } from '../../src/components/QuizOption';
 import { GhostieImage } from '../../src/components/GhostieImage';
 import type { GhostieState } from '../../src/components/GhostieImage';
 import { useHaptic } from '../../src/hooks/useHaptic';
+
+interface Message {
+  id: string;
+  text: string;
+  sender: 'user' | 'ghostie';
+  timestamp: Date;
+}
 
 interface AnswerMap {
   [questionId: string]: unknown;
@@ -514,6 +525,14 @@ function QuestionCard({
       return starter;
     });
 
+    useEffect(() => {
+      if (typeof selectedAnswer === 'string' && selectedAnswer && selectedAnswer !== '__code_editor__') {
+        setCode(selectedAnswer);
+      } else if (!selectedAnswer) {
+        setCode(starter);
+      }
+    }, [selectedAnswer, starter]);
+
     const [sandboxResult, setSandboxResult] = useState<CodeRunResult | null>(null);
     const [running, setRunning] = useState(false);
     const [editorError, setEditorError] = useState<string | null>(null);
@@ -660,16 +679,43 @@ function ResultScreen({
   );
 }
 
+function attemptLabel(count: number): string {
+  if (count <= 1) return 'İpucu';
+  if (count === 2) return 'Açık İpucu';
+  if (count === 3) return 'Örnek';
+  return 'Öneri';
+}
+
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { successNotification, errorNotification } = useHaptic();
+  const { lightImpact, successNotification, errorNotification } = useHaptic();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [ghostieState, setGhostieState] = useState<GhostieState>('thinking');
   const [result, setResult] = useState<LessonResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Mentor Chat Modal State
+  const [mentorOpen, setMentorOpen] = useState(false);
+  const [mentorMessages, setMentorMessages] = useState<Message[]>([]);
+  const [mentorInput, setMentorInput] = useState('');
+  const [mentorLoading, setMentorLoading] = useState(false);
+  const [mentorGhostieState, setMentorGhostieState] = useState<GhostieState>('idle');
+  const [attemptCount, setAttemptCount] = useState(1);
+  const [lastSuggestion, setLastSuggestion] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList>(null);
+
+  // Reset mentor chat when current question changes
+  useEffect(() => {
+    setMentorMessages([]);
+    setMentorGhostieState('idle');
+    setMentorInput('');
+    setMentorLoading(false);
+    setAttemptCount(1);
+    setLastSuggestion(null);
+  }, [currentIndex]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['lessonDetail', id],
@@ -688,12 +734,13 @@ export default function LessonScreen() {
 
   const submitMutation = useMutation({
     mutationFn: (ans: AnswerMap) =>
-      submitLessonAnswers(id, {
-        answers: Object.entries(ans).map(([question_id, answer]) => ({
+      submitLessonAnswers(
+        id,
+        Object.entries(ans).map(([question_id, answer]) => ({
           question_id,
           answer,
-        })),
-      }),
+        }))
+      ),
     onSuccess: (res) => {
       setResult(res);
       if (res.passed) {
@@ -702,6 +749,12 @@ export default function LessonScreen() {
       } else {
         errorNotification();
         setGhostieState('sad');
+      }
+    },
+    onError: (err) => {
+      console.error('[LessonScreen] submitLessonAnswers error:', err);
+      if (err && typeof err === 'object' && 'response' in err) {
+        console.error('[LessonScreen] API submit error response data:', (err as any).response?.data);
       }
     },
   });
@@ -743,6 +796,94 @@ export default function LessonScreen() {
     ? answers[currentQuestion.id]
     : undefined;
 
+  const isQuestionAnswered = currentQuestion
+    ? currentQuestion.question_type === 'code_editor'
+      ? currentAnswer === '__code_editor__'
+      : currentAnswer !== undefined
+    : false;
+
+  const SUGGESTION_PATTERN = /ÖNERİ:\s*(.+?)(?:\n|$)/i;
+
+  const parseMentorSuggestion = (content: string) => {
+    const match = content.match(SUGGESTION_PATTERN);
+    if (!match) {
+      return { displayText: content, suggestion: null };
+    }
+    const suggestion = match[1].trim().replace(/^['"`]|['"`]$/g, '');
+    const displayText = content.replace(SUGGESTION_PATTERN, '').trimEnd();
+    return { displayText: displayText || content, suggestion };
+  };
+
+  const handleSendMentorMessage = async (text: string) => {
+    if (!text.trim() || mentorLoading) return;
+
+    lightImpact();
+    const userMsg: Message = {
+      id: Math.random().toString(),
+      text: text.trim(),
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMentorMessages((prev) => [...prev, userMsg]);
+    setMentorInput('');
+    setMentorLoading(true);
+    setMentorGhostieState('thinking');
+
+    try {
+      const res = await askMentor({
+        question: userMsg.text,
+        user_level: 'beginner',
+        learning_path: data?.lesson?.module_id || undefined,
+        attempt_count: attemptCount,
+        question_text: currentQuestion?.question_text || undefined,
+        lesson_title: data?.lesson?.title || undefined,
+        question_type: currentQuestion?.question_type || undefined,
+        code_block: currentQuestion?.code_block || currentQuestion?.starter_code || undefined,
+      });
+
+      const { displayText, suggestion } = parseMentorSuggestion(res.answer);
+
+      const nextAttempt = attemptCount + 1;
+      setAttemptCount(nextAttempt);
+
+      if (suggestion) {
+        setLastSuggestion(suggestion);
+      }
+
+      const ghostieMsg: Message = {
+        id: Math.random().toString(),
+        text: displayText,
+        sender: 'ghostie',
+        timestamp: new Date(),
+      };
+
+      setMentorMessages((prev) => [...prev, ghostieMsg]);
+      setMentorGhostieState('happy');
+      successNotification();
+    } catch (err) {
+      const errorMsg: Message = {
+        id: Math.random().toString(),
+        text: 'Bağlantı kurulamadı. Lütfen tekrar dene! 👻',
+        sender: 'ghostie',
+        timestamp: new Date(),
+      };
+      setMentorMessages((prev) => [...prev, errorMsg]);
+      setMentorGhostieState('sad');
+      errorNotification();
+    } finally {
+      setMentorLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [mentorMessages, mentorLoading]);
+
   if (result) {
     return (
       <SafeAreaView style={styles.safe}>
@@ -770,7 +911,7 @@ export default function LessonScreen() {
   };
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
-  const canProceed = currentAnswer !== undefined;
+  const canProceed = isQuestionAnswered;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -792,9 +933,14 @@ export default function LessonScreen() {
             {currentIndex + 1} / {totalQuestions}
           </Text>
         </View>
-        <View style={styles.ghostieHeaderBox}>
+        <TouchableOpacity
+          onPress={() => setMentorOpen(true)}
+          style={styles.ghostieHeaderBox}
+          activeOpacity={0.7}
+        >
           <GhostieImage state={ghostieState} size={36} />
-        </View>
+          <View style={styles.ghostieIndicatorDot} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -840,6 +986,156 @@ export default function LessonScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </View>
+
+      {/* Ghostie AI Mentor Modal */}
+      <Modal
+        visible={mentorOpen}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setMentorOpen(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          {/* Header */}
+          <View style={styles.modalHeader}>
+            <View style={styles.modalHeaderGhostie}>
+              <GhostieImage state={mentorGhostieState} size={42} />
+              <View>
+                <View style={styles.modalHeaderRow}>
+                  <Text style={styles.modalHeaderTitle}>Ghostie AI Mentor</Text>
+                  <View style={styles.attemptBadge}>
+                    <Text style={styles.attemptBadgeText}>{attemptLabel(attemptCount)}</Text>
+                  </View>
+                </View>
+                <Text style={styles.modalHeaderSubtitle}>
+                  {mentorLoading ? 'Düşünüyor...' : 'Sana yardımcı olmak için hazır 👻'}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => setMentorOpen(false)}
+              style={styles.modalCloseBtn}
+            >
+              <Text style={styles.modalCloseText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Chat content */}
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+          >
+            {mentorMessages.length === 0 ? (
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={styles.modalWelcomeContainer}
+                showsVerticalScrollIndicator={false}
+              >
+                <GhostieImage state="happy" size={80} />
+                <Text style={styles.modalWelcomeTitle}>Takıldın mı? Ghostie Yanında! 👻</Text>
+                <Text style={styles.modalWelcomeText}>
+                  Şu an çözdüğün soruyla alakalı benden ipucu isteyebilir, yazdığın kodun neden hata verdiğini sorabilirsin.
+                </Text>
+
+                <Text style={styles.modalSuggestionHeader}>YARDIMCI SORULAR</Text>
+                <View style={styles.modalSuggestionsList}>
+                  {[
+                    'Bana bu soruda ipucu ver 💡',
+                    currentQuestion?.question_type === 'code_editor'
+                      ? 'Yazdığım kod neden hata veriyor? 💻'
+                      : 'Bu sorunun mantığını açıklar mısın? 🧠',
+                    'Python\'da bu konu nasıl çalışır? 🐍',
+                  ].map((suggestion) => (
+                    <TouchableOpacity
+                      key={suggestion}
+                      style={styles.modalSuggestionCard}
+                      onPress={() => handleSendMentorMessage(suggestion)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.modalSuggestionText}>{suggestion}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            ) : (
+              <FlatList
+                ref={flatListRef}
+                data={mentorMessages}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.modalListContent}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const isUser = item.sender === 'user';
+                  return (
+                    <View style={[styles.modalMessageRow, isUser ? styles.rowUser : styles.rowGhostie]}>
+                      {!isUser && (
+                        <View style={styles.avatarMini}>
+                          <GhostieImage state={mentorGhostieState === 'thinking' ? 'thinking' : 'idle'} size={24} />
+                        </View>
+                      )}
+                      <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleGhostie]}>
+                        <Text style={[styles.bubbleText, isUser ? styles.bubbleTextUser : styles.bubbleTextGhostie]}>
+                          {item.text}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                }}
+                ListFooterComponent={
+                  mentorLoading ? (
+                    <View style={styles.modalMessageRow}>
+                      <View style={styles.avatarMini}>
+                        <GhostieImage state="thinking" size={24} />
+                      </View>
+                      <View style={styles.modalTypingBubble}>
+                        <ActivityIndicator size="small" color="#A78BFA" />
+                      </View>
+                    </View>
+                  ) : null
+                }
+              />
+            )}
+
+            {/* Suggestion Fill Button */}
+            {lastSuggestion && attemptCount >= 4 && (
+              <View style={styles.modalSuggestionFillContainer}>
+                <TouchableOpacity
+                  style={styles.modalSuggestionFillBtn}
+                  onPress={() => {
+                    handleAnswer(lastSuggestion);
+                    setMentorOpen(false);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalSuggestionFillText}>
+                    💡 Öneriyi Uygula: "{lastSuggestion}"
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Input */}
+            <View style={styles.modalInputBar}>
+              <TextInput
+                style={styles.modalTextInput}
+                value={mentorInput}
+                onChangeText={setMentorInput}
+                placeholder="Ghostie'ye sor..."
+                placeholderTextColor="#6B7280"
+                onSubmitEditing={() => handleSendMentorMessage(mentorInput)}
+                editable={!mentorLoading}
+              />
+              <TouchableOpacity
+                style={[styles.modalSendBtn, (!mentorInput.trim() || mentorLoading) && styles.modalSendBtnDisabled]}
+                onPress={() => handleSendMentorMessage(mentorInput)}
+                disabled={!mentorInput.trim() || mentorLoading}
+              >
+                <Text style={styles.modalSendText}>Gönder</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -893,6 +1189,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1.5,
     borderColor: '#1E1E35',
+    position: 'relative',
+  },
+  ghostieIndicatorDot: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#10B981',
+    borderWidth: 1.5,
+    borderColor: '#0F0F1A',
   },
   scroll: { flex: 1 },
   content: { padding: 20 },
@@ -1355,4 +1663,218 @@ const styles = StyleSheet.create({
   resultStatValue: { color: '#A78BFA', fontSize: 32, fontWeight: '900' },
   resultStatLabel: { color: '#9CA3AF', fontSize: 14, fontWeight: '600' },
   disabledClick: { opacity: 0.5 },
+
+  // Mentor Chat Modal specific styles
+  modalContainer: { flex: 1, backgroundColor: '#0A0A12' },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#1E1E30',
+    backgroundColor: '#0F0F1A',
+  },
+  modalHeaderGhostie: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  modalHeaderTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  modalHeaderSubtitle: {
+    color: '#10B981',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#1E1E30',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+  },
+  modalCloseText: { color: '#E5E7EB', fontSize: 13, fontWeight: '700' },
+  modalWelcomeContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    paddingTop: 40,
+    gap: 16,
+  },
+  modalWelcomeTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  modalWelcomeText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 10,
+  },
+  modalSuggestionHeader: {
+    color: '#6B7280',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginTop: 24,
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+  },
+  modalSuggestionsList: {
+    width: '100%',
+    gap: 10,
+  },
+  modalSuggestionCard: {
+    width: '100%',
+    backgroundColor: '#111124',
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+    borderRadius: 14,
+    padding: 16,
+  },
+  modalSuggestionText: {
+    color: '#A78BFA',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  modalListContent: {
+    padding: 16,
+    gap: 14,
+  },
+  modalMessageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+    maxWidth: '85%',
+  },
+  modalTypingBubble: {
+    backgroundColor: '#111124',
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+    borderRadius: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  modalInputBar: {
+    flexDirection: 'row',
+    padding: 12,
+    borderTopWidth: 1.5,
+    borderTopColor: '#1E1E30',
+    backgroundColor: '#0F0F1A',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modalTextInput: {
+    flex: 1,
+    backgroundColor: '#111124',
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+    borderRadius: 24,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    color: '#FFFFFF',
+    fontSize: 14,
+  },
+  modalSendBtn: {
+    backgroundColor: '#7C3AED',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  modalSendBtnDisabled: {
+    backgroundColor: '#1E1E30',
+    opacity: 0.5,
+  },
+  modalSendText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  rowUser: {
+    alignSelf: 'flex-end',
+  },
+  rowGhostie: {
+    alignSelf: 'flex-start',
+  },
+  avatarMini: {
+    width: 24,
+    height: 24,
+    marginBottom: 2,
+  },
+  bubble: {
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 4,
+  },
+  bubbleUser: {
+    backgroundColor: '#7C3AED',
+    borderBottomRightRadius: 4,
+  },
+  bubbleGhostie: {
+    backgroundColor: '#111124',
+    borderBottomLeftRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#2D2D4B',
+  },
+  bubbleText: {
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  bubbleTextUser: {
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
+  bubbleTextGhostie: {
+    color: '#E5E7EB',
+  },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  attemptBadge: {
+    backgroundColor: 'rgba(167,139,250,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  attemptBadgeText: {
+    color: '#A78BFA',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  modalSuggestionFillContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1.5,
+    borderTopColor: '#1E1E30',
+    backgroundColor: '#0F0F1A',
+  },
+  modalSuggestionFillBtn: {
+    backgroundColor: 'rgba(34,197,94,0.12)',
+    borderWidth: 1.5,
+    borderColor: '#22C55E',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSuggestionFillText: {
+    color: '#22C55E',
+    fontSize: 13,
+    fontWeight: '800',
+  },
 });

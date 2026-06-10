@@ -1,6 +1,6 @@
 // Ana sayfa — Flutter home_tab.dart'tan, XP çubuğu, seri, devam butonu
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -59,6 +59,16 @@ export default function HomeScreen() {
     if (!lessons || lessons.length === 0) return null;
     return lessons.find((l) => !l.is_completed && !l.is_locked) || lessons[0];
   }, [lessons]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchStats();
+      refetchModules();
+      if (firstModule) {
+        refetchLessons();
+      }
+    }, [refetchStats, refetchModules, refetchLessons, firstModule])
+  );
 
   const hour = new Date().getHours();
   const greeting =

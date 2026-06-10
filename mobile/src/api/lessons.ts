@@ -13,7 +13,7 @@ import type {
   Lesson,
   LessonDetail,
   LessonResult,
-  LessonSubmitRequest,
+  AnswerSubmission,
   Module,
 } from '../types/lesson';
 
@@ -50,11 +50,15 @@ export const fetchLessonDetail = async (
 
 export const submitLessonAnswers = async (
   lessonId: string,
-  data: LessonSubmitRequest,
+  answers: AnswerSubmission[],
 ): Promise<LessonResult> => {
+  const payload = answers.map((a) => ({
+    question_id: a.question_id,
+    answer: typeof a.answer === 'string' ? a.answer : JSON.stringify(a.answer),
+  }));
   const response = await apiClient.post<LessonResult>(
     submitLesson(lessonId),
-    data,
+    payload,
   );
   return response.data;
 };
