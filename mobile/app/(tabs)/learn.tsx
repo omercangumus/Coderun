@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -198,10 +199,11 @@ export default function LearnScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Öğren</Text>
-        <Text style={styles.headerSub}>Modülleri keşfet ve python becerilerini geliştir</Text>
+        <Text style={styles.headerSub}>Modülleri keşfet ve becerilerini geliştir</Text>
       </View>
 
       <ScrollView
@@ -237,8 +239,9 @@ export default function LearnScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0A0A12' },
   header: {
-    padding: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 14,
     borderBottomWidth: 1.5,
     borderBottomColor: '#1E1E30',
     backgroundColor: '#0F0F1A',

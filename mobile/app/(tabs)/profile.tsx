@@ -5,6 +5,7 @@ import {
   Alert,
   FlatList,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -44,7 +45,8 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="#0F0F1A" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profil</Text>
       </View>

@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -93,7 +94,8 @@ export default function MentorScreen() {
   }, [messages, loading]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="#0F0F1A" />
       {/* Header bar */}
       <View style={styles.header}>
         <View style={styles.ghostieWrapper}>

@@ -1,9 +1,10 @@
-// Ana sayfa — Flutter home_tab.dart'tan, XP çubuğu, seri, devam butonu
-
+// Ana sayfa — iPhone 11 safe area optimized
 import React, { useMemo, useCallback } from 'react';
 import {
+  Platform,
   RefreshControl,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -79,30 +80,29 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
+
       {/* App Bar */}
       <View style={styles.appBar}>
-        <Text style={styles.appBarTitle}>Coderun</Text>
+        <View>
+          <Text style={styles.appBarTitle}>Coderun</Text>
+          <Text style={styles.appBarSub}>Kodlamayı öğren, seviye atla</Text>
+        </View>
         {stats && (
           <View style={styles.pillsRow}>
-            <LinearGradient
-              colors={['rgba(124,58,237,0.15)', 'rgba(124,58,237,0.05)']}
-              style={[styles.pill, { borderColor: 'rgba(124,58,237,0.4)' }]}
-            >
+            <View style={[styles.pill, { borderColor: 'rgba(124,58,237,0.4)' }]}>
               <Text style={styles.pillIcon}>⚡</Text>
               <Text style={[styles.pillValue, { color: '#A78BFA' }]}>
                 {stats.total_xp}
               </Text>
-            </LinearGradient>
-            <LinearGradient
-              colors={['rgba(251,146,60,0.15)', 'rgba(251,146,60,0.05)']}
-              style={[styles.pill, { borderColor: 'rgba(251,146,60,0.4)' }]}
-            >
+            </View>
+            <View style={[styles.pill, { borderColor: 'rgba(251,146,60,0.4)' }]}>
               <Text style={styles.pillIcon}>🔥</Text>
               <Text style={[styles.pillValue, { color: '#FB923C' }]}>
                 {stats.streak}
               </Text>
-            </LinearGradient>
+            </View>
           </View>
         )}
       </View>
@@ -121,9 +121,12 @@ export default function HomeScreen() {
       >
         {/* Welcome */}
         <View style={styles.welcomeContainer}>
-          <View style={styles.welcomeTextSection}>
+          <View style={styles.welcomeLeft}>
             <Text style={styles.greetingText}>
-              {greeting}, <Text style={styles.usernameText}>{user?.username ?? 'Kullanıcı'}</Text>! 👋
+              {greeting},
+            </Text>
+            <Text style={styles.usernameText}>
+              {user?.username ?? 'Kullanıcı'}! 👋
             </Text>
             <Text style={styles.subgreeting}>Bugün yeni bir kodlama zaferi kazanmaya hazır mısın?</Text>
           </View>
@@ -136,10 +139,10 @@ export default function HomeScreen() {
 
         {/* XP Card */}
         {statsLoading ? (
-          <SkeletonCard height={90} />
+          <SkeletonCard height={100} />
         ) : stats ? (
           <LinearGradient
-            colors={['#1E1E38', '#111126']}
+            colors={['#1A1A2E', '#111126']}
             style={styles.xpCard}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -175,12 +178,12 @@ export default function HomeScreen() {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Eğitime Devam Et</Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/learn')}>
-            <Text style={styles.sectionAction}>Tümünü Gör</Text>
+            <Text style={styles.sectionAction}>Tümünü Gör →</Text>
           </TouchableOpacity>
         </View>
 
         {modulesLoading ? (
-          <SkeletonCard height={100} />
+          <SkeletonCard height={110} />
         ) : (firstModule && nextLesson) ? (
           <TouchableOpacity
             onPress={() => router.push(`/lesson/${nextLesson.id}`)}
@@ -193,11 +196,11 @@ export default function HomeScreen() {
               style={styles.continueCard}
             >
               <View style={styles.continueContent}>
-                <Text style={styles.continueLabel}>SIRADAKİ DERSİN</Text>
-                <Text style={styles.continueTitle} numberOfLines={1}>
+                <Text style={styles.continueLabel}>SIRADAKİ DERS</Text>
+                <Text style={styles.continueModule} numberOfLines={1}>
                   {firstModule.title}
                 </Text>
-                <Text style={styles.continueSub} numberOfLines={1}>
+                <Text style={styles.continueTitle} numberOfLines={2}>
                   {nextLesson.title}
                 </Text>
                 <View style={styles.continueBadge}>
@@ -205,7 +208,7 @@ export default function HomeScreen() {
                 </View>
               </View>
               <View style={styles.continueIconWrapper}>
-                <Text style={{ fontSize: 42 }}>🚀</Text>
+                <Text style={{ fontSize: 38 }}>🚀</Text>
               </View>
             </LinearGradient>
           </TouchableOpacity>
@@ -218,12 +221,11 @@ export default function HomeScreen() {
         {/* Ghostie motivasyon kartı */}
         <View style={styles.ghostieContainer}>
           <View style={styles.ghostieMascotBox}>
-            <GhostieImage state="idle" size={64} />
+            <GhostieImage state="idle" size={60} />
           </View>
           <View style={styles.ghostieBubble}>
-            <View style={styles.bubbleTail} />
             <Text style={styles.ghostieText}>
-              "Selam coder! Python kodlarken veya quiz çözerken takılırsan ben buradayım! Mentor sekmesinden bana istediğin soruyu sorabilirsin." 👻
+              "Merhaba! Python, DevOps veya Cloud konularında takılırsan Mentor sekmesinden bana sorabilirsin." 👻
             </Text>
           </View>
         </View>
@@ -239,68 +241,79 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1.5,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
     borderBottomColor: '#1E1E30',
     backgroundColor: '#0F0F1A',
   },
   appBarTitle: {
     color: '#FFFFFF',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
-  pillsRow: { flexDirection: 'row', gap: 10 },
+  appBarSub: {
+    color: '#6B7280',
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  pillsRow: { flexDirection: 'row', gap: 8 },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
+    gap: 5,
+    paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1.5,
+    backgroundColor: 'rgba(255,255,255,0.04)',
   },
-  pillIcon: { fontSize: 13 },
+  pillIcon: { fontSize: 12 },
   pillValue: { fontSize: 13, fontWeight: '800' },
   scroll: { flex: 1 },
-  scrollContent: { padding: 20, gap: 24 },
+  scrollContent: { padding: 16, gap: 16, paddingBottom: 32 },
   welcomeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#111124',
-    padding: 16,
+    padding: 18,
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: '#1E1E35',
   },
-  welcomeTextSection: {
+  welcomeLeft: {
     flex: 1,
     paddingRight: 12,
-    gap: 4,
+    gap: 2,
   },
   greetingText: {
-    fontSize: 18,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  usernameText: {
+    fontSize: 20,
     fontWeight: '800',
     color: '#FFFFFF',
   },
-  usernameText: {
-    color: '#A78BFA',
-  },
   subgreeting: {
-    fontSize: 13,
-    color: '#9CA3AF',
-    lineHeight: 18,
+    fontSize: 12,
+    color: '#6B7280',
+    lineHeight: 17,
+    marginTop: 4,
   },
   avatarPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#7C3AED',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#A78BFA',
+    flexShrink: 0,
   },
   avatarText: {
     color: '#FFFFFF',
@@ -308,97 +321,85 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   xpCard: {
-    borderRadius: 22,
-    padding: 20,
+    borderRadius: 20,
+    padding: 18,
     borderWidth: 1.5,
     borderColor: '#2D2D4B',
-    gap: 18,
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    gap: 16,
   },
   xpStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.15)',
-    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 12,
     paddingVertical: 12,
-    marginTop: 4,
   },
-  xpStat: { alignItems: 'center', gap: 4 },
+  xpStat: { alignItems: 'center', gap: 3 },
   xpStatValue: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
   },
-  xpStatLabel: { color: '#9CA3AF', fontSize: 11, fontWeight: '700' },
-  xpStatDivider: { width: 1.5, height: 32, backgroundColor: '#2D2D4B' },
+  xpStatLabel: { color: '#9CA3AF', fontSize: 11, fontWeight: '600' },
+  xpStatDivider: { width: 1, height: 30, backgroundColor: '#2D2D4B' },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: -4,
   },
-  sectionTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '800' },
+  sectionTitle: { color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
   sectionAction: { color: '#A78BFA', fontSize: 13, fontWeight: '700' },
   continueCard: {
-    borderRadius: 22,
-    padding: 22,
+    borderRadius: 20,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
     elevation: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
   },
   continueContent: { flex: 1, gap: 4 },
   continueLabel: {
-    color: 'rgba(255,255,255,0.75)',
+    color: 'rgba(255,255,255,0.6)',
     fontSize: 10,
-    fontWeight: '900',
+    fontWeight: '800',
     letterSpacing: 1.2,
+  },
+  continueModule: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 12,
+    fontWeight: '600',
   },
   continueTitle: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: '800',
-    opacity: 0.9,
-  },
-  continueSub: {
-    color: '#FFFFFF',
-    fontSize: 19,
-    fontWeight: '900',
-    marginBottom: 6,
+    lineHeight: 22,
   },
   continueBadge: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 7,
     alignSelf: 'flex-start',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
+    marginTop: 6,
   },
   continueBadgeText: { color: '#7C3AED', fontSize: 12, fontWeight: '800' },
   continueIconWrapper: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.18)',
+    flexShrink: 0,
+    marginLeft: 12,
   },
   emptyCard: {
     backgroundColor: '#111124',
@@ -412,53 +413,31 @@ const styles = StyleSheet.create({
   ghostieContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 12,
-    marginTop: 8,
+    gap: 10,
   },
   ghostieMascotBox: {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#111124',
-    borderRadius: 20,
+    borderRadius: 18,
     padding: 10,
     borderWidth: 1.5,
     borderColor: '#1E1E35',
+    flexShrink: 0,
   },
   ghostieBubble: {
     flex: 1,
-    backgroundColor: '#1E1E38',
-    borderRadius: 20,
+    backgroundColor: '#1A1A2E',
+    borderRadius: 18,
     borderBottomLeftRadius: 4,
-    padding: 16,
+    padding: 14,
     borderWidth: 1.5,
     borderColor: '#2D2D4B',
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  bubbleTail: {
-    position: 'absolute',
-    bottom: 0,
-    left: -10,
-    width: 0,
-    height: 0,
-    borderStyle: 'solid',
-    borderTopWidth: 10,
-    borderRightWidth: 10,
-    borderBottomWidth: 0,
-    borderLeftWidth: 0,
-    borderTopColor: '#2D2D4B',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: 'transparent',
   },
   ghostieText: {
-    color: '#E5E7EB',
+    color: '#D1D5DB',
     fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 18,
+    fontWeight: '500',
+    lineHeight: 19,
   },
 });
-

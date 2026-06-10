@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -914,7 +915,8 @@ export default function LessonScreen() {
   const canProceed = isQuestionAnswered;
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
       {/* Header */}
       <View style={styles.lessonHeader}>
         <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn} activeOpacity={0.7}>

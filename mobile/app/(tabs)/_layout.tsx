@@ -1,18 +1,21 @@
-// Alt tab navigatörü — Flutter home_screen.dart tab yapısından
+// Alt tab navigatörü — iPhone 11 safe area optimized
 
 import { Tabs } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 function TabIcon({
   emoji,
+  label,
   focused,
 }: {
   emoji: string;
+  label: string;
   focused: boolean;
 }) {
   return (
-    <View style={[styles.iconContainer, focused && styles.iconFocused]}>
-      <Text style={styles.emoji}>{emoji}</Text>
+    <View style={[styles.iconWrapper, focused && styles.iconWrapperFocused]}>
+      <Text style={[styles.emoji, focused && styles.emojiFocused]}>{emoji}</Text>
+      <Text style={[styles.label, focused && styles.labelFocused]}>{label}</Text>
     </View>
   );
 }
@@ -22,10 +25,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#7C3AED',
-        tabBarInactiveTintColor: '#6B7280',
-        tabBarLabelStyle: styles.tabLabel,
       }}
     >
       <Tabs.Screen
@@ -33,7 +34,7 @@ export default function TabsLayout() {
         options={{
           title: 'Ana Sayfa',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🏠" focused={focused} />
+            <TabIcon emoji="🏠" label="Ana Sayfa" focused={focused} />
           ),
         }}
       />
@@ -42,7 +43,7 @@ export default function TabsLayout() {
         options={{
           title: 'Öğren',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="📚" focused={focused} />
+            <TabIcon emoji="📚" label="Öğren" focused={focused} />
           ),
         }}
       />
@@ -51,7 +52,7 @@ export default function TabsLayout() {
         options={{
           title: 'AI Mentor',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="👻" focused={focused} />
+            <TabIcon emoji="👻" label="Mentor" focused={focused} />
           ),
         }}
       />
@@ -60,7 +61,7 @@ export default function TabsLayout() {
         options={{
           title: 'Sıralama',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🏆" focused={focused} />
+            <TabIcon emoji="🏆" label="Sıralama" focused={focused} />
           ),
         }}
       />
@@ -69,7 +70,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="👤" focused={focused} />
+            <TabIcon emoji="👤" label="Profil" focused={focused} />
           ),
         }}
       />
@@ -79,29 +80,45 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#1A1A2E',
-    borderTopColor: '#2D2D44',
+    backgroundColor: '#0F0F1A',
+    borderTopColor: '#1E1E30',
     borderTopWidth: 1,
-    paddingBottom: 8,
+    // iPhone 11 home indicator safe area (34pt) is handled by expo-router
+    height: Platform.OS === 'ios' ? 82 : 64,
     paddingTop: 8,
-    height: 68,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 20,
   },
-  tabLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  iconContainer: {
-    width: 36,
-    height: 28,
+  iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    minWidth: 52,
   },
-  iconFocused: {
-    backgroundColor: 'rgba(124,58,237,0.15)',
+  iconWrapperFocused: {
+    backgroundColor: 'rgba(124,58,237,0.12)',
   },
   emoji: {
     fontSize: 20,
+    opacity: 0.6,
+  },
+  emojiFocused: {
+    opacity: 1,
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  labelFocused: {
+    color: '#A78BFA',
+    fontWeight: '700',
   },
 });
