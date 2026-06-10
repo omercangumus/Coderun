@@ -15,7 +15,7 @@ import {
   FlatList,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { fetchLessonDetail, submitLessonAnswers } from '../../src/api/lessons';
@@ -734,6 +734,7 @@ function LessonContent({
   onBack: () => void;
 }) {
   const { lightImpact, successNotification, errorNotification } = useHaptic();
+  const insets = useSafeAreaInsets();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
@@ -1007,7 +1008,7 @@ function LessonContent({
         statusBarTranslucent={false}
         onRequestClose={() => setMentorOpen(false)}
       >
-        <SafeAreaView style={styles.modalContainer} edges={['top', 'bottom']}>
+        <SafeAreaView style={styles.modalContainer} edges={['top']}>
           {/* Header */}
           <View style={styles.modalHeader}>
             <View style={styles.modalHeaderGhostie}>
@@ -1035,7 +1036,7 @@ function LessonContent({
           {/* Chat content */}
           <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior="padding"
             keyboardVerticalOffset={0}
           >
             {mentorMessages.length === 0 ? (
@@ -1130,7 +1131,7 @@ function LessonContent({
             )}
 
             {/* Input */}
-            <View style={styles.modalInputBar}>
+            <View style={[styles.modalInputBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
               <TextInput
                 style={styles.modalTextInput}
                 value={mentorInput}
