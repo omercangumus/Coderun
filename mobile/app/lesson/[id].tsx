@@ -1036,7 +1036,7 @@ function LessonContent({
           <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+            keyboardVerticalOffset={0}
           >
             {mentorMessages.length === 0 ? (
               <ScrollView
@@ -1077,6 +1077,8 @@ function LessonContent({
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.modalListContent}
                 showsVerticalScrollIndicator={false}
+                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
                 renderItem={({ item }) => {
                   const isUser = item.sender === 'user';
                   return (
