@@ -1,20 +1,19 @@
-// Alt tab navigatörü — iPhone 11 safe area optimized
-
 import { Tabs } from 'expo-router';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 function TabIcon({
-  emoji,
+  name,
   label,
   focused,
 }: {
-  emoji: string;
+  name: React.ComponentProps<typeof Ionicons>['name'];
   label: string;
   focused: boolean;
 }) {
   return (
     <View style={[styles.iconWrapper, focused && styles.iconWrapperFocused]}>
-      <Text style={[styles.emoji, focused && styles.emojiFocused]}>{emoji}</Text>
+      <Ionicons name={name} size={22} color={focused ? '#A78BFA' : '#4B5563'} />
       <Text style={[styles.label, focused && styles.labelFocused]}>{label}</Text>
     </View>
   );
@@ -34,7 +33,7 @@ export default function TabsLayout() {
         options={{
           title: 'Ana Sayfa',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🏠" label="Ana Sayfa" focused={focused} />
+            <TabIcon name={focused ? 'home' : 'home-outline'} label="Ana Sayfa" focused={focused} />
           ),
         }}
       />
@@ -43,16 +42,16 @@ export default function TabsLayout() {
         options={{
           title: 'Öğren',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="📚" label="Öğren" focused={focused} />
+            <TabIcon name={focused ? 'book' : 'book-outline'} label="Öğren" focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="mentor"
         options={{
-          title: 'AI Mentor',
+          title: 'Mentor',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="👻" label="Mentor" focused={focused} />
+            <TabIcon name={focused ? 'sparkles' : 'sparkles-outline'} label="Mentor" focused={focused} />
           ),
         }}
       />
@@ -61,7 +60,7 @@ export default function TabsLayout() {
         options={{
           title: 'Sıralama',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🏆" label="Sıralama" focused={focused} />
+            <TabIcon name={focused ? 'trophy' : 'trophy-outline'} label="Sıralama" focused={focused} />
           ),
         }}
       />
@@ -70,7 +69,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="👤" label="Profil" focused={focused} />
+            <TabIcon name={focused ? 'person' : 'person-outline'} label="Profil" focused={focused} />
           ),
         }}
       />
@@ -83,13 +82,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F0F1A',
     borderTopColor: '#1E1E30',
     borderTopWidth: 1,
-    // iPhone 11 home indicator safe area (34pt) is handled by expo-router
     height: Platform.OS === 'ios' ? 82 : 64,
     paddingTop: 8,
     paddingBottom: Platform.OS === 'ios' ? 24 : 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 12,
     elevation: 20,
   },
@@ -105,17 +103,10 @@ const styles = StyleSheet.create({
   iconWrapperFocused: {
     backgroundColor: 'rgba(124,58,237,0.12)',
   },
-  emoji: {
-    fontSize: 20,
-    opacity: 0.6,
-  },
-  emojiFocused: {
-    opacity: 1,
-  },
   label: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#4B5563',
   },
   labelFocused: {
     color: '#A78BFA',

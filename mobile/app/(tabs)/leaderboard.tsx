@@ -1,4 +1,4 @@
-// Liderlik tablosu — geliştirilmiş UI, podyum, sıra değişimi
+// Liderlik tablosu
 import React, { useRef, useEffect } from 'react';
 import {
   Animated,
@@ -12,12 +12,44 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { getLeaderboard } from '../../src/api/gamification';
 import type { LeaderboardEntry } from '../../src/types/gamification';
 import { SkeletonCard } from '../../src/components/LoadingSkeleton';
 import { useAuthStore } from '../../src/store/authStore';
 
-// Podium için Top 3
+function UserAvatar({
+  username,
+  size = 40,
+  isCurrentUser = false,
+  isBig = false,
+}: {
+  username: string;
+  size?: number;
+  isCurrentUser?: boolean;
+  isBig?: boolean;
+}) {
+  const letter = username?.[0]?.toUpperCase() ?? '?';
+  const radius = size / 2;
+
+  return (
+    <LinearGradient
+      colors={isCurrentUser ? ['#7C3AED', '#4C1D95'] : ['#1E1E38', '#111124']}
+      style={[styles.avatarBase, { width: size, height: size, borderRadius: radius }]}
+    >
+      <Ionicons
+        name="person"
+        size={size * 0.42}
+        color={isCurrentUser ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)'}
+        style={{ position: 'absolute' }}
+      />
+      <Text style={[styles.avatarLetter, { fontSize: size * 0.35 }, isBig && { fontWeight: '900' }]}>
+        {letter}
+      </Text>
+    </LinearGradient>
+  );
+}
+
 function PodiumBlock({
   entry,
   rank,
@@ -30,32 +62,22 @@ function PodiumBlock({
   height: number;
 }) {
   const medals = ['🥇', '🥈', '🥉'];
-  const colors = [
-    ['#FFD700', '#B8860B'],
-    ['#C0C0C0', '#808080'],
-    ['#CD7F32', '#8B4513'],
+  const blockColors = [
+    ['#92400E', '#78350F'],
+    ['#374151', '#1F2937'],
+    ['#713F12', '#5C3317'],
   ] as [string, string][];
 
   return (
-    <View style={[styles.podiumCol, rank === 1 && { marginTop: -20 }]}>
-      {/* Crown / medal */}
+    <View style={[styles.podiumCol, rank === 1 && { marginTop: -18 }]}>
       <Text style={styles.podiumMedal}>{medals[rank - 1]}</Text>
-      {/* Avatar */}
-      <LinearGradient
-        colors={isCurrentUser ? ['#7C3AED', '#4C1D95'] : ['#2D2D4B', '#1E1E38']}
-        style={[styles.podiumAvatar, rank === 1 && styles.podiumAvatarFirst]}
-      >
-        <Text style={styles.podiumAvatarText}>
-          {entry.username[0]?.toUpperCase() ?? '?'}
-        </Text>
-      </LinearGradient>
-      <Text style={styles.podiumName} numberOfLines={1}>
+      <UserAvatar username={entry.username} size={rank === 1 ? 52 : 42} isCurrentUser={isCurrentUser} isBig />
+      <Text style={styles.podiumName} numberOfLines={1} ellipsizeMode="tail">
         {entry.username}{isCurrentUser ? ' ✦' : ''}
       </Text>
       <Text style={styles.podiumXP}>{entry.weekly_xp} XP</Text>
-      {/* Block */}
       <LinearGradient
-        colors={colors[rank - 1]}
+        colors={blockColors[rank - 1]}
         style={[styles.podiumBlock, { height }]}
       >
         <Text style={styles.podiumRankNum}>{rank}</Text>
@@ -83,9 +105,7 @@ function RankChangeBanner({ rank, prevRank }: { rank: number; prevRank: number |
   return (
     <Animated.View style={[styles.rankBanner, { transform: [{ translateY: slideAnim }], opacity: opacityAnim }]}>
       <Text style={styles.rankBannerEmoji}>🚀</Text>
-      <Text style={styles.rankBannerText}>
-        {diff} sıra yükseldin! #{rank}. sıradasın
-      </Text>
+      <Text style={styles.rankBannerText}>{diff} sıra yükseldin! #{rank}. sıradasın</Text>
     </Animated.View>
   );
 }
@@ -102,7 +122,6 @@ function LeaderboardRow({
 
   return (
     <View style={[styles.row, isCurrentUser && styles.rowCurrentUser]}>
-      {/* Rank */}
       <View style={styles.rankCell}>
         {isMedal ? (
           <Text style={styles.rankMedal}>{medals[entry.rank - 1]}</Text>
@@ -113,28 +132,24 @@ function LeaderboardRow({
         )}
       </View>
 
-      {/* Avatar */}
-      <LinearGradient
-        colors={isCurrentUser ? ['#7C3AED', '#5B21B6'] : ['#2D2D4B', '#1E1E38']}
-        style={styles.rowAvatar}
-      >
-        <Text style={styles.rowAvatarText}>
-          {entry.username[0]?.toUpperCase() ?? '?'}
-        </Text>
-      </LinearGradient>
+      <UserAvatar username={entry.username} size={38} isCurrentUser={isCurrentUser} />
 
-      {/* Info */}
       <View style={styles.rowInfo}>
-        <Text style={[styles.rowUsername, isCurrentUser && styles.rowUsernameCurrent]} numberOfLines={1}>
-          {entry.username}
-          {isCurrentUser && <Text style={styles.youTag}> (Sen)</Text>}
-        </Text>
-        <Text style={styles.rowMeta}>
-          Lv {entry.level} • {entry.streak}🔥 seri
+        <View style={styles.rowNameRow}>
+          <Text style={[styles.rowUsername, isCurrentUser && styles.rowUsernameCurrent]} numberOfLines={1} ellipsizeMode="tail">
+            {entry.username}
+          </Text>
+          {isCurrentUser && (
+            <View style={styles.youBadge}>
+              <Text style={styles.youBadgeText}>Sen</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.rowMeta} numberOfLines={1}>
+          Lv {entry.level} • {entry.streak} gün seri
         </Text>
       </View>
 
-      {/* XP */}
       <View style={[styles.xpBadge, isCurrentUser && styles.xpBadgeCurrent]}>
         <Text style={[styles.xpValue, isCurrentUser && styles.xpValueCurrent]}>
           {entry.weekly_xp}
@@ -148,13 +163,7 @@ function LeaderboardRow({
 export default function LeaderboardScreen() {
   const user = useAuthStore((s) => s.user);
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isRefetching,
-  } = useQuery({
+  const { data, isLoading, error, refetch, isRefetching } = useQuery({
     queryKey: ['leaderboard'],
     queryFn: getLeaderboard,
   });
@@ -166,26 +175,25 @@ export default function LeaderboardScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
 
-      {/* Header */}
-      <LinearGradient
-        colors={['#0F0F1A', '#0A0A12']}
-        style={styles.header}
-      >
-        <Text style={styles.headerTitle}>🏆 Haftalık Sıralama</Text>
-        <Text style={styles.headerSub}>Bu haftanın en iyi geliştiricileri</Text>
+      <LinearGradient colors={['#0F0F1A', '#0A0A12']} style={styles.header}>
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.headerTitle}>Sıralama</Text>
+            <Text style={styles.headerSub}>Bu haftanın en iyi geliştiricileri</Text>
+          </View>
+          <View style={styles.trophyBox}>
+            <Ionicons name="trophy" size={22} color="#F59E0B" />
+          </View>
+        </View>
         {data && (
-          <Text style={styles.headerWeek}>
-            {data.week_start} — {data.week_end}
-          </Text>
+          <Text style={styles.headerWeek}>{data.week_start} — {data.week_end}</Text>
         )}
       </LinearGradient>
 
-      {/* Rank change banner */}
       {data?.user_rank && userEntry && (
         <RankChangeBanner rank={data.user_rank} prevRank={null} />
       )}
 
-      {/* My rank card */}
       {data?.user_rank && (
         <LinearGradient
           colors={['rgba(124,58,237,0.15)', 'rgba(124,58,237,0.05)']}
@@ -209,11 +217,7 @@ export default function LeaderboardScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor="#7C3AED"
-          />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#7C3AED" />
         }
       >
         {isLoading && (
@@ -228,39 +232,19 @@ export default function LeaderboardScreen() {
           <Text style={styles.errorText}>Sıralama yüklenemedi. Aşağı çekerek yenile.</Text>
         )}
 
-        {/* Podyum - Top 3 */}
         {top3.length === 3 && (
           <View style={styles.podium}>
-            <PodiumBlock
-              entry={top3[1]}
-              rank={2}
-              isCurrentUser={top3[1].username === user?.username}
-              height={80}
-            />
-            <PodiumBlock
-              entry={top3[0]}
-              rank={1}
-              isCurrentUser={top3[0].username === user?.username}
-              height={110}
-            />
-            <PodiumBlock
-              entry={top3[2]}
-              rank={3}
-              isCurrentUser={top3[2].username === user?.username}
-              height={60}
-            />
+            <PodiumBlock entry={top3[1]} rank={2} isCurrentUser={top3[1].username === user?.username} height={80} />
+            <PodiumBlock entry={top3[0]} rank={1} isCurrentUser={top3[0].username === user?.username} height={110} />
+            <PodiumBlock entry={top3[2]} rank={3} isCurrentUser={top3[2].username === user?.username} height={60} />
           </View>
         )}
 
-        {/* Tüm sıralama listesi */}
         {data && data.entries.length > 0 && (
           <View style={styles.listCard}>
             {data.entries.map((entry, idx) => (
               <View key={entry.user_id}>
-                <LeaderboardRow
-                  entry={entry}
-                  isCurrentUser={entry.username === user?.username}
-                />
+                <LeaderboardRow entry={entry} isCurrentUser={entry.username === user?.username} />
                 {idx < data.entries.length - 1 && <View style={styles.rowDivider} />}
               </View>
             ))}
@@ -275,19 +259,30 @@ export default function LeaderboardScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0A0A12' },
+
   header: {
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 16,
     borderBottomWidth: 1.5,
     borderBottomColor: '#1E1E30',
-    gap: 3,
+    gap: 6,
   },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: '900' },
-  headerSub: { color: '#9CA3AF', fontSize: 13, fontWeight: '500' },
-  headerWeek: { color: '#6B7280', fontSize: 11, fontWeight: '600', marginTop: 2 },
+  headerSub: { color: '#9CA3AF', fontSize: 13, fontWeight: '500', marginTop: 2 },
+  headerWeek: { color: '#4B5563', fontSize: 11, fontWeight: '600' },
+  trophyBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(245,158,11,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.2)',
+  },
 
-  // Rank change banner
   rankBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,10 +295,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'rgba(34,197,94,0.3)',
   },
-  rankBannerEmoji: { fontSize: 20 },
-  rankBannerText: { color: '#22C55E', fontSize: 14, fontWeight: '700' },
+  rankBannerEmoji: { fontSize: 18 },
+  rankBannerText: { color: '#22C55E', fontSize: 13, fontWeight: '700', flex: 1 },
 
-  // My rank card
   myRankCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -319,13 +313,12 @@ const styles = StyleSheet.create({
   myRankLabel: { color: '#A78BFA', fontSize: 11, fontWeight: '700', letterSpacing: 0.5 },
   myRankValue: { color: '#FFFFFF', fontSize: 26, fontWeight: '900' },
   myRankRight: { alignItems: 'flex-end' },
-  myRankXP: { color: '#7C3AED', fontSize: 20, fontWeight: '900' },
+  myRankXP: { color: '#A78BFA', fontSize: 20, fontWeight: '900' },
   myRankMeta: { color: '#6B7280', fontSize: 11, fontWeight: '600' },
 
   scroll: { flex: 1 },
   content: { padding: 16, gap: 14 },
 
-  // Podium
   podium: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -335,25 +328,10 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 8,
   },
-  podiumCol: { flex: 1, alignItems: 'center', gap: 6 },
-  podiumMedal: { fontSize: 28 },
-  podiumAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  podiumAvatarFirst: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    borderWidth: 3,
-    borderColor: '#FFD700',
-  },
-  podiumAvatarText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
-  podiumName: { color: '#FFFFFF', fontSize: 12, fontWeight: '700', textAlign: 'center', maxWidth: 80 },
-  podiumXP: { color: '#A78BFA', fontSize: 11, fontWeight: '700' },
+  podiumCol: { flex: 1, alignItems: 'center', gap: 5 },
+  podiumMedal: { fontSize: 26 },
+  podiumName: { color: '#FFFFFF', fontSize: 11, fontWeight: '700', textAlign: 'center', maxWidth: 90 },
+  podiumXP: { color: '#A78BFA', fontSize: 10, fontWeight: '700' },
   podiumBlock: {
     width: '100%',
     borderTopLeftRadius: 10,
@@ -362,9 +340,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 8,
   },
-  podiumRankNum: { color: 'rgba(0,0,0,0.4)', fontSize: 22, fontWeight: '900' },
+  podiumRankNum: { color: 'rgba(255,255,255,0.3)', fontSize: 20, fontWeight: '900' },
 
-  // List
   listCard: {
     backgroundColor: '#111124',
     borderRadius: 20,
@@ -377,47 +354,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 14,
-    gap: 12,
+    gap: 10,
   },
   rowCurrentUser: { backgroundColor: 'rgba(124,58,237,0.08)' },
-  rowDivider: { height: 1, backgroundColor: '#1E1E35', marginHorizontal: 14 },
+  rowDivider: { height: 1, backgroundColor: '#1A1A30', marginHorizontal: 14 },
 
-  rankCell: { width: 36, alignItems: 'center' },
-  rankMedal: { fontSize: 20 },
-  rankNum: { color: '#9CA3AF', fontSize: 16, fontWeight: '800' },
+  rankCell: { width: 32, alignItems: 'center', flexShrink: 0 },
+  rankMedal: { fontSize: 19 },
+  rankNum: { color: '#9CA3AF', fontSize: 15, fontWeight: '800' },
   rankNumCurrent: { color: '#A78BFA' },
 
-  rowAvatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rowAvatarText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  // Avatar
+  avatarBase: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 },
+  avatarLetter: { color: '#FFFFFF', fontWeight: '800', zIndex: 1 },
 
-  rowInfo: { flex: 1 },
-  rowUsername: { color: '#E5E7EB', fontSize: 14, fontWeight: '700' },
+  rowInfo: { flex: 1, minWidth: 0 },
+  rowNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rowUsername: { color: '#E5E7EB', fontSize: 13, fontWeight: '700', flexShrink: 1 },
   rowUsernameCurrent: { color: '#FFFFFF' },
-  youTag: { color: '#A78BFA', fontWeight: '700', fontSize: 12 },
-  rowMeta: { color: '#9CA3AF', fontSize: 11, marginTop: 2, fontWeight: '500' },
+  youBadge: {
+    backgroundColor: 'rgba(124,58,237,0.2)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    flexShrink: 0,
+  },
+  youBadgeText: { color: '#A78BFA', fontSize: 9, fontWeight: '800' },
+  rowMeta: { color: '#6B7280', fontSize: 11, marginTop: 2, fontWeight: '500' },
 
   xpBadge: {
     alignItems: 'flex-end',
-    backgroundColor: '#1E1E38',
+    backgroundColor: '#1A1A30',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
     borderColor: '#2D2D4B',
+    flexShrink: 0,
+    minWidth: 48,
   },
   xpBadgeCurrent: {
     backgroundColor: 'rgba(124,58,237,0.15)',
     borderColor: 'rgba(124,58,237,0.4)',
   },
-  xpValue: { color: '#A78BFA', fontSize: 15, fontWeight: '900' },
-  xpValueCurrent: { color: '#7C3AED' },
-  xpLabel: { color: '#6B7280', fontSize: 10, fontWeight: '600' },
+  xpValue: { color: '#A78BFA', fontSize: 14, fontWeight: '900' },
+  xpValueCurrent: { color: '#C4B5FD' },
+  xpLabel: { color: '#6B7280', fontSize: 9, fontWeight: '700' },
 
   errorText: { color: '#EF4444', fontSize: 14, textAlign: 'center', fontWeight: '600' },
 });

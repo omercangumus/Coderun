@@ -1,131 +1,109 @@
-// Öğren — Duolingo tarzı dikey yol görünümü
-import React, { useCallback, useRef } from 'react';
+// Öğren — Modül kartları + genişletilebilir ders yol haritası
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
-  Animated,
+  LayoutAnimation,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
+  UIManager,
   View,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { getModules, getLessons } from '../../src/api/lessons';
 import type { Module, Lesson } from '../../src/types/lesson';
 
-const TYPE_EMOJI: Record<string, string> = {
-  multiple_choice: '🎯',
-  true_false: '✅',
-  fill_in_blank: '✏️',
-  code_editor: '💻',
-  reorder: '🔄',
-  multi_select: '☑️',
-  spot_the_bug: '🐛',
-  code_completion: '🔧',
-  true_false_reason: '🤔',
-  default: '📖',
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const TYPE_ICON: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+  multiple_choice: 'help-circle-outline',
+  true_false: 'checkmark-circle-outline',
+  fill_in_blank: 'create-outline',
+  code_editor: 'code-slash',
+  reorder: 'swap-vertical-outline',
+  multi_select: 'checkbox-outline',
+  spot_the_bug: 'bug-outline',
+  code_completion: 'construct-outline',
+  true_false_reason: 'chatbubble-outline',
+  default: 'book-outline',
 };
 
-// Zigzag: sağ → orta → sol → orta → ...
-const ZIGZAG = [
-  { alignSelf: 'flex-end' as const, mr: 24 },
-  { alignSelf: 'center' as const, mr: 0 },
-  { alignSelf: 'flex-start' as const, ml: 24 },
-  { alignSelf: 'center' as const, mr: 0 },
-];
-
-function LessonNode({
-  lesson,
-  zigIdx,
-  showConnector,
-  connectorDone,
-  onPress,
-}: {
-  lesson: Lesson;
-  zigIdx: number;
-  showConnector: boolean;
-  connectorDone: boolean;
-  onPress: () => void;
-}) {
+function LessonRow({ lesson, onPress }: { lesson: Lesson; onPress: () => void }) {
   const completed = lesson.is_completed;
   const locked = lesson.is_locked;
   const active = !completed && !locked;
-  const pos = ZIGZAG[zigIdx % 4];
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handlePress = () => {
-    if (locked) return;
-    Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 0.9, duration: 70, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1, duration: 90, useNativeDriver: true }),
-    ]).start();
-    onPress();
-  };
-
-  const nodeBg = completed ? '#15803D' : active ? '#6D28D9' : '#1E1E38';
-  const nodeBorder = completed ? '#22C55E' : active ? '#A78BFA' : '#3D3D5B';
-  const emoji = TYPE_EMOJI[lesson.lesson_type] ?? TYPE_EMOJI.default;
-
-  const wrapperStyle: any = {
-    alignSelf: pos.alignSelf,
-    alignItems: 'center',
-  };
-  if ((pos as any).mr) wrapperStyle.marginRight = (pos as any).mr;
-  if ((pos as any).ml) wrapperStyle.marginLeft = (pos as any).ml;
 
   return (
-    <View style={[styles.nodeOuter, wrapperStyle]}>
-      {active && <View style={styles.nodeGlow} />}
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <TouchableOpacity
-          style={[
-            styles.node,
-            { backgroundColor: nodeBg, borderColor: nodeBorder },
-            active && styles.nodeShadowActive,
-            completed && styles.nodeShadowDone,
-          ]}
-          onPress={handlePress}
-          disabled={locked}
-          activeOpacity={0.85}
-        >
-          {completed ? (
-            <Text style={styles.nodeCheck}>✓</Text>
-          ) : locked ? (
-            <Text style={styles.nodeEmoji}>🔒</Text>
-          ) : (
-            <Text style={styles.nodeEmoji}>{emoji}</Text>
-          )}
-        </TouchableOpacity>
-      </Animated.View>
-
-      <View style={[styles.nodeLabel, locked && { opacity: 0.4 }]}>
-        <Text style={styles.nodeLabelText} numberOfLines={2}>
-          {lesson.title}
-        </Text>
-        <Text style={styles.nodeXP}>⚡ {lesson.xp_reward} XP</Text>
-        {active && <Text style={styles.nodeActiveBadge}>SIRADAKI</Text>}
+    <TouchableOpacity
+      style={[styles.lessonRow, active && styles.lessonRowActive]}
+      onPress={!locked ? onPress : undefined}
+      disabled={locked}
+      activeOpacity={0.7}
+    >
+      <View style={[
+        styles.lessonDot,
+        completed && styles.dotCompleted,
+        active && styles.dotActive,
+        locked && styles.dotLocked,
+      ]}>
+        {completed ? (
+          <Ionicons name="checkmark" size={13} color="#fff" />
+        ) : locked ? (
+          <Ionicons name="lock-closed" size={11} color="#374151" />
+        ) : (
+          <View style={styles.dotActiveInner} />
+        )}
       </View>
 
-      {showConnector && (
-        <View style={[styles.connector, connectorDone ? styles.connectorDone : styles.connectorPending]} />
-      )}
-    </View>
+      <View style={styles.lessonRowInfo}>
+        <Text
+          style={[styles.lessonTitle, locked && styles.lessonTitleLocked]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {lesson.title}
+        </Text>
+        <Text style={[styles.lessonType, locked && { opacity: 0.4 }]}>
+          {lesson.lesson_type?.replace(/_/g, ' ') ?? 'ders'}
+        </Text>
+      </View>
+
+      <View style={styles.lessonRowRight}>
+        {!locked && (
+          <View style={[styles.xpPill, completed && styles.xpPillDone]}>
+            <Text style={[styles.xpPillText, completed && styles.xpPillTextDone]}>
+              +{lesson.xp_reward}
+            </Text>
+          </View>
+        )}
+        {active && (
+          <Ionicons name="chevron-forward" size={14} color="#7C3AED" style={{ marginLeft: 4 }} />
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }
 
-function ModuleSection({
+function ModuleCard({
   module,
-  startZigIdx,
   onLessonPress,
+  defaultOpen,
 }: {
   module: Module;
-  startZigIdx: number;
   onLessonPress: (id: string) => void;
+  defaultOpen?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(defaultOpen ?? false);
+
   const { data: lessons, isLoading } = useQuery({
     queryKey: ['lessons', module.slug],
     queryFn: () => getLessons(module.slug),
@@ -134,49 +112,77 @@ function ModuleSection({
   const completed = lessons?.filter((l) => l.is_completed).length ?? 0;
   const total = lessons?.length ?? 0;
   const pct = total > 0 ? (completed / total) * 100 : 0;
+  const allDone = total > 0 && completed === total;
+  const hasActive = lessons?.some((l) => !l.is_completed && !l.is_locked);
+
+  const toggle = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded((v) => !v);
+  };
 
   return (
-    <View style={styles.moduleSection}>
-      {/* Module banner */}
-      <LinearGradient
-        colors={['#1C1040', '#130E38']}
-        style={styles.moduleBanner}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <View style={styles.moduleBannerRow}>
-          <View style={styles.moduleTitleCol}>
-            <Text style={styles.moduleSectionLabel}>MODÜL</Text>
-            <Text style={styles.moduleTitle}>{module.title}</Text>
+    <View style={[styles.moduleCard, hasActive && !expanded && styles.moduleCardActive]}>
+      <TouchableOpacity onPress={toggle} activeOpacity={0.8} style={styles.moduleHeader}>
+        <LinearGradient
+          colors={allDone ? ['#052E16', '#064E3B'] : hasActive ? ['#1C1040', '#130E38'] : ['#111124', '#0F0F1A']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.moduleHeaderGradient}
+        >
+          <View style={[styles.moduleIconWrap, allDone && styles.moduleIconWrapDone]}>
+            <Ionicons
+              name={allDone ? 'checkmark-circle' : 'code-slash'}
+              size={20}
+              color={allDone ? '#22C55E' : '#A78BFA'}
+            />
           </View>
-          <View style={styles.moduleCountBadge}>
-            <Text style={styles.moduleCountText}>{completed}/{total}</Text>
-            <Text style={styles.moduleCountSub}>ders</Text>
+
+          <View style={styles.moduleInfo}>
+            <Text style={styles.moduleLabel}>MODÜL</Text>
+            <Text style={styles.moduleTitle} numberOfLines={1} ellipsizeMode="tail">
+              {module.title}
+            </Text>
           </View>
-        </View>
+
+          <View style={styles.moduleRightCol}>
+            <View style={styles.modulePill}>
+              <Text style={styles.modulePillText}>
+                {isLoading ? '...' : `${completed}/${total}`}
+              </Text>
+            </View>
+            <Ionicons
+              name={expanded ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color="#6B7280"
+            />
+          </View>
+        </LinearGradient>
+
+        {/* İlerleme çubuğu */}
         {total > 0 && (
-          <View style={styles.moduleBarBg}>
-            <View style={[styles.moduleBarFill, { width: `${pct}%` }]} />
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: `${pct}%` as any }, allDone && styles.progressBarDone]} />
           </View>
         )}
-      </LinearGradient>
+      </TouchableOpacity>
 
-      {/* Lesson nodes */}
-      {isLoading && (
-        <View style={styles.loadingNodes}>
-          <ActivityIndicator size="small" color="#7C3AED" />
+      {/* Ders listesi — genişlemiş */}
+      {expanded && (
+        <View style={styles.lessonListWrap}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#7C3AED" style={{ paddingVertical: 20 }} />
+          ) : !lessons?.length ? (
+            <Text style={styles.emptyText}>Bu modülde henüz ders yok.</Text>
+          ) : (
+            lessons.map((lesson, idx) => (
+              <View key={lesson.id}>
+                <LessonRow lesson={lesson} onPress={() => onLessonPress(lesson.id)} />
+                {idx < lessons.length - 1 && <View style={styles.lessonDivider} />}
+              </View>
+            ))
+          )}
         </View>
       )}
-      {lessons?.map((lesson, idx) => (
-        <LessonNode
-          key={lesson.id}
-          lesson={lesson}
-          zigIdx={startZigIdx + idx}
-          showConnector={idx < lessons.length - 1}
-          connectorDone={lesson.is_completed && (lessons[idx + 1]?.is_completed ?? false)}
-          onPress={() => onLessonPress(lesson.id)}
-        />
-      ))}
     </View>
   );
 }
@@ -194,34 +200,26 @@ export default function LearnScreen() {
     useCallback(() => {
       refetch();
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
-    }, [refetch, queryClient])
+    }, [refetch, queryClient]),
   );
-
-  // Zigzag sayacını modüller arasında süreklileştir
-  let zigCounter = 0;
-  const moduleZigStarts: number[] = [];
-  if (modules) {
-    for (const _m of modules) {
-      moduleZigStarts.push(zigCounter);
-      // Her modüldeki ders sayısını bilmiyoruz burada ama
-      // genel zigzag için sabit bir offset kullan
-      zigCounter += 10;
-    }
-  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
 
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Öğren</Text>
-        <Text style={styles.headerSub}>Kodlama yolculuğuna devam et 🚀</Text>
+        <View>
+          <Text style={styles.headerTitle}>Öğren</Text>
+          <Text style={styles.headerSub}>Modüle bas, yol haritasını aç</Text>
+        </View>
+        <View style={styles.headerIcon}>
+          <Ionicons name="map-outline" size={20} color="#A78BFA" />
+        </View>
       </View>
 
       {isLoading && (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#7C3AED" />
-          <Text style={styles.loadingText}>Yükleniyor...</Text>
         </View>
       )}
 
@@ -237,28 +235,17 @@ export default function LearnScreen() {
       {!isLoading && !error && modules && (
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.pathContent}
+          contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {/* Arka plan yolu çizgisi */}
-          <View style={styles.pathLine} pointerEvents="none" />
-
-          {modules.map((module, mIdx) => (
-            <ModuleSection
+          {modules.map((module, idx) => (
+            <ModuleCard
               key={module.id}
               module={module}
-              startZigIdx={moduleZigStarts[mIdx] ?? 0}
               onLessonPress={(id) => router.push(`/lesson/${id}`)}
+              defaultOpen={idx === 0}
             />
           ))}
-
-          {/* Yol sonu */}
-          <View style={styles.pathEnd}>
-            <View style={styles.pathEndCircle}>
-              <Text style={styles.pathEndEmoji}>🏁</Text>
-            </View>
-            <Text style={styles.pathEndText}>Devam edecek...</Text>
-          </View>
           <View style={{ height: 80 }} />
         </ScrollView>
       )}
@@ -266,12 +253,12 @@ export default function LearnScreen() {
   );
 }
 
-const NODE = 66;
-const GLOW = NODE + 22;
-
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0A0A12' },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 14,
@@ -280,139 +267,138 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F0F1A',
   },
   headerTitle: { color: '#FFFFFF', fontSize: 24, fontWeight: '900', letterSpacing: 0.3 },
-  headerSub: { color: '#9CA3AF', fontSize: 13, marginTop: 3, fontWeight: '500' },
+  headerSub: { color: '#6B7280', fontSize: 12, marginTop: 2, fontWeight: '500' },
+  headerIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.25)',
+  },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
-  loadingText: { color: '#6B7280', fontSize: 14 },
   errorText: { color: '#EF4444', fontSize: 14, fontWeight: '600', textAlign: 'center' },
   retryBtn: { backgroundColor: '#7C3AED', borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12 },
   retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-
   scroll: { flex: 1 },
-  pathContent: { alignItems: 'center', paddingTop: 20, paddingBottom: 40, paddingHorizontal: 16 },
-  pathLine: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 4,
-    backgroundColor: '#17172A',
-    borderRadius: 2,
-  },
+  content: { padding: 16, gap: 12 },
 
-  // Module section
-  moduleSection: { width: '100%', alignItems: 'center', gap: 0 },
-  moduleBanner: {
-    width: '100%',
+  // Module card
+  moduleCard: {
     borderRadius: 18,
-    padding: 16,
-    marginVertical: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(167,139,250,0.2)',
-    gap: 10,
-  },
-  moduleBannerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  moduleTitleCol: { flex: 1, gap: 2 },
-  moduleSectionLabel: {
-    color: '#A78BFA',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1.5,
-  },
-  moduleTitle: { color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
-  moduleCountBadge: {
-    backgroundColor: 'rgba(124,58,237,0.15)',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(124,58,237,0.3)',
-  },
-  moduleCountText: { color: '#A78BFA', fontSize: 16, fontWeight: '900' },
-  moduleCountSub: { color: '#6B7280', fontSize: 10, fontWeight: '600' },
-  moduleBarBg: {
-    height: 5,
-    backgroundColor: '#2D2D4B',
-    borderRadius: 3,
     overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: '#1E1E35',
+    backgroundColor: '#0F0F1A',
   },
-  moduleBarFill: {
-    height: '100%',
-    backgroundColor: '#A78BFA',
-    borderRadius: 3,
-  },
-  loadingNodes: { paddingVertical: 20 },
-
-  // Lesson node
-  nodeOuter: {
-    alignItems: 'center',
-    marginVertical: 6,
-    width: 140,
-    zIndex: 1,
-  },
-  nodeGlow: {
-    position: 'absolute',
-    top: -11,
-    width: GLOW,
-    height: GLOW,
-    borderRadius: GLOW / 2,
-    backgroundColor: 'rgba(109,40,217,0.2)',
-  },
-  node: {
-    width: NODE,
-    height: NODE,
-    borderRadius: NODE / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3.5,
-  },
-  nodeShadowActive: {
+  moduleCardActive: {
+    borderColor: 'rgba(124,58,237,0.35)',
     shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  nodeShadowDone: {
-    shadowColor: '#22C55E',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
     elevation: 6,
   },
-  nodeEmoji: { fontSize: 26 },
-  nodeCheck: { fontSize: 28, color: '#FFFFFF', fontWeight: '900' },
-  nodeLabel: { alignItems: 'center', maxWidth: 130, gap: 3, marginTop: 8 },
-  nodeLabelText: { color: '#E5E7EB', fontSize: 12, fontWeight: '700', textAlign: 'center', lineHeight: 16 },
-  nodeXP: { color: '#A78BFA', fontSize: 11, fontWeight: '700' },
-  nodeActiveBadge: {
-    backgroundColor: 'rgba(124,58,237,0.2)',
-    color: '#A78BFA',
-    fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 1,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(124,58,237,0.4)',
-    overflow: 'hidden',
+  moduleHeader: {},
+  moduleHeaderGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+    gap: 12,
   },
-  connector: { width: 4, height: 30, borderRadius: 2, marginTop: 6 },
-  connectorDone: { backgroundColor: '#16A34A' },
-  connectorPending: { backgroundColor: '#2D2D4B' },
-
-  // Path end
-  pathEnd: { alignItems: 'center', gap: 8, marginTop: 16 },
-  pathEndCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#1E1E38',
-    borderWidth: 2,
-    borderColor: '#3D3D5B',
+  moduleIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(124,58,237,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(124,58,237,0.25)',
+    flexShrink: 0,
   },
-  pathEndEmoji: { fontSize: 24 },
-  pathEndText: { color: '#6B7280', fontSize: 13, fontWeight: '600' },
+  moduleIconWrapDone: {
+    backgroundColor: 'rgba(34,197,94,0.12)',
+    borderColor: 'rgba(34,197,94,0.25)',
+  },
+  moduleInfo: { flex: 1, gap: 2 },
+  moduleLabel: { color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5 },
+  moduleTitle: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
+  moduleRightCol: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 },
+  modulePill: {
+    backgroundColor: 'rgba(124,58,237,0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.25)',
+  },
+  modulePillText: { color: '#A78BFA', fontSize: 12, fontWeight: '800' },
+
+  // Progress bar
+  progressBarBg: {
+    height: 3,
+    backgroundColor: '#1E1E35',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#7C3AED',
+  },
+  progressBarDone: { backgroundColor: '#22C55E' },
+
+  // Lesson list
+  lessonListWrap: {
+    backgroundColor: '#0A0A10',
+    borderTopWidth: 1,
+    borderTopColor: '#1E1E30',
+  },
+  lessonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  lessonRowActive: {
+    backgroundColor: 'rgba(124,58,237,0.04)',
+  },
+  lessonDot: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  dotCompleted: { backgroundColor: '#16A34A' },
+  dotActive: {
+    backgroundColor: 'rgba(124,58,237,0.2)',
+    borderWidth: 2,
+    borderColor: '#7C3AED',
+  },
+  dotLocked: { backgroundColor: '#111124', borderWidth: 1.5, borderColor: '#1E1E30' },
+  dotActiveInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#7C3AED' },
+
+  lessonRowInfo: { flex: 1 },
+  lessonTitle: { color: '#E5E7EB', fontSize: 14, fontWeight: '700' },
+  lessonTitleLocked: { color: '#374151' },
+  lessonType: { color: '#6B7280', fontSize: 11, marginTop: 2, fontWeight: '500', textTransform: 'capitalize' },
+
+  lessonRowRight: { flexDirection: 'row', alignItems: 'center' },
+  xpPill: {
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.2)',
+  },
+  xpPillDone: { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.2)' },
+  xpPillText: { color: '#A78BFA', fontSize: 11, fontWeight: '800' },
+  xpPillTextDone: { color: '#22C55E' },
+
+  lessonDivider: { height: 1, backgroundColor: '#111124', marginHorizontal: 16 },
+  emptyText: { color: '#4B5563', fontSize: 13, textAlign: 'center', paddingVertical: 20 },
 });
