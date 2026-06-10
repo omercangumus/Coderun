@@ -6,20 +6,42 @@ import { CODE_RUN, CODE_SUBMIT } from '../constants/api';
 export interface CodeRunRequest {
   language: string;
   code: string;
-  test_cases?: Array<Record<string, unknown>>;
+  stdin?: string;
+  timeout_ms?: number;
+  memory_limit_mb?: number;
 }
 
 export interface CodeRunResult {
   stdout: string;
   stderr: string;
   exit_code: number;
-  execution_time_ms: number;
+  duration_ms: number;
+  timed_out: boolean;
+}
+
+export interface CodeSubmitRequest {
+  question_id: string;
+  code: string;
+  language: string;
+}
+
+export interface TestCaseResult {
+  name: string;
   passed: boolean;
-  test_results?: Array<{
-    passed: boolean;
-    expected: string;
-    actual: string;
-  }>;
+  stdout: string;
+  stderr: string;
+  duration_ms: number;
+  hidden: boolean;
+  expected_stdout?: string | null;
+}
+
+export interface CodeSubmitResponse {
+  passed: boolean;
+  score: number;
+  stdout: string;
+  stderr: string;
+  test_results: TestCaseResult[];
+  feedback: string;
 }
 
 export const runCode = async (data: CodeRunRequest): Promise<CodeRunResult> => {
@@ -28,8 +50,9 @@ export const runCode = async (data: CodeRunRequest): Promise<CodeRunResult> => {
 };
 
 export const submitCode = async (
-  data: CodeRunRequest,
-): Promise<CodeRunResult> => {
-  const response = await apiClient.post<CodeRunResult>(CODE_SUBMIT, data);
+  data: CodeSubmitRequest,
+): Promise<CodeSubmitResponse> => {
+  const response = await apiClient.post<CodeSubmitResponse>(CODE_SUBMIT, data);
   return response.data;
 };
+

@@ -21,7 +21,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { fetchLessonDetail, submitLessonAnswers } from '../../src/api/lessons';
 import { submitCode } from '../../src/api/sandbox';
 import { askMentor } from '../../src/api/mentor';
-import type { CodeRunResult } from '../../src/api/sandbox';
+import type { CodeSubmitResponse } from '../../src/api/sandbox';
+
 import type { Question, LessonResult, LessonDetail } from '../../src/types/lesson';
 import { QuizOption } from '../../src/components/QuizOption';
 import { GhostieImage } from '../../src/components/GhostieImage';
@@ -534,7 +535,7 @@ function QuestionCard({
       }
     }, [selectedAnswer, starter]);
 
-    const [sandboxResult, setSandboxResult] = useState<CodeRunResult | null>(null);
+    const [sandboxResult, setSandboxResult] = useState<CodeSubmitResponse | null>(null);
     const [running, setRunning] = useState(false);
     const [editorError, setEditorError] = useState<string | null>(null);
 
@@ -544,9 +545,9 @@ function QuestionCard({
       setSandboxResult(null);
       try {
         const res = await submitCode({
-          language: question.language ?? 'python',
+          question_id: question.id,
           code: code,
-          test_cases: question.test_cases ?? [],
+          language: question.language ?? 'python',
         });
         setSandboxResult(res);
         if (res.passed) {
@@ -560,6 +561,7 @@ function QuestionCard({
         setRunning(false);
       }
     };
+
 
     return (
       <View style={styles.questionCard}>

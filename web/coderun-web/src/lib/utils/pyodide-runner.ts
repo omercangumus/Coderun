@@ -301,10 +301,11 @@ export async function evaluateTestCases(
         s = s.split(search).join(replace);
       }
       return s
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"]/g, "")
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
     };
+
 
     const passed = normalize(actual) === normalize(expected) && !result.timedOut;
 

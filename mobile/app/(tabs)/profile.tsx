@@ -264,9 +264,10 @@ export default function ProfileScreen() {
               {stats.badges.map((b) => (
                 <View key={b.id} style={styles.badgePill}>
                   <Ionicons name="medal" size={20} color="#F59E0B" />
-                  <Text style={styles.badgeName} numberOfLines={1}>{b.name}</Text>
+                  <Text style={styles.badgeName} numberOfLines={1}>{b.title}</Text>
                 </View>
               ))}
+
             </ScrollView>
           </>
         )}

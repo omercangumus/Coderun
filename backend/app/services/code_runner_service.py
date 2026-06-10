@@ -375,9 +375,10 @@ async def evaluate_submission(
             turkish_map = {"ı": "i", "ğ": "g", "ü": "u", "ş": "s", "ö": "o", "ç": "c"}
             for k, v in turkish_map.items():
                 t = t.replace(k, v)
-            t = re.sub(r"[.,\/#!$%\^&\*;:{}=\-_`~()?'\"]", "", t)
+            t = re.sub(r"[.,\/#!$%\^&\*;:{}=\-_`~()?'\"]", " ", t)
             t = re.sub(r"\s+", " ", t)
             return t.strip()
+
 
         passed = _normalize(actual) == _normalize(expected) and not run_result.timed_out
 
