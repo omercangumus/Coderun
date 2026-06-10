@@ -22,7 +22,7 @@ import { fetchLessonDetail, submitLessonAnswers } from '../../src/api/lessons';
 import { submitCode } from '../../src/api/sandbox';
 import { askMentor } from '../../src/api/mentor';
 import type { CodeRunResult } from '../../src/api/sandbox';
-import type { Question, LessonResult } from '../../src/types/lesson';
+import type { Question, LessonResult, LessonDetail } from '../../src/types/lesson';
 import { QuizOption } from '../../src/components/QuizOption';
 import { GhostieImage } from '../../src/components/GhostieImage';
 import type { GhostieState } from '../../src/components/GhostieImage';
@@ -690,33 +690,6 @@ function attemptLabel(count: number): string {
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { lightImpact, successNotification, errorNotification } = useHaptic();
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<AnswerMap>({});
-  const [ghostieState, setGhostieState] = useState<GhostieState>('thinking');
-  const [result, setResult] = useState<LessonResult | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Mentor Chat Modal State
-  const [mentorOpen, setMentorOpen] = useState(false);
-  const [mentorMessages, setMentorMessages] = useState<Message[]>([]);
-  const [mentorInput, setMentorInput] = useState('');
-  const [mentorLoading, setMentorLoading] = useState(false);
-  const [mentorGhostieState, setMentorGhostieState] = useState<GhostieState>('idle');
-  const [attemptCount, setAttemptCount] = useState(1);
-  const [lastSuggestion, setLastSuggestion] = useState<string | null>(null);
-  const flatListRef = useRef<FlatList>(null);
-
-  // Reset mentor chat when current question changes
-  useEffect(() => {
-    setMentorMessages([]);
-    setMentorGhostieState('idle');
-    setMentorInput('');
-    setMentorLoading(false);
-    setAttemptCount(1);
-    setLastSuggestion(null);
-  }, [currentIndex]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['lessonDetail', id],
@@ -724,56 +697,6 @@ export default function LessonScreen() {
     enabled: !!id,
   });
 
-  useEffect(() => {
-    if (error) {
-      console.error('[LessonScreen] fetchLessonDetail error:', error);
-      if (error && typeof error === 'object' && 'response' in error) {
-        console.error('[LessonScreen] API error response data:', (error as any).response?.data);
-      }
-    }
-  }, [error]);
-
-  const submitMutation = useMutation({
-    mutationFn: (ans: AnswerMap) =>
-      submitLessonAnswers(
-        id,
-        Object.entries(ans).map(([question_id, answer]) => ({
-          question_id,
-          answer,
-        }))
-      ),
-    onSuccess: (res) => {
-      setResult(res);
-      if (res.passed) {
-        successNotification();
-        setGhostieState('happy');
-      } else {
-        errorNotification();
-        setGhostieState('sad');
-      }
-    },
-    onError: (err) => {
-      console.error('[LessonScreen] submitLessonAnswers error:', err);
-      if (err && typeof err === 'object' && 'response' in err) {
-        console.error('[LessonScreen] API submit error response data:', (err as any).response?.data);
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (data && data.questions) {
-      setGhostieState('thinking');
-    }
-  }, [data, currentIndex]);
-
-  // flatListRef scroll — MUST be before early returns (Rules of Hooks)
-  useEffect(() => {
-    if (flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [mentorMessages, mentorLoading]);
 
   if (isLoading) {
     return (
@@ -798,13 +721,85 @@ export default function LessonScreen() {
     );
   }
 
+  return <LessonContent id={id} data={data} onBack={() => router.back()} />;
+}
+
+function LessonContent({
+  id,
+  data,
+  onBack,
+}: {
+  id: string;
+  data: LessonDetail;
+  onBack: () => void;
+}) {
+  const { lightImpact, successNotification, errorNotification } = useHaptic();
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState<AnswerMap>({});
+  const [ghostieState, setGhostieState] = useState<GhostieState>('thinking');
+  const [result, setResult] = useState<LessonResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [mentorOpen, setMentorOpen] = useState(false);
+  const [mentorMessages, setMentorMessages] = useState<Message[]>([]);
+  const [mentorInput, setMentorInput] = useState('');
+  const [mentorLoading, setMentorLoading] = useState(false);
+  const [mentorGhostieState, setMentorGhostieState] = useState<GhostieState>('idle');
+  const [attemptCount, setAttemptCount] = useState(1);
+  const [lastSuggestion, setLastSuggestion] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    setMentorMessages([]);
+    setMentorGhostieState('idle');
+    setMentorInput('');
+    setMentorLoading(false);
+    setAttemptCount(1);
+    setLastSuggestion(null);
+  }, [currentIndex]);
+
+  const submitMutation = useMutation({
+    mutationFn: (ans: AnswerMap) =>
+      submitLessonAnswers(
+        id,
+        Object.entries(ans).map(([question_id, answer]) => ({
+          question_id,
+          answer,
+        }))
+      ),
+    onSuccess: (res) => {
+      setResult(res);
+      if (res.passed) {
+        successNotification();
+        setGhostieState('happy');
+      } else {
+        errorNotification();
+        setGhostieState('sad');
+      }
+    },
+    onError: (err) => {
+      console.error('[LessonContent] submitLessonAnswers error:', err);
+    },
+  });
+
+  useEffect(() => {
+    setGhostieState('thinking');
+  }, [currentIndex]);
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [mentorMessages, mentorLoading]);
+
   const questions = data.questions;
   const currentQuestion: Question | undefined = questions[currentIndex];
   const totalQuestions = questions.length;
   const progress = totalQuestions > 0 ? (currentIndex + 1) / totalQuestions : 0;
-  const currentAnswer = currentQuestion
-    ? answers[currentQuestion.id]
-    : undefined;
+  const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
 
   const isQuestionAnswered = currentQuestion
     ? currentQuestion.question_type === 'code_editor'
@@ -822,6 +817,23 @@ export default function LessonScreen() {
     const suggestion = match[1].trim().replace(/^['"`]|['"`]$/g, '');
     const displayText = content.replace(SUGGESTION_PATTERN, '').trimEnd();
     return { displayText: displayText || content, suggestion };
+  };
+
+  const handleAnswer = (answer: unknown) => {
+    if (!currentQuestion) return;
+    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }));
+    setGhostieState('happy');
+  };
+
+  const handleNext = () => {
+    if (currentIndex < totalQuestions - 1) {
+      setCurrentIndex((i) => i + 1);
+    } else {
+      setSubmitting(true);
+      submitMutation.mutate(answers, {
+        onSettled: () => setSubmitting(false),
+      });
+    }
   };
 
   const handleSendMentorMessage = async (text: string) => {
@@ -854,12 +866,8 @@ export default function LessonScreen() {
 
       const { displayText, suggestion } = parseMentorSuggestion(res.answer);
 
-      const nextAttempt = attemptCount + 1;
-      setAttemptCount(nextAttempt);
-
-      if (suggestion) {
-        setLastSuggestion(suggestion);
-      }
+      setAttemptCount((c) => c + 1);
+      if (suggestion) setLastSuggestion(suggestion);
 
       const ghostieMsg: Message = {
         id: Math.random().toString(),
@@ -871,14 +879,16 @@ export default function LessonScreen() {
       setMentorMessages((prev) => [...prev, ghostieMsg]);
       setMentorGhostieState('happy');
       successNotification();
-    } catch (err) {
-      const errorMsg: Message = {
-        id: Math.random().toString(),
-        text: 'Bağlantı kurulamadı. Lütfen tekrar dene! 👻',
-        sender: 'ghostie',
-        timestamp: new Date(),
-      };
-      setMentorMessages((prev) => [...prev, errorMsg]);
+    } catch {
+      setMentorMessages((prev) => [
+        ...prev,
+        {
+          id: Math.random().toString(),
+          text: 'Bağlantı kurulamadı. Lütfen tekrar dene! 👻',
+          sender: 'ghostie',
+          timestamp: new Date(),
+        },
+      ]);
       setMentorGhostieState('sad');
       errorNotification();
     } finally {
@@ -889,28 +899,10 @@ export default function LessonScreen() {
   if (result) {
     return (
       <SafeAreaView style={styles.safe}>
-        <ResultScreen result={result} onBack={() => router.back()} />
+        <ResultScreen result={result} onBack={onBack} />
       </SafeAreaView>
     );
   }
-
-  const handleAnswer = (answer: unknown) => {
-    if (!currentQuestion) return;
-    const newAnswers = { ...answers, [currentQuestion.id]: answer };
-    setAnswers(newAnswers);
-    setGhostieState('happy');
-  };
-
-  const handleNext = () => {
-    if (currentIndex < totalQuestions - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      setSubmitting(true);
-      submitMutation.mutate(answers, {
-        onSettled: () => setSubmitting(false),
-      });
-    }
-  };
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const canProceed = isQuestionAnswered;
@@ -920,7 +912,7 @@ export default function LessonScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
       {/* Header */}
       <View style={styles.lessonHeader}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn} activeOpacity={0.7}>
+        <TouchableOpacity onPress={onBack} style={styles.closeBtn} activeOpacity={0.7}>
           <Text style={styles.closeBtnText}>✕</Text>
         </TouchableOpacity>
         <View style={styles.progressContainer}>
@@ -941,8 +933,11 @@ export default function LessonScreen() {
           style={styles.ghostieHeaderBox}
           activeOpacity={0.7}
         >
-          <GhostieImage state={ghostieState} size={36} />
-          <View style={styles.ghostieIndicatorDot} />
+          <GhostieImage state={ghostieState} size={30} />
+          <View>
+            <Text style={styles.ghostieBtnLabel}>AI Mentor</Text>
+            <View style={styles.ghostieIndicatorDot} />
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -953,13 +948,27 @@ export default function LessonScreen() {
       >
         {currentQuestion && (
           <QuestionCard
-            key={currentQuestion.id} // Re-mounts completely on question change to reset local state hooks
+            key={currentQuestion.id}
             question={currentQuestion}
             selectedAnswer={currentAnswer}
             onAnswer={handleAnswer}
             answered={false}
           />
         )}
+
+        {/* AI Mentor satır içi butonu */}
+        <TouchableOpacity
+          style={styles.inlineMentorBtn}
+          onPress={() => setMentorOpen(true)}
+          activeOpacity={0.8}
+        >
+          <GhostieImage state="idle" size={28} />
+          <View style={styles.inlineMentorText}>
+            <Text style={styles.inlineMentorTitle}>Ghostie'ye Sor 👻</Text>
+            <Text style={styles.inlineMentorSub}>Takıldın mı? AI mentor yardım etsin</Text>
+          </View>
+          <Text style={styles.inlineMentorArrow}>→</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Footer */}
@@ -1188,24 +1197,44 @@ const styles = StyleSheet.create({
   },
   progressText: { color: '#A78BFA', fontSize: 11, textAlign: 'right', fontWeight: '800' },
   ghostieHeaderBox: {
-    padding: 4,
-    backgroundColor: '#111124',
-    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#1E1E35',
-    position: 'relative',
+    borderColor: 'rgba(124,58,237,0.3)',
+  },
+  ghostieBtnLabel: {
+    color: '#A78BFA',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   ghostieIndicatorDot: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: '#10B981',
-    borderWidth: 1.5,
-    borderColor: '#0F0F1A',
+    marginTop: 2,
   },
+  inlineMentorBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(124,58,237,0.08)',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(124,58,237,0.25)',
+    marginTop: 8,
+  },
+  inlineMentorText: { flex: 1, gap: 2 },
+  inlineMentorTitle: { color: '#A78BFA', fontSize: 14, fontWeight: '800' },
+  inlineMentorSub: { color: '#6B7280', fontSize: 12, fontWeight: '500' },
+  inlineMentorArrow: { color: '#A78BFA', fontSize: 18, fontWeight: '700' },
   scroll: { flex: 1 },
   content: { padding: 20 },
   questionCard: { gap: 16 },
