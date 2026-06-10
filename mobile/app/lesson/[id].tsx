@@ -766,6 +766,15 @@ export default function LessonScreen() {
     }
   }, [data, currentIndex]);
 
+  // flatListRef scroll — MUST be before early returns (Rules of Hooks)
+  useEffect(() => {
+    if (flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [mentorMessages, mentorLoading]);
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safe}>
@@ -877,14 +886,6 @@ export default function LessonScreen() {
     }
   };
 
-  useEffect(() => {
-    if (flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [mentorMessages, mentorLoading]);
-
   if (result) {
     return (
       <SafeAreaView style={styles.safe}>
@@ -994,9 +995,10 @@ export default function LessonScreen() {
         visible={mentorOpen}
         animationType="slide"
         transparent={false}
+        statusBarTranslucent={false}
         onRequestClose={() => setMentorOpen(false)}
       >
-        <SafeAreaView style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer} edges={['top', 'bottom']}>
           {/* Header */}
           <View style={styles.modalHeader}>
             <View style={styles.modalHeaderGhostie}>
@@ -1024,8 +1026,8 @@ export default function LessonScreen() {
           {/* Chat content */}
           <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
           >
             {mentorMessages.length === 0 ? (
               <ScrollView
@@ -1705,10 +1707,10 @@ const styles = StyleSheet.create({
   modalCloseText: { color: '#E5E7EB', fontSize: 13, fontWeight: '700' },
   modalWelcomeContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 24,
     paddingTop: 40,
     gap: 16,
+    flexGrow: 1,
   },
   modalWelcomeTitle: {
     color: '#FFFFFF',
@@ -1758,6 +1760,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: 8,
     maxWidth: '85%',
+    flexShrink: 1,
   },
   modalTypingBubble: {
     backgroundColor: '#111124',
@@ -1818,6 +1821,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     gap: 4,
+    flexShrink: 1,
   },
   bubbleUser: {
     backgroundColor: '#7C3AED',
