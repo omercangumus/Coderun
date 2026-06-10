@@ -1104,7 +1104,11 @@ function LessonContent({
         statusBarTranslucent={false}
         onRequestClose={() => setMentorOpen(false)}
       >
-        <SafeAreaView style={styles.modalContainer} edges={['top']}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+        <SafeAreaView style={styles.modalContainer} edges={['top', 'bottom']}>
           {/* Header */}
           <View style={styles.modalHeader}>
             <View style={styles.modalHeaderGhostie}>
@@ -1129,12 +1133,8 @@ function LessonContent({
             </TouchableOpacity>
           </View>
 
-          {/* Chat content */}
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior="padding"
-            keyboardVerticalOffset={0}
-          >
+          {/* Chat content - no KAV wrapper needed, it's on the Modal wrapper */}
+          <View style={{ flex: 1 }}>
             {mentorMessages.length === 0 ? (
               <ScrollView
                 style={{ flex: 1 }}
@@ -1227,7 +1227,7 @@ function LessonContent({
             )}
 
             {/* Input */}
-            <View style={[styles.modalInputBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
+            <View style={styles.modalInputBar}>
               <TextInput
                 style={styles.modalTextInput}
                 value={mentorInput}
@@ -1236,6 +1236,8 @@ function LessonContent({
                 placeholderTextColor="#6B7280"
                 onSubmitEditing={() => handleSendMentorMessage(mentorInput)}
                 editable={!mentorLoading}
+                multiline
+                maxLength={500}
               />
               <TouchableOpacity
                 style={[styles.modalSendBtn, (!mentorInput.trim() || mentorLoading) && styles.modalSendBtnDisabled]}
@@ -1245,8 +1247,9 @@ function LessonContent({
                 <Text style={styles.modalSendText}>Gönder</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
+          </View>
         </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

@@ -111,8 +111,8 @@ export default function MentorScreen() {
 
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         {messages.length === 0 ? (
           /* Welcome Screen with suggestions */
@@ -194,6 +194,8 @@ export default function MentorScreen() {
             placeholderTextColor="#6B7280"
             onSubmitEditing={() => sendMessage(input)}
             editable={!loading}
+            multiline
+            maxLength={500}
           />
           <TouchableOpacity
             style={[styles.sendButton, (!input.trim() || loading) && styles.sendButtonDisabled]}
@@ -364,10 +366,11 @@ const styles = StyleSheet.create({
   inputBar: {
     flexDirection: 'row',
     padding: 12,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
     borderTopWidth: 1,
     borderTopColor: '#1A1A2E',
     backgroundColor: '#111124',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     gap: 10,
   },
   textInput: {
