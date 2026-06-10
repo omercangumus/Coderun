@@ -1,8 +1,8 @@
-// Öğren ekranı — Flutter learn_tab.dart'tan, modül/ders listesi
-
-import React, { useState, useCallback } from 'react';
+// Öğren — Duolingo tarzı dikey yol görünümü
+import React, { useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -16,176 +16,175 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getModules, getLessons } from '../../src/api/lessons';
 import type { Module, Lesson } from '../../src/types/lesson';
-import { SkeletonCard } from '../../src/components/LoadingSkeleton';
 
-function LessonTypeIcon({ type, isCompleted, isLocked }: { type: string; isCompleted: boolean; isLocked: boolean }) {
-  const icons: Record<string, string> = {
-    multiple_choice: '🎯',
-    true_false: '✅',
-    fill_in_blank: '✏️',
-    code_editor: '💻',
-    reorder: '🔄',
-    multi_select: '☑️',
-    spot_the_bug: '🐛',
-    default: '📖',
+const TYPE_EMOJI: Record<string, string> = {
+  multiple_choice: '🎯',
+  true_false: '✅',
+  fill_in_blank: '✏️',
+  code_editor: '💻',
+  reorder: '🔄',
+  multi_select: '☑️',
+  spot_the_bug: '🐛',
+  code_completion: '🔧',
+  true_false_reason: '🤔',
+  default: '📖',
+};
+
+// Zigzag: sağ → orta → sol → orta → ...
+const ZIGZAG = [
+  { alignSelf: 'flex-end' as const, mr: 24 },
+  { alignSelf: 'center' as const, mr: 0 },
+  { alignSelf: 'flex-start' as const, ml: 24 },
+  { alignSelf: 'center' as const, mr: 0 },
+];
+
+function LessonNode({
+  lesson,
+  zigIdx,
+  showConnector,
+  connectorDone,
+  onPress,
+}: {
+  lesson: Lesson;
+  zigIdx: number;
+  showConnector: boolean;
+  connectorDone: boolean;
+  onPress: () => void;
+}) {
+  const completed = lesson.is_completed;
+  const locked = lesson.is_locked;
+  const active = !completed && !locked;
+  const pos = ZIGZAG[zigIdx % 4];
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => {
+    if (locked) return;
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.9, duration: 70, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 90, useNativeDriver: true }),
+    ]).start();
+    onPress();
   };
 
-  const getBadgeStyles = () => {
-    if (isCompleted) {
-      return {
-        bg: 'rgba(34,197,94,0.12)',
-        border: 'rgba(34,197,94,0.3)',
-      };
-    }
-    if (isLocked) {
-      return {
-        bg: 'rgba(75,85,99,0.1)',
-        border: 'rgba(75,85,99,0.2)',
-      };
-    }
-    // Active
-    return {
-      bg: 'rgba(124,58,237,0.12)',
-      border: 'rgba(124,58,237,0.3)',
-    };
-  };
+  const nodeBg = completed ? '#15803D' : active ? '#6D28D9' : '#1E1E38';
+  const nodeBorder = completed ? '#22C55E' : active ? '#A78BFA' : '#3D3D5B';
+  const emoji = TYPE_EMOJI[lesson.lesson_type] ?? TYPE_EMOJI.default;
 
-  const stylesColors = getBadgeStyles();
+  const wrapperStyle: any = {
+    alignSelf: pos.alignSelf,
+    alignItems: 'center',
+  };
+  if ((pos as any).mr) wrapperStyle.marginRight = (pos as any).mr;
+  if ((pos as any).ml) wrapperStyle.marginLeft = (pos as any).ml;
 
   return (
-    <View style={[styles.iconCircle, { backgroundColor: stylesColors.bg, borderColor: stylesColors.border }]}>
-      <Text style={styles.lessonIconText}>{icons[type] ?? icons['default']}</Text>
+    <View style={[styles.nodeOuter, wrapperStyle]}>
+      {active && <View style={styles.nodeGlow} />}
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <TouchableOpacity
+          style={[
+            styles.node,
+            { backgroundColor: nodeBg, borderColor: nodeBorder },
+            active && styles.nodeShadowActive,
+            completed && styles.nodeShadowDone,
+          ]}
+          onPress={handlePress}
+          disabled={locked}
+          activeOpacity={0.85}
+        >
+          {completed ? (
+            <Text style={styles.nodeCheck}>✓</Text>
+          ) : locked ? (
+            <Text style={styles.nodeEmoji}>🔒</Text>
+          ) : (
+            <Text style={styles.nodeEmoji}>{emoji}</Text>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
+
+      <View style={[styles.nodeLabel, locked && { opacity: 0.4 }]}>
+        <Text style={styles.nodeLabelText} numberOfLines={2}>
+          {lesson.title}
+        </Text>
+        <Text style={styles.nodeXP}>⚡ {lesson.xp_reward} XP</Text>
+        {active && <Text style={styles.nodeActiveBadge}>SIRADAKI</Text>}
+      </View>
+
+      {showConnector && (
+        <View style={[styles.connector, connectorDone ? styles.connectorDone : styles.connectorPending]} />
+      )}
     </View>
   );
 }
 
-function LessonRow({
-  lesson,
-  onPress,
+function ModuleSection({
+  module,
+  startZigIdx,
+  onLessonPress,
 }: {
-  lesson: Lesson;
-  onPress: () => void;
+  module: Module;
+  startZigIdx: number;
+  onLessonPress: (id: string) => void;
 }) {
-  const isCompleted = lesson.is_completed;
-  const isLocked = lesson.is_locked;
-  const isActive = !isCompleted && !isLocked;
-
-  return (
-    <TouchableOpacity
-      style={[
-        styles.lessonRow,
-        isLocked && styles.lessonLocked,
-        isCompleted && styles.lessonRowCompleted,
-        isActive && styles.lessonRowActive,
-      ]}
-      onPress={onPress}
-      disabled={isLocked}
-      activeOpacity={0.75}
-    >
-      <LessonTypeIcon type={lesson.lesson_type} isCompleted={isCompleted} isLocked={isLocked} />
-      <View style={styles.lessonInfo}>
-        <Text
-          style={[
-            styles.lessonTitle,
-            isLocked && styles.lockedText,
-          ]}
-          numberOfLines={1}
-        >
-          {lesson.title}
-        </Text>
-        <Text style={styles.lessonMeta}>
-          💰 {lesson.xp_reward} XP
-          {isCompleted && <Text style={{ color: '#22C55E', fontWeight: '700' }}> • Tamamlandı ✓</Text>}
-          {isLocked && <Text style={{ color: '#6B7280' }}> • {lesson.locked_reason ?? 'Kilitli'}</Text>}
-          {isActive && <Text style={{ color: '#A78BFA', fontWeight: '700' }}> • Sıradaki Ders</Text>}
-        </Text>
-      </View>
-      {isCompleted && (
-        <View style={styles.checkmarkBadge}>
-          <Text style={styles.checkmarkText}>✓</Text>
-        </View>
-      )}
-      {isLocked && <Text style={styles.lockIcon}>🔒</Text>}
-    </TouchableOpacity>
-  );
-}
-
-function ModuleCard({ module }: { module: Module }) {
-  const router = useRouter();
-  const [expanded, setExpanded] = useState(false);
-
-  // Fetch immediately to calculate progress indicator on the card header
-  const {
-    data: lessons,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: lessons, isLoading } = useQuery({
     queryKey: ['lessons', module.slug],
     queryFn: () => getLessons(module.slug),
   });
 
-  const completedCount = lessons?.filter((l) => l.is_completed).length ?? 0;
-  const totalCount = lessons?.length ?? 0;
-  const progressRatio = totalCount > 0 ? completedCount / totalCount : 0;
+  const completed = lessons?.filter((l) => l.is_completed).length ?? 0;
+  const total = lessons?.length ?? 0;
+  const pct = total > 0 ? (completed / total) * 100 : 0;
 
   return (
-    <View style={styles.moduleCard}>
-      <TouchableOpacity
-        style={styles.moduleHeader}
-        onPress={() => setExpanded((v) => !v)}
-        activeOpacity={0.85}
+    <View style={styles.moduleSection}>
+      {/* Module banner */}
+      <LinearGradient
+        colors={['#1C1040', '#130E38']}
+        style={styles.moduleBanner}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
       >
-        <View style={styles.moduleInfo}>
-          <Text style={styles.moduleTitle}>{module.title}</Text>
-          <Text style={styles.moduleDesc} numberOfLines={2}>
-            {module.description}
-          </Text>
-
-          {/* Module Progress bar in card header */}
-          {totalCount > 0 && (
-            <View style={styles.moduleProgressSection}>
-              <View style={styles.miniBarBackground}>
-                {progressRatio > 0 && (
-                  <LinearGradient
-                    colors={['#A78BFA', '#7C3AED']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={[styles.miniBarFill, { width: `${progressRatio * 100}%` }]}
-                  />
-                )}
-              </View>
-              <Text style={styles.moduleProgressText}>
-                {completedCount}/{totalCount} Ders
-              </Text>
-            </View>
-          )}
+        <View style={styles.moduleBannerRow}>
+          <View style={styles.moduleTitleCol}>
+            <Text style={styles.moduleSectionLabel}>MODÜL</Text>
+            <Text style={styles.moduleTitle}>{module.title}</Text>
+          </View>
+          <View style={styles.moduleCountBadge}>
+            <Text style={styles.moduleCountText}>{completed}/{total}</Text>
+            <Text style={styles.moduleCountSub}>ders</Text>
+          </View>
         </View>
-        <View style={styles.chevronBox}>
-          <Text style={styles.chevron}>{expanded ? '▲' : '▼'}</Text>
-        </View>
-      </TouchableOpacity>
+        {total > 0 && (
+          <View style={styles.moduleBarBg}>
+            <View style={[styles.moduleBarFill, { width: `${pct}%` }]} />
+          </View>
+        )}
+      </LinearGradient>
 
-      {expanded && (
-        <View style={styles.lessonsList}>
-          {isLoading && <SkeletonCard height={60} />}
-          {error && (
-            <Text style={styles.errorText}>Dersler yüklenemedi.</Text>
-          )}
-          {lessons?.map((lesson) => (
-            <LessonRow
-              key={lesson.id}
-              lesson={lesson}
-              onPress={() => router.push(`/lesson/${lesson.id}`)}
-            />
-          ))}
+      {/* Lesson nodes */}
+      {isLoading && (
+        <View style={styles.loadingNodes}>
+          <ActivityIndicator size="small" color="#7C3AED" />
         </View>
       )}
+      {lessons?.map((lesson, idx) => (
+        <LessonNode
+          key={lesson.id}
+          lesson={lesson}
+          zigIdx={startZigIdx + idx}
+          showConnector={idx < lessons.length - 1}
+          connectorDone={lesson.is_completed && (lessons[idx + 1]?.is_completed ?? false)}
+          onPress={() => onLessonPress(lesson.id)}
+        />
+      ))}
     </View>
   );
 }
 
 export default function LearnScreen() {
+  const router = useRouter();
   const queryClient = useQueryClient();
+
   const { data: modules, isLoading, error, refetch } = useQuery({
     queryKey: ['modules'],
     queryFn: getModules,
@@ -198,43 +197,77 @@ export default function LearnScreen() {
     }, [refetch, queryClient])
   );
 
+  // Zigzag sayacını modüller arasında süreklileştir
+  let zigCounter = 0;
+  const moduleZigStarts: number[] = [];
+  if (modules) {
+    for (const _m of modules) {
+      moduleZigStarts.push(zigCounter);
+      // Her modüldeki ders sayısını bilmiyoruz burada ama
+      // genel zigzag için sabit bir offset kullan
+      zigCounter += 10;
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A12" />
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Öğren</Text>
-        <Text style={styles.headerSub}>Modülleri keşfet ve becerilerini geliştir</Text>
+        <Text style={styles.headerSub}>Kodlama yolculuğuna devam et 🚀</Text>
       </View>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {isLoading && (
-          <>
-            <SkeletonCard height={80} />
-            <SkeletonCard height={80} />
-            <SkeletonCard height={80} />
-          </>
-        )}
+      {isLoading && (
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color="#7C3AED" />
+          <Text style={styles.loadingText}>Yükleniyor...</Text>
+        </View>
+      )}
 
-        {error && (
-          <View style={styles.errorCard}>
-            <Text style={styles.errorText}>Modüller yüklenemedi.</Text>
-            <TouchableOpacity onPress={() => refetch()} style={styles.retryBtn}>
-              <Text style={styles.retryText}>Tekrar Dene</Text>
-            </TouchableOpacity>
+      {error && (
+        <View style={styles.center}>
+          <Text style={styles.errorText}>Modüller yüklenemedi.</Text>
+          <TouchableOpacity onPress={() => refetch()} style={styles.retryBtn}>
+            <Text style={styles.retryText}>Tekrar Dene</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {!isLoading && !error && modules && (
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.pathContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Arka plan yolu çizgisi */}
+          <View style={styles.pathLine} pointerEvents="none" />
+
+          {modules.map((module, mIdx) => (
+            <ModuleSection
+              key={module.id}
+              module={module}
+              startZigIdx={moduleZigStarts[mIdx] ?? 0}
+              onLessonPress={(id) => router.push(`/lesson/${id}`)}
+            />
+          ))}
+
+          {/* Yol sonu */}
+          <View style={styles.pathEnd}>
+            <View style={styles.pathEndCircle}>
+              <Text style={styles.pathEndEmoji}>🏁</Text>
+            </View>
+            <Text style={styles.pathEndText}>Devam edecek...</Text>
           </View>
-        )}
-
-        {modules?.map((module) => (
-          <ModuleCard key={module.id} module={module} />
-        ))}
-      </ScrollView>
+          <View style={{ height: 80 }} />
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
+
+const NODE = 66;
+const GLOW = NODE + 22;
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0A0A12' },
@@ -246,138 +279,140 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1E1E30',
     backgroundColor: '#0F0F1A',
   },
-  headerTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: '900', letterSpacing: 0.5 },
-  headerSub: { color: '#9CA3AF', fontSize: 13, marginTop: 4, fontWeight: '500' },
+  headerTitle: { color: '#FFFFFF', fontSize: 24, fontWeight: '900', letterSpacing: 0.3 },
+  headerSub: { color: '#9CA3AF', fontSize: 13, marginTop: 3, fontWeight: '500' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
+  loadingText: { color: '#6B7280', fontSize: 14 },
+  errorText: { color: '#EF4444', fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  retryBtn: { backgroundColor: '#7C3AED', borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12 },
+  retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
+
   scroll: { flex: 1 },
-  content: { padding: 16, gap: 16 },
-  moduleCard: {
-    backgroundColor: '#111124',
-    borderRadius: 20,
+  pathContent: { alignItems: 'center', paddingTop: 20, paddingBottom: 40, paddingHorizontal: 16 },
+  pathLine: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: '#17172A',
+    borderRadius: 2,
+  },
+
+  // Module section
+  moduleSection: { width: '100%', alignItems: 'center', gap: 0 },
+  moduleBanner: {
+    width: '100%',
+    borderRadius: 18,
+    padding: 16,
+    marginVertical: 20,
     borderWidth: 1.5,
-    borderColor: '#1E1E35',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  moduleHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 18,
-  },
-  moduleInfo: { flex: 1, marginRight: 12, gap: 6 },
-  moduleTitle: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  moduleDesc: { color: '#9CA3AF', fontSize: 13, lineHeight: 18, fontWeight: '500' },
-  chevronBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#1E1E38',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#2D2D4B',
-  },
-  chevron: { color: '#A78BFA', fontSize: 12, fontWeight: '800' },
-  lessonsList: {
-    borderTopWidth: 1.5,
-    borderTopColor: '#1E1E35',
-    backgroundColor: '#0F0F1D',
-    padding: 14,
+    borderColor: 'rgba(167,139,250,0.2)',
     gap: 10,
   },
-  moduleProgressSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 6,
-  },
-  miniBarBackground: {
-    flex: 1,
-    height: 6,
-    backgroundColor: '#1E1E38',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  miniBarFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  moduleProgressText: {
+  moduleBannerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  moduleTitleCol: { flex: 1, gap: 2 },
+  moduleSectionLabel: {
     color: '#A78BFA',
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
+    letterSpacing: 1.5,
   },
-  lessonRow: {
-    flexDirection: 'row',
+  moduleTitle: { color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
+  moduleCountBadge: {
+    backgroundColor: 'rgba(124,58,237,0.15)',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     alignItems: 'center',
-    backgroundColor: '#111124',
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1.5,
-    borderColor: '#2D2D4B',
-    gap: 12,
-  },
-  lessonRowCompleted: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#22C55E',
-  },
-  lessonRowActive: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#7C3AED',
+    borderWidth: 1,
     borderColor: 'rgba(124,58,237,0.3)',
   },
-  lessonLocked: {
-    opacity: 0.5,
-    borderColor: '#1E1E30',
+  moduleCountText: { color: '#A78BFA', fontSize: 16, fontWeight: '900' },
+  moduleCountSub: { color: '#6B7280', fontSize: 10, fontWeight: '600' },
+  moduleBarBg: {
+    height: 5,
+    backgroundColor: '#2D2D4B',
+    borderRadius: 3,
+    overflow: 'hidden',
   },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
+  moduleBarFill: {
+    height: '100%',
+    backgroundColor: '#A78BFA',
+    borderRadius: 3,
   },
-  lessonIconText: { fontSize: 18 },
-  lessonInfo: { flex: 1, gap: 2 },
-  lessonTitle: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-  lockedText: { color: '#6B7280' },
-  lessonMeta: { color: '#9CA3AF', fontSize: 12, fontWeight: '500' },
-  checkmarkBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(34,197,94,0.15)',
-    borderWidth: 1.5,
-    borderColor: '#22C55E',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkmarkText: { color: '#22C55E', fontSize: 11, fontWeight: '900' },
-  lockIcon: { fontSize: 14, marginRight: 4 },
-  errorCard: {
-    backgroundColor: '#1E1E38',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(239,68,68,0.3)',
-    gap: 12,
-  },
-  errorText: { color: '#EF4444', fontSize: 14, textAlign: 'center', fontWeight: '600' },
-  retryBtn: {
-    backgroundColor: '#7C3AED',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-});
+  loadingNodes: { paddingVertical: 20 },
 
+  // Lesson node
+  nodeOuter: {
+    alignItems: 'center',
+    marginVertical: 6,
+    width: 140,
+    zIndex: 1,
+  },
+  nodeGlow: {
+    position: 'absolute',
+    top: -11,
+    width: GLOW,
+    height: GLOW,
+    borderRadius: GLOW / 2,
+    backgroundColor: 'rgba(109,40,217,0.2)',
+  },
+  node: {
+    width: NODE,
+    height: NODE,
+    borderRadius: NODE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3.5,
+  },
+  nodeShadowActive: {
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  nodeShadowDone: {
+    shadowColor: '#22C55E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  nodeEmoji: { fontSize: 26 },
+  nodeCheck: { fontSize: 28, color: '#FFFFFF', fontWeight: '900' },
+  nodeLabel: { alignItems: 'center', maxWidth: 130, gap: 3, marginTop: 8 },
+  nodeLabelText: { color: '#E5E7EB', fontSize: 12, fontWeight: '700', textAlign: 'center', lineHeight: 16 },
+  nodeXP: { color: '#A78BFA', fontSize: 11, fontWeight: '700' },
+  nodeActiveBadge: {
+    backgroundColor: 'rgba(124,58,237,0.2)',
+    color: '#A78BFA',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.4)',
+    overflow: 'hidden',
+  },
+  connector: { width: 4, height: 30, borderRadius: 2, marginTop: 6 },
+  connectorDone: { backgroundColor: '#16A34A' },
+  connectorPending: { backgroundColor: '#2D2D4B' },
+
+  // Path end
+  pathEnd: { alignItems: 'center', gap: 8, marginTop: 16 },
+  pathEndCircle: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#1E1E38',
+    borderWidth: 2,
+    borderColor: '#3D3D5B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pathEndEmoji: { fontSize: 24 },
+  pathEndText: { color: '#6B7280', fontSize: 13, fontWeight: '600' },
+});
