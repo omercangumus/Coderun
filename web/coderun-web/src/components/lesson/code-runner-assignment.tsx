@@ -470,7 +470,9 @@ export function CodeRunnerAssignment({
     try {
       const testCases = question.testCases ?? [];
       let outcome;
+
       if (testCases.length === 0) {
+        // Test senaryosu yok: sadece kodun hata vermeden çalışıp çalışmadığını kontrol et
         const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
         outcome = {
           passed: result.exitCode === 0,
@@ -482,7 +484,21 @@ export function CodeRunnerAssignment({
         };
         setSubmitResult(outcome);
       } else {
-        outcome = await evaluateTestCases(code, testCases, question.maxRuntimeMs ?? 5000);
+        // Test senaryoları var: backend'e gönder (hidden testler sadece orada değerlendirilebilir)
+        const { codeApi } = await import('@/lib/api/code-api');
+        const backendResult = await codeApi.submitCode({
+          questionId: question.id,
+          code,
+          language: 'python',
+        });
+        outcome = {
+          passed: backendResult.passed,
+          score: backendResult.score,
+          stdout: backendResult.stdout,
+          stderr: backendResult.stderr,
+          testResults: backendResult.testResults,
+          feedback: backendResult.feedback,
+        };
         setSubmitResult(outcome);
       }
 
@@ -499,6 +515,7 @@ export function CodeRunnerAssignment({
       setEditorState('idle');
     }
   };
+
 
   const handleReset = () => {
     setCode(starterCode);
