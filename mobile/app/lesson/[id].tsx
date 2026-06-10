@@ -881,12 +881,22 @@ function LessonContent({
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }));
     setGhostieState('happy');
 
-    const isCodeEditor = currentQuestion.question_type === 'code_editor';
-    if (!isCodeEditor && answer !== undefined) {
+    // Only lock options immediately for single-pick types.
+    // reorder / multi_select / fill_in_blank stay editable until Devam Et.
+    const type = currentQuestion.question_type;
+    const lockImmediately =
+      type === 'multiple_choice' ||
+      type === 'true_false' ||
+      type === 'true_false_reason' ||
+      (type === 'code_completion' && !!(currentQuestion.options?.choices));
+
+    if (lockImmediately && answer !== undefined) {
       setQuestionAnswered(true);
-    } else if (isCodeEditor && answer === '__code_editor__') {
+    } else if (type === 'code_editor' && answer === '__code_editor__') {
       setQuestionAnswered(true);
     }
+    // reorder, multi_select, fill_in_blank, spot_the_bug → questionAnswered stays false
+    // (controls remain interactive; footer uses isQuestionAnswered separately)
   };
 
   const handleNext = () => {
