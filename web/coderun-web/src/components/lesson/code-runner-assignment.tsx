@@ -255,9 +255,10 @@ export function CodeRunnerAssignment({
   canNext = false,
 }: CodeRunnerAssignmentProps) {
   const starterCode = question.starterCode ?? '# Kodunu buraya yaz\n';
-  const [code, setCode] = useState(currentAnswer || starterCode);
+  const [code, setCode] = useState(
+    currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starterCode,
+  );
   const [editorState, setEditorState] = useState<EditorState>('idle');
-  const [editorTab, setEditorTab] = useState<'editor' | 'terminal'>('editor');
   const [resultTab, setResultTab] = useState<ResultTab>('output');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
@@ -273,6 +274,20 @@ export function CodeRunnerAssignment({
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) setUseTextarea(true);
   }, []);
+
+  // Reset state when navigating to a new question
+  useEffect(() => {
+    const starter = question.starterCode ?? '# Kodunu buraya yaz\n';
+    setCode(currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starter);
+    setRunResult(null);
+    setSubmitResult(null);
+    setError(null);
+    setEditorState('idle');
+    setResultTab('output');
+    isRunningRef.current = false;
+    isSubmittingRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id]);
 
   // Listen to Pyodide status changes
   useEffect(() => {
@@ -303,7 +318,6 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
-    setEditorTab('terminal');
     setResultTab('output');
 
     try {
@@ -314,7 +328,6 @@ export function CodeRunnerAssignment({
       );
       setRunResult(result);
       setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
-      setEditorTab('terminal');
 
       if (result.error || (result.stderr && result.exitCode !== 0)) {
         setRunState('error');
@@ -374,7 +387,11 @@ export function CodeRunnerAssignment({
       if (outcome.passed) {
         onChange('__code_editor__');
         setSubmitState('success');
-        setTimeout(() => setSubmitState('idle'), 1500);
+        const isLast = questionIndex >= totalQuestions - 1;
+        setTimeout(() => {
+          setSubmitState('idle');
+          if (!isLast && onNext) onNext();
+        }, 1500);
       } else {
         setSubmitState('error');
         setTimeout(() => setSubmitState('idle'), 1500);
@@ -470,26 +487,9 @@ export function CodeRunnerAssignment({
   const editorPanel = (
     <div className="flex h-full min-h-[360px] flex-col">
       <div className="flex items-center gap-2 border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
-        <button
-          type="button"
-          onClick={() => setEditorTab('editor')}
-          className={cn(
-            'rounded-lg px-3 py-1 text-xs font-semibold',
-            editorTab === 'editor' ? 'bg-white/10 text-white' : 'text-white/50',
-          )}
-        >
+        <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white">
           solution.py
-        </button>
-        <button
-          type="button"
-          onClick={() => setEditorTab('terminal')}
-          className={cn(
-            'rounded-lg px-3 py-1 text-xs font-semibold',
-            editorTab === 'terminal' ? 'bg-white/10 text-white' : 'text-white/50',
-          )}
-        >
-          Terminal
-        </button>
+        </span>
         <button
           type="button"
           onClick={() => setUseTextarea(!useTextarea)}
@@ -505,31 +505,27 @@ export function CodeRunnerAssignment({
             <span className="animate-pulse text-sm text-white">İşleniyor...</span>
           </div>
         )}
-        {editorTab === 'editor' ? (
-          useTextarea ? (
-            <textarea
-              value={code}
-              onChange={(e) => handleCodeChange(e.target.value)}
-              className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
-            />
-          ) : (
-            <MonacoEditor
-              height="100%"
-              language="python"
-              theme="vs-dark"
-              value={code}
-              onChange={handleCodeChange}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                wordWrap: 'on',
-                automaticLayout: true,
-              }}
-            />
-          )
+        {useTextarea ? (
+          <textarea
+            value={code}
+            onChange={(e) => handleCodeChange(e.target.value)}
+            className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
+          />
         ) : (
-          <TerminalOutput result={runResult} />
+          <MonacoEditor
+            height="100%"
+            language="python"
+            theme="vs-dark"
+            value={code}
+            onChange={handleCodeChange}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+              automaticLayout: true,
+            }}
+          />
         )}
       </div>
     </div>
