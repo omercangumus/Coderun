@@ -15,10 +15,22 @@ export function CodeCompletionQuestion({ question, currentAnswer, onChange }: Pr
   const choices = (question.options as { choices?: string[] })?.choices;
   const hasChoices = choices && choices.length > 0;
   const [selectedChoice, setSelectedChoice] = useState<string | null>(currentAnswer || null);
+  const [confirmed, setConfirmed] = useState<boolean>(!!currentAnswer);
 
   const handleChoiceSelect = (choice: string) => {
+    if (confirmed) return;
     setSelectedChoice(choice);
-    onChange(choice);
+  };
+
+  const handleClear = () => {
+    if (confirmed) return;
+    setSelectedChoice(null);
+  };
+
+  const handleConfirm = () => {
+    if (!selectedChoice) return;
+    setConfirmed(true);
+    onChange(selectedChoice);
   };
 
   // Code block display (if question has ___ pattern or code_block)
@@ -45,16 +57,20 @@ export function CodeCompletionQuestion({ question, currentAnswer, onChange }: Pr
                 <span className="whitespace-pre-wrap">{part}</span>
                 {idx < arr.length - 1 && (
                   hasChoices ? (
-                    <span
+                    <button
+                      onClick={handleClear}
+                      disabled={confirmed}
                       className={cn(
-                        'inline-block min-w-[80px] px-2 py-0.5 mx-1 rounded-md border-2 border-dashed text-center transition-all duration-200',
+                        'inline-flex items-center justify-center min-w-[90px] px-3 py-1 mx-1 rounded-md border-2 transition-all duration-200',
                         selectedChoice
-                          ? 'border-primary bg-primary/20 text-primary font-semibold'
-                          : 'border-accent/50 text-accent/60 animate-pulse'
+                          ? confirmed
+                            ? 'border-secondary bg-secondary/20 text-on-surface font-semibold cursor-default'
+                            : 'border-primary bg-primary/20 text-primary font-semibold cursor-pointer hover:border-error hover:bg-error/10 hover:text-error hover:scale-105 active:scale-95'
+                          : 'border-dashed border-outline-variant bg-surface-container text-on-surface-variant animate-pulse'
                       )}
                     >
                       {selectedChoice || '______'}
-                    </span>
+                    </button>
                   ) : (
                     <input
                       type="text"
@@ -78,44 +94,65 @@ export function CodeCompletionQuestion({ question, currentAnswer, onChange }: Pr
 
       {/* If choices are available, show them as selectable buttons */}
       {hasChoices ? (
-        <div className="space-y-2">
-          <p className="font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
-            Seçenekler
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {choices.map((choice, idx) => {
-              const isSelected = selectedChoice === choice;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleChoiceSelect(choice)}
-                  className={cn(
-                    'relative p-4 rounded-xl border-2 text-left font-mono text-sm',
-                    'transition-all duration-200 ease-out',
-                    'hover:shadow-lg active:scale-[0.98]',
-                    isSelected
-                      ? 'border-primary bg-primary/10 text-on-surface shadow-primary ring-1 ring-primary/30'
-                      : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container',
-                  )}
-                >
-                  <span className={cn(
-                    'inline-flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-bold',
-                    isSelected
-                      ? 'bg-primary text-on-primary'
-                      : 'bg-surface-container text-on-surface-variant'
-                  )}>
-                    {String.fromCharCode(65 + idx)}
-                  </span>
-                  <span className={cn(
-                    'font-semibold',
-                    isSelected ? 'text-on-surface' : ''
-                  )}>
-                    {choice}
-                  </span>
-                </button>
-              );
-            })}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
+              Seçenekler
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {choices.map((choice, idx) => {
+                const isSelected = selectedChoice === choice;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleChoiceSelect(choice)}
+                    disabled={confirmed}
+                    className={cn(
+                      'relative p-4 rounded-xl border-2 text-left font-mono text-sm transition-all duration-200 ease-out',
+                      isSelected
+                        ? 'border-dashed border-outline-variant bg-surface-container-lowest text-on-surface-variant/30 opacity-40 cursor-default pointer-events-none scale-95'
+                        : confirmed
+                          ? 'border-outline-variant bg-surface-container-lowest text-on-surface-variant opacity-50 cursor-not-allowed'
+                          : 'border-outline-variant bg-surface-container-lowest text-on-surface hover:border-primary/50 hover:bg-surface-container active:scale-[0.98] cursor-pointer'
+                    )}
+                  >
+                    <span className={cn(
+                      'inline-flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-bold',
+                      isSelected
+                        ? 'bg-outline-variant text-on-surface-variant/30'
+                        : 'bg-surface-container text-on-surface-variant'
+                    )}>
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span className={cn(
+                      'font-semibold',
+                      isSelected ? 'line-through' : ''
+                    )}>
+                      {choice}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Confirm button */}
+          {selectedChoice && !confirmed && (
+            <button
+              onClick={handleConfirm}
+              className="w-full py-3 rounded-2xl bg-primary text-white font-bold text-sm
+                shadow-lg hover:bg-primary/90 active:scale-[0.98]
+                transition-all duration-200 animate-fade-in"
+            >
+              Cevapla ✓
+            </button>
+          )}
+
+          {confirmed && (
+            <div className="flex items-center gap-2 py-2 px-4 rounded-xl bg-secondary/10 border border-secondary/20 animate-fade-in">
+              <span className="text-secondary font-semibold text-sm">✓ Cevap kaydedildi</span>
+            </div>
+          )}
         </div>
       ) : !hasCodeBlock ? (
         /* Fallback: simple text input when no code block and no choices */
@@ -147,3 +184,4 @@ export function CodeCompletionQuestion({ question, currentAnswer, onChange }: Pr
     </div>
   );
 }
+
