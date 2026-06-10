@@ -149,6 +149,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Row(
           children: [

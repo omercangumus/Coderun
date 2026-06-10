@@ -129,11 +129,11 @@ export function LoginForm() {
               autoComplete="current-password"
               className="pl-10 pr-12"
             />
-            <Lock className="absolute left-3 top-[38px] w-4 h-4 text-outline pointer-events-none" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline pointer-events-none" />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-[10px] text-outline hover:text-on-surface transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
               tabIndex={-1}
               aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
             >

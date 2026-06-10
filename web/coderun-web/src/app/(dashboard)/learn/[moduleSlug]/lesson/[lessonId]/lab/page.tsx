@@ -90,9 +90,9 @@ export default function LabPage({
   const isComplete = completedItems.length === MISSION.checklist.length;
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] gap-0 -m-4 lg:-m-6 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] gap-0 -m-4 lg:-m-6 overflow-hidden">
       {/* ── LEFT PANEL: Mission & Instructions ── */}
-      <div className="w-72 flex-shrink-0 flex flex-col bg-white border-r border-outline-variant overflow-y-auto no-scrollbar">
+      <div className="hidden lg:flex lg:w-72 flex-shrink-0 flex-col bg-white border-r border-outline-variant overflow-y-auto no-scrollbar">
         {/* Header */}
         <div className="p-4 border-b border-outline-variant">
           <div className="flex items-center gap-2 mb-3">
@@ -326,7 +326,7 @@ export default function LabPage({
       </div>
 
       {/* ── RIGHT PANEL: Ghostie AI Mentor ── */}
-      <div className="w-72 flex-shrink-0 flex flex-col">
+      <div className="hidden lg:flex lg:w-72 flex-shrink-0 flex-col">
         <GhostieMentorPanel
           context={`Lab: ${MISSION.title}`}
           messages={messages}

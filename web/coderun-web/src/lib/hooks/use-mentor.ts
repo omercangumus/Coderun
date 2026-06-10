@@ -44,13 +44,15 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
   const attemptRef = useRef(1);
   const optionsRef = useRef(options);
   optionsRef.current = options;
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   const sendMessage = useCallback(
     async (userMessage: string) => {
       if (!userMessage.trim() || isLoading) return;
 
       const userMsg: ChatMessage = { role: 'user', content: userMessage };
-      const historyForApi = messages;
+      const historyForApi = messagesRef.current;
       setMessages((prev) => [...prev, userMsg]);
       setIsLoading(true);
 
@@ -125,7 +127,7 @@ export function useMentor(options: UseMentorOptions = {}): UseMentorReturn {
         setIsLoading(false);
       }
     },
-    [isLoading, messages],
+    [isLoading],
   );
 
   const clearChat = useCallback(() => {
