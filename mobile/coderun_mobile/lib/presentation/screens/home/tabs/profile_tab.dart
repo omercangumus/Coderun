@@ -538,7 +538,7 @@ class WeeklyActivityPainter extends CustomPainter {
       ..color = AppColors.primary
       ..style = PaintingStyle.fill;
     final inactivePaint = Paint()
-      ..color = Colors.grey[300]!
+      ..color = Colors.grey.shade300
       ..style = PaintingStyle.fill;
 
     for (var i = 0; i < data.length; i++) {

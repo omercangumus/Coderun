@@ -137,9 +137,8 @@ class _TestPhase extends ConsumerWidget {
 
         if (currentIndex >= total) {
           // Tüm sorular cevaplandı, submit et
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            await notifier.submitTest(moduleSlug, questions);
-            onComplete();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            notifier.submitTest(moduleSlug, questions).then((_) => onComplete());
           });
           return const LoadingWidget(message: 'Sonuçlar hesaplanıyor...');
         }

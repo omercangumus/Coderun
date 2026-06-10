@@ -86,12 +86,15 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
     final state = ref.read(mentorProvider(_config));
     final notifier = ref.read(mentorProvider(_config).notifier);
     final suggestion = state.lastSuggestion;
+    final lessonId = widget.lessonId;
+    final questionId = widget.questionId;
     if (!notifier.canApplySuggestion || suggestion == null) return;
+    if (lessonId == null || questionId == null) return;
 
     ref.read(pendingMentorSuggestionProvider.notifier).state =
         PendingMentorSuggestion(
-      lessonId: widget.lessonId!,
-      questionId: widget.questionId!,
+      lessonId: lessonId,
+      questionId: questionId,
       suggestion: suggestion,
     );
     if (mounted) context.pop();

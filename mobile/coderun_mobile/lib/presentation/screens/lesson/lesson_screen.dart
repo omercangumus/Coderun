@@ -75,7 +75,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         final questions = lesson.questions;
         final currentIndex = lessonState.currentQuestionIndex;
         final currentQuestion =
-            questions.isNotEmpty ? questions[currentIndex] : null;
+            questions.isNotEmpty && currentIndex < questions.length
+                ? questions[currentIndex]
+                : null;
         final currentAnswer = currentQuestion != null
             ? lessonState.answers[currentQuestion.id]
             : null;
