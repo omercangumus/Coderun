@@ -67,6 +67,11 @@ export interface LessonResult {
   xp_earned: number;
   is_completed: boolean;
   correct_count: number;
+  wrong_count: number;
   total_questions: number;
   passed: boolean;
+  message: string;
+  level_up?: boolean;
+  new_level?: number;
+  new_streak?: number;
 }
