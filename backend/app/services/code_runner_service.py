@@ -369,15 +369,9 @@ async def evaluate_submission(
 
         actual = run_result.stdout.strip()
         
-        # Tolerant output comparison helper
         def _normalize(text: str) -> str:
-            t = text.lower()
-            turkish_map = {"ı": "i", "ğ": "g", "ü": "u", "ş": "s", "ö": "o", "ç": "c"}
-            for k, v in turkish_map.items():
-                t = t.replace(k, v)
-            t = re.sub(r"[.,\/#!$%\^&\*;:{}=\-_`~()?'\"]", " ", t)
-            t = re.sub(r"\s+", " ", t)
-            return t.strip()
+            lines = text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+            return '\n'.join(line.rstrip() for line in lines).strip()
 
 
         passed = _normalize(actual) == _normalize(expected) and not run_result.timed_out

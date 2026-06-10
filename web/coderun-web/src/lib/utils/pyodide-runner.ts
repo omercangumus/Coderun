@@ -293,19 +293,9 @@ export async function evaluateTestCases(
     const expected = tc.expectedStdout.trim();
 
     const normalize = (str: string) => {
-      const turkishMap: Record<string, string> = {
-        'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c'
-      };
-      let s = str.toLowerCase();
-      for (const [search, replace] of Object.entries(turkishMap)) {
-        s = s.split(search).join(replace);
-      }
-      return s
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+      const lines = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+      return lines.map((l) => l.trimEnd()).join('\n').trim();
     };
-
 
     const passed = normalize(actual) === normalize(expected) && !result.timedOut;
 
