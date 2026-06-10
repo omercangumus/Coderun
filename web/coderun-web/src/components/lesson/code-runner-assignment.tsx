@@ -26,8 +26,6 @@ function formatRunDuration(ms: number): string {
   return `${(ms / 1000).toFixed(2)} sn`;
 }
 
-type ResultTab = 'output' | 'errors' | 'tests';
-
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
   loading: () => (
@@ -107,29 +105,42 @@ function getDifficultyFromQuestion(question: ExtendedQuestion, index: number): C
   return 'Zor';
 }
 
-function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
-  if (!result) {
-    return (
-      <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
-        <span className="mr-2 animate-pulse">$_</span>
-        Kodunu yaz, Çalıştır&apos;a bas.
-      </div>
-    );
-  }
-
+// ─── Çalıştır çıktısı ──────────────────────────────────────────────────────
+function SmartRunOutput({ result }: { result: CodeRunResponse }) {
   return (
     <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs">
       {result.timedOut && (
-        <div className="mb-2 rounded-lg border border-orange-500/40 bg-orange-950/60 px-3 py-1.5 text-orange-400">
-          ⏱ Zaman aşımı
+        <div className="mb-3 flex items-center gap-2 text-orange-400">
+          <span>⏱</span>
+          <span>Zaman aşımı</span>
         </div>
       )}
-      {result.stdout && <pre className="whitespace-pre-wrap text-[#39ff14]">{result.stdout}</pre>}
-      {result.stderr && <pre className="mt-1 whitespace-pre-wrap text-rose-400">{result.stderr}</pre>}
+
+      {result.stdout && (
+        <div className="mb-3">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <span className="text-green-500">▶</span>
+            <span>ÇIKTI</span>
+          </div>
+          <pre className="whitespace-pre-wrap text-[#39ff14]">{result.stdout}</pre>
+        </div>
+      )}
+
+      {result.stderr && (
+        <div>
+          <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <span className="text-red-500">⚠</span>
+            <span>HATA ÇIKTISI</span>
+          </div>
+          <pre className="whitespace-pre-wrap text-rose-400">{result.stderr}</pre>
+        </div>
+      )}
+
       {!result.stdout && !result.stderr && (
         <span className="italic text-slate-500">(çıktı yok)</span>
       )}
-      <div className="mt-3 flex gap-4 border-t border-slate-800/80 pt-2 text-[10px] text-slate-500">
+
+      <div className="mt-3 flex gap-4 border-t border-slate-800/60 pt-2 text-[10px] text-slate-500">
         <span>
           EXIT:{' '}
           <span className={result.exitCode === 0 ? 'font-bold text-green-400' : 'font-bold text-red-400'}>
@@ -145,39 +156,150 @@ function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
   );
 }
 
-function TestResultsPanel({ results }: { results: TestCaseResult[] }) {
-  if (results.length === 0) return null;
+// ─── Tek test satırı ───────────────────────────────────────────────────────
+function SmartTestRow({ result, index }: { result: TestCaseResult; index: number }) {
+  if (result.hidden) {
+    return (
+      <div className="flex items-center justify-between border-b border-gray-800/60 px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <span className="text-slate-500">🔒</span>
+          <span className="text-sm text-slate-500">Gizli doğrulama</span>
+        </div>
+        <span className="font-mono text-[11px] text-slate-600">{result.durationMs}ms</span>
+      </div>
+    );
+  }
+
+  const name = result.name || `Test ${index + 1}`;
+  const showDetails = !result.passed;
 
   return (
-    <div className="h-full overflow-y-auto bg-surface-container-low p-3">
-      <p className="mb-2 font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
-        Test Sonuçları
-      </p>
-      <div className="space-y-2">
-        {results.map((r, i) => (
-          <div
-            key={i}
-            className={cn(
-              'rounded-xl border p-3 text-xs',
-              r.passed
-                ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                : 'border-error/30 bg-error-container/30 text-error',
-            )}
-          >
-            <div className="flex items-center gap-2">
-              <span className="font-bold">{r.passed ? '✓' : '✗'}</span>
-              <span className="font-semibold">{r.name}</span>
-              {r.hidden && (
-                <span className="rounded bg-surface-container px-1.5 py-0.5 text-[9px] uppercase">gizli</span>
-              )}
-              <span className="ml-auto font-mono opacity-70">{formatRunDuration(r.durationMs)}</span>
-            </div>
-            {!r.passed && !r.hidden && r.expectedStdout && (
-              <p className="mt-2 font-mono text-[10px] opacity-80">Beklenen: {r.expectedStdout.slice(0, 120)}</p>
-            )}
-          </div>
+    <div className={cn('border-b border-gray-800/60', showDetails && 'bg-red-950/10')}>
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <span className={cn('text-base font-bold', result.passed ? 'text-green-400' : 'text-red-400')}>
+            {result.passed ? '✓' : '✗'}
+          </span>
+          <span className={cn('text-sm font-medium', result.passed ? 'text-green-400' : 'text-red-400')}>
+            {name}
+          </span>
+        </div>
+        <span className="font-mono text-[11px] text-slate-500">{result.durationMs}ms</span>
+      </div>
+
+      {showDetails && (
+        <div className="mx-4 mb-3 overflow-hidden rounded-lg border border-gray-800 bg-gray-900/50">
+          <table className="w-full text-xs">
+            <tbody>
+              <tr className="border-b border-gray-800">
+                <td className="w-[90px] border-r border-gray-800 px-3 py-2 align-top text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                  Beklenen
+                </td>
+                <td className="break-all px-3 py-2 font-mono text-slate-300">
+                  {result.expectedStdout?.trim() || '(boş)'}
+                </td>
+              </tr>
+              <tr>
+                <td className="border-r border-gray-800 px-3 py-2 align-top text-[10px] font-bold uppercase tracking-wide text-slate-500">
+                  Alınan
+                </td>
+                <td className="break-all px-3 py-2 font-mono text-slate-300">
+                  {result.stdout?.trim() || '(boş)'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Test sonuçları paneli ─────────────────────────────────────────────────
+function SmartTestResults({ submitResult }: { submitResult: CodeSubmitResponse }) {
+  const { testResults, passed } = submitResult;
+  const passedCount = testResults.filter((r) => r.passed).length;
+  const totalCount = testResults.length;
+
+  return (
+    <div className="flex h-full flex-col bg-[#090d16]">
+      <div className="flex shrink-0 items-center justify-between border-b border-gray-800 px-4 py-2.5">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+          Test Sonuçları
+        </span>
+        <span
+          className={cn(
+            'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+            passed ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400',
+          )}
+        >
+          {passedCount}/{totalCount} geçti {passed ? '✓' : '✗'}
+        </span>
+      </div>
+
+      <div className="overflow-y-auto">
+        {testResults.map((r, i) => (
+          <SmartTestRow key={i} result={r} index={i} />
         ))}
       </div>
+    </div>
+  );
+}
+
+// ─── Akıllı panel — sekme yok, duruma göre içerik ─────────────────────────
+function SmartPanel({
+  editorState,
+  runResult,
+  submitResult,
+}: {
+  editorState: EditorState;
+  runResult: CodeRunResponse | null;
+  submitResult: CodeSubmitResponse | null;
+}) {
+  if (editorState === 'running') {
+    return (
+      <div className="flex h-full items-center gap-2 bg-[#090d16] p-4 font-mono text-xs text-slate-400">
+        <span className="animate-spin">⟳</span>
+        <span>Kod çalıştırılıyor...</span>
+      </div>
+    );
+  }
+
+  if (editorState === 'submitting') {
+    return (
+      <div className="flex h-full items-center gap-2 bg-[#090d16] p-4 font-mono text-xs text-slate-400">
+        <span className="animate-spin">⟳</span>
+        <span>Test senaryoları değerlendiriliyor...</span>
+      </div>
+    );
+  }
+
+  if (submitResult !== null) {
+    if (submitResult.testResults.length > 0) {
+      return <SmartTestResults submitResult={submitResult} />;
+    }
+    // Test senaryosu yoksa gönder çıktısını göster
+    return (
+      <SmartRunOutput
+        result={{
+          stdout: submitResult.stdout ?? '',
+          stderr: submitResult.stderr ?? '',
+          exitCode: submitResult.passed ? 0 : 1,
+          durationMs: 0,
+          timedOut: false,
+        }}
+      />
+    );
+  }
+
+  if (runResult !== null) {
+    return <SmartRunOutput result={runResult} />;
+  }
+
+  return (
+    <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
+      <span className="mr-2 animate-pulse text-slate-400">$_</span>
+      <span className="italic">Kodu yaz, Çalıştır&apos;a bas.</span>
     </div>
   );
 }
@@ -188,7 +310,7 @@ function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
   return (
     <div
       className={cn(
-        'rounded-xl border px-4 py-3 text-sm flex items-center gap-3',
+        'flex items-center gap-3 rounded-xl border px-4 py-3 text-sm',
         status === 'loading'
           ? 'border-primary/30 bg-primary/5 text-primary'
           : 'border-error/30 bg-error-container text-error',
@@ -199,7 +321,9 @@ function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <div>
             <p className="font-semibold">Python çalıştırıcı yükleniyor...</p>
-            <p className="text-xs opacity-70">İlk seferde ~10 saniye sürebilir, sonraki çalıştırmalar anlık olacak.</p>
+            <p className="text-xs opacity-70">
+              İlk seferde ~10 saniye sürebilir, sonraki çalıştırmalar anlık olacak.
+            </p>
           </div>
         </>
       )}
@@ -216,7 +340,6 @@ function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
   );
 }
 
-/** Doğru cevap banner'ı: 1.5 sn görünür, sonra onSuccess çağrılır */
 function CorrectAnswerBanner({
   explanation,
   onSuccess,
@@ -232,14 +355,11 @@ function CorrectAnswerBanner({
   return (
     <div className="rounded-xl border border-secondary/40 bg-secondary/10 px-4 py-3">
       <p className="font-bold text-secondary">✓ Doğru! Harika iş çıkardın!</p>
-      {explanation && (
-        <p className="mt-1 text-xs text-on-surface-variant">{explanation}</p>
-      )}
+      {explanation && <p className="mt-1 text-xs text-on-surface-variant">{explanation}</p>}
     </div>
   );
 }
 
-/** Yanlış cevap banner'ı: 3 sn görünür, sonra kaybolur — editör temizlenmez */
 function WrongAnswerBanner({ onDismiss }: { onDismiss: () => void }) {
   useEffect(() => {
     const timer = setTimeout(onDismiss, 3000);
@@ -271,8 +391,6 @@ export function CodeRunnerAssignment({
     currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starterCode,
   );
   const [editorState, setEditorState] = useState<EditorState>('idle');
-
-  const [resultTab, setResultTab] = useState<ResultTab>('output');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -281,7 +399,6 @@ export function CodeRunnerAssignment({
   const [feedbackState, setFeedbackState] = useState<'none' | 'correct' | 'wrong'>('none');
   const [showHint, setShowHint] = useState(false);
 
-  // Soru değişince tüm state'i sıfırla
   const prevQuestionId = useRef(question.id);
   useEffect(() => {
     if (prevQuestionId.current !== question.id) {
@@ -292,7 +409,6 @@ export function CodeRunnerAssignment({
       setSubmitResult(null);
       setError(null);
       setFeedbackState('none');
-      setResultTab('output');
       setShowHint(false);
     }
   }, [question.id, question.starterCode]);
@@ -322,19 +438,16 @@ export function CodeRunnerAssignment({
     [onChange],
   );
 
-  /** Çalıştır: sadece kodu çalıştırır, ilerlemez */
   const handleRun = async () => {
     if (editorState !== 'idle') return;
     setEditorState('running');
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
-    setResultTab('output');
 
     try {
       const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
       setRunResult(result);
-      setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Kod çalıştırılamadı.';
       setError(msg);
@@ -343,7 +456,6 @@ export function CodeRunnerAssignment({
     }
   };
 
-  /** Gönder: cevabı kontrol eder, doğruysa 1.5 sn sonra ilerler */
   const handleSubmit = async () => {
     if (editorState !== 'idle') return;
     setEditorState('submitting');
@@ -366,20 +478,16 @@ export function CodeRunnerAssignment({
           feedback: result.exitCode === 0 ? 'Kod başarıyla çalıştı! ✓' : 'Kodda hata var, kontrol et.',
         };
         setSubmitResult(outcome);
-        setResultTab(outcome.stderr ? 'errors' : 'output');
       } else {
         outcome = await evaluateTestCases(code, testCases, question.maxRuntimeMs ?? 5000);
         setSubmitResult(outcome);
-        setResultTab(outcome.stderr ? 'errors' : 'tests');
       }
 
       if (outcome.passed) {
         setFeedbackState('correct');
         onChange('__code_editor__');
-        // Auto-advance after 1.5s handled by CorrectAnswerBanner
       } else {
         setFeedbackState('wrong');
-        // Editör TEMİZLENMEZ — sadece banner 3 sn sonra kaybolur
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gönderim başarısız.';
@@ -408,53 +516,7 @@ export function CodeRunnerAssignment({
   }, []);
 
   const isLoading = editorState !== 'idle';
-  // Sonraki buton sadece soru cevaplanmışsa aktif
   const isAnswered = currentAnswer === '__code_editor__';
-
-  const resultsPanelContent = () => {
-    if (resultTab === 'tests') {
-      if (submitResult) {
-        return <TestResultsPanel results={submitResult.testResults} />;
-      }
-      return <TerminalOutput result={null} />;
-    }
-
-    if (resultTab === 'errors') {
-      const currentStderr = runResult ? runResult.stderr : (submitResult ? submitResult.stderr : null);
-      if (currentStderr) {
-        return (
-          <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs text-rose-400">
-            {currentStderr}
-          </div>
-        );
-      }
-      return (
-        <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
-          <span className="mr-2">$_</span>
-          Hata çıktısı yok.
-        </div>
-      );
-    }
-
-    // Default or output tab
-    if (runResult) {
-      return <TerminalOutput result={runResult} />;
-    }
-    if (submitResult) {
-      return (
-        <TerminalOutput
-          result={{
-            stdout: submitResult.stdout,
-            stderr: submitResult.stderr,
-            exitCode: submitResult.passed ? 0 : 1,
-            durationMs: submitResult.testResults.reduce((acc, r) => acc + r.durationMs, 0),
-            timedOut: false,
-          }}
-        />
-      );
-    }
-    return <TerminalOutput result={null} />;
-  };
 
   const ghostieState = getGhostieState(editorState, runResult, submitResult);
   const ghostieMessage = getGhostieMessage(editorState, runResult, submitResult, pyodideStatus);
@@ -468,7 +530,7 @@ export function CodeRunnerAssignment({
         onClick={handleRun}
         disabled={isLoading}
         title="Kodu çalıştırır ve çıktıyı gösterir — ilerlemez"
-        className="rounded-xl bg-secondary px-4 py-2 text-xs font-bold text-on-secondary transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="rounded-xl bg-green-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-green-700 disabled:opacity-50"
       >
         {editorState === 'running' ? '⟳ Çalışıyor...' : '▶ Çalıştır'}
       </button>
@@ -477,7 +539,7 @@ export function CodeRunnerAssignment({
         onClick={handleSubmit}
         disabled={isLoading}
         title="Cevabı kontrol eder — doğruysa sonraki soruya geçer"
-        className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
       >
         {editorState === 'submitting' ? '⟳ Gönderiliyor...' : '✓ Gönder'}
       </button>
@@ -485,7 +547,7 @@ export function CodeRunnerAssignment({
         type="button"
         onClick={handleReset}
         disabled={isLoading}
-        className="rounded-xl border border-outline-variant px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container disabled:opacity-50"
+        className="rounded-xl border border-gray-600/60 bg-transparent px-4 py-2 text-xs font-bold text-gray-400 transition-colors hover:border-gray-500 hover:text-gray-300 disabled:opacity-50"
       >
         ↺ Sıfırla
       </button>
@@ -494,7 +556,6 @@ export function CodeRunnerAssignment({
 
   const editorPanel = (
     <div className="flex h-full min-h-0 flex-col">
-      {/* Feedback banners */}
       {feedbackState === 'correct' && (
         <div className="px-3 pt-3">
           <CorrectAnswerBanner explanation={question.explanation} onSuccess={handleCorrectAutoAdvance} />
@@ -506,17 +567,11 @@ export function CodeRunnerAssignment({
         </div>
       )}
 
-      <div className="flex items-center gap-2 border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
-        <span className="rounded-lg px-3 py-1 text-xs font-semibold bg-white/10 text-white">
+      {/* Sadece dosya adı etiketi — tıklanamaz */}
+      <div className="flex items-center border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
+        <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white">
           solution.py
         </span>
-        <button
-          type="button"
-          onClick={() => setUseTextarea(!useTextarea)}
-          className="ml-auto text-[10px] font-semibold text-primary hover:underline"
-        >
-          {useTextarea ? 'Monaco' : 'Metin'}
-        </button>
       </div>
 
       <div className="relative min-h-0 flex-1">
@@ -532,7 +587,6 @@ export function CodeRunnerAssignment({
             className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
           />
         ) : (
-          // key prop force-remounts Monaco on question change
           <MonacoEditor
             key={`editor-${questionIndex}`}
             height="100%"
@@ -561,25 +615,23 @@ export function CodeRunnerAssignment({
         examples={publicExamples}
       />
 
-      {/* Beklenen çıktı */}
       {expectedOutput && (
         <div>
           <p className="mb-1 font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
             Beklenen Çıktı
           </p>
-          <pre className="rounded-xl border border-outline-variant bg-[#0d1117] p-3 font-mono text-xs text-green-400 overflow-x-auto whitespace-pre-wrap">
+          <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg border border-gray-700 bg-gray-900 p-3 font-mono text-sm text-green-300">
             {expectedOutput}
           </pre>
         </div>
       )}
 
-      {/* İpucu — tıklanınca açılır, kapatılabilir */}
       {question.hint && (
         <div>
           <button
             type="button"
             onClick={() => setShowHint((v) => !v)}
-            className="flex w-full items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300 hover:bg-amber-500/15 transition-colors"
+            className="flex w-full items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 transition-colors hover:bg-amber-500/15 dark:text-amber-300"
           >
             <span className="font-semibold">💡 İpucu</span>
             {showHint ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -621,34 +673,11 @@ export function CodeRunnerAssignment({
         problemPanel={problemPanel}
         editorPanel={editorPanel}
         resultsPanel={
-          <div className="flex h-full min-h-[140px] flex-col">
-            <div className="flex gap-1 border-b border-outline-variant bg-surface-container px-2 py-1">
-              {(
-                [
-                  { id: 'output' as const, label: 'Çıktı' },
-                  { id: 'errors' as const, label: 'Hatalar' },
-                  { id: 'tests' as const, label: 'Testler' },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setResultTab(tab.id)}
-                  disabled={tab.id === 'tests' && !submitResult}
-                  className={cn(
-                    'rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide',
-                    resultTab === tab.id
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container-high',
-                    tab.id === 'tests' && !submitResult && 'opacity-40',
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-            <div className="min-h-0 flex-1">{resultsPanelContent()}</div>
-          </div>
+          <SmartPanel
+            editorState={editorState}
+            runResult={runResult}
+            submitResult={submitResult}
+          />
         }
       />
 
