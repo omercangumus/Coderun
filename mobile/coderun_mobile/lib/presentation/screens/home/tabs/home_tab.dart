@@ -542,8 +542,8 @@ class _LeaderboardPreview extends StatelessWidget {
                       radius: 16,
                       backgroundColor: AppColors.primaryFixed,
                       child: Text(
-                        (entry.username as String).isNotEmpty
-                            ? (entry.username as String)[0].toUpperCase()
+                        entry.username.isNotEmpty
+                            ? entry.username[0].toUpperCase()
                             : '?',
                         style: const TextStyle(
                           fontFamily: 'Lexend',
@@ -557,7 +557,7 @@ class _LeaderboardPreview extends StatelessWidget {
                     // Name
                     Expanded(
                       child: Text(
-                        entry.username as String,
+                        entry.username,
                         style: const TextStyle(
                           fontFamily: 'Lexend',
                           fontSize: 14,
