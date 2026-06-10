@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Coderun",
+    "slug": "coderun",
+    "scheme": "coderun",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      ["expo-notifications", { "color": "#5B21B6" }]
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/ghostie.png",
+        "backgroundColor": "#5B21B6"
+      },
+      "package": "com.coderun.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.coderun.app"
+    }
+  }
+}
