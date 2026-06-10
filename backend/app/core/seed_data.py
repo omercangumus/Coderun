@@ -7108,253 +7108,367 @@ PYTHON_EXTRA_QUIZ_LESSON: dict = {
 }
 
 CODING_ASSIGNMENTS_LESSON: dict = {
-    'title': 'Python Kodlama Odevleri',
-    'lesson_type': 'code_editor',
-    'order': 27,
-    'xp_reward': 50,
-    'questions': [
+    "title": "Hello Coderun — İlk Adımlar",
+    "lesson_type": "code_editor",
+    "order": 27,
+    "xp_reward": 50,
+    "questions": [
+        # ------------------------------------------------------------------
+        # 1. İlk Çıktın (easy)
+        # ------------------------------------------------------------------
         {
-            'question_text': 'Hello Coderun',
-            'question_type': 'code_editor',
-            'language': 'python',
-            'assignment_instructions': (
-                "Ekrana tam olarak 'Hello, Coderun!' yazdiran bir program yazin.\n"
-                "\n"
-                "Ipucu: print() fonksiyonunu kullanin."
+            "question_text": "İlk Çıktın",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "easy",
+            "assignment_instructions": (
+                "Ekrana 'Merhaba Dünya!' yazdıran bir program yaz.\n\n"
+                "Beklenen çıktı:\nMerhaba Dünya!"
             ),
-            'starter_code': (
-                "# Buraya kodunuzu yazin\n"
-                ""
-            ),
-            'correct_answer': '__code_editor__',
-            'hint': 'print() fonksiyonunu kullanin.',
-            'explanation': "print('Hello, Coderun!') ifadesi ekrana istenen metni yazdirir.",
-            'max_runtime_ms': 5000,
-            'memory_limit_mb': 128,
-            'order': 1,
-            'test_cases': [
+            "starter_code": "# Çözümünü buraya yaz\n",
+            "correct_answer": "__code_editor__",
+            "hint": "print() fonksiyonunu kullan. Metin tırnak içinde olmalı.",
+            "explanation": "print() fonksiyonu parantez içindeki değeri ekrana yazdırır.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 1,
+            "test_cases": [
                 {
-                    'name': 'Temel cikti',
-                    'stdin': '',
-                    'expected_stdout': 'Hello, Coderun!',
-                    'hidden': False,
+                    "name": "Merhaba Dünya çıktısı",
+                    "stdin": "",
+                    "expected_stdout": "Merhaba Dünya!",
+                    "hidden": False,
                 },
                 {
-                    'name': 'Gizli dogrulama',
-                    'stdin': '',
-                    'expected_stdout': 'Hello, Coderun!',
-                    'hidden': True,
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Merhaba Dünya!",
+                    "hidden": True,
                 },
             ],
         },
+        # ------------------------------------------------------------------
+        # 2. Çoklu Satır (easy)
+        # ------------------------------------------------------------------
         {
-            'question_text': 'Iki Sayinin Toplami',
-            'question_type': 'code_editor',
-            'language': 'python',
-            'assignment_instructions': (
-                "Iki tam sayiyi toplayip sonucu yazdiran bir program yazin.\n"
-                "\n"
-                "Giris: Iki satirda birer tam sayi\n"
-                "Cikti: Toplamlar"
+            "question_text": "Çoklu Satır",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "easy",
+            "assignment_instructions": (
+                "Ekrana alt alta şu iki satırı yazdır:\n"
+                "Python öğreniyorum\n"
+                "Coderun ile pratik yapıyorum"
             ),
-            'starter_code': (
-                "a = int(input())\n"
-                "b = int(input())\n"
-                "# Toplami hesaplayin ve yazdirin\n"
-                ""
-            ),
-            'correct_answer': '__code_editor__',
-            'hint': 'a + b ifadesini print() ile yazdiriniz.',
-            'explanation': 'print(a + b) iki sayinin toplamini yazdirir.',
-            'max_runtime_ms': 5000,
-            'memory_limit_mb': 128,
-            'order': 2,
-            'test_cases': [
+            "starter_code": "# İki ayrı print() kullan\n",
+            "correct_answer": "__code_editor__",
+            "hint": "Her satır için ayrı bir print() kullan.",
+            "explanation": "Her print() çağrısı yeni bir satıra yazar.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 2,
+            "test_cases": [
                 {
-                    'name': '3 + 5 = 8',
-                    'stdin': (
-                        "3\n"
-                        "5"
-                    ),
-                    'expected_stdout': '8',
-                    'hidden': False,
+                    "name": "İki satır çıktı",
+                    "stdin": "",
+                    "expected_stdout": "Python öğreniyorum\nCoderun ile pratik yapıyorum",
+                    "hidden": False,
                 },
                 {
-                    'name': 'Negatif sayilar',
-                    'stdin': (
-                        "-2\n"
-                        "7"
-                    ),
-                    'expected_stdout': '5',
-                    'hidden': True,
-                },
-                {
-                    'name': 'Sifir',
-                    'stdin': (
-                        "0\n"
-                        "0"
-                    ),
-                    'expected_stdout': '0',
-                    'hidden': True,
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Python öğreniyorum\nCoderun ile pratik yapıyorum",
+                    "hidden": True,
                 },
             ],
         },
+        # ------------------------------------------------------------------
+        # 3. String Birleştirme (medium)
+        # ------------------------------------------------------------------
         {
-            'question_text': 'Cift Sayilari Say',
-            'question_type': 'code_editor',
-            'language': 'python',
-            'assignment_instructions': (
-                "1'den N'e kadar (N dahil) olan cift sayilarin adedini yazdirin.\n"
-                "\n"
-                "Giris: Tek bir tam sayi N\n"
-                "Cikti: Cift sayi adedi"
+            "question_text": "String Birleştirme",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "medium",
+            "assignment_instructions": (
+                "ad değişkenine 'Coderun' değerini ata ve ekrana 'Hoş geldin, Coderun!' yazdır."
             ),
-            'starter_code': (
-                "n = int(input())\n"
-                "# Cift sayilari sayiniz\n"
-                ""
-            ),
-            'correct_answer': '__code_editor__',
-            'hint': 'range(2, n+1, 2) ile cift sayilari sayabilirsiniz.',
-            'explanation': 'n // 2 veya len(range(2, n+1, 2)) cift sayi adedini verir.',
-            'max_runtime_ms': 5000,
-            'memory_limit_mb': 128,
-            'order': 3,
-            'test_cases': [
+            "starter_code": "ad = ___\nprint(___)\n",
+            "correct_answer": "__code_editor__",
+            "hint": "f-string: f'Hoş geldin, {ad}!' veya + ile birleştir.",
+            "explanation": "f-string ile değişkenleri metin içinde {süslü parantez} ile kullanabilirsin.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 3,
+            "test_cases": [
                 {
-                    'name': 'N=10 -> 5',
-                    'stdin': '10',
-                    'expected_stdout': '5',
-                    'hidden': False,
+                    "name": "Hoş geldin Coderun",
+                    "stdin": "",
+                    "expected_stdout": "Hoş geldin, Coderun!",
+                    "hidden": False,
                 },
                 {
-                    'name': 'N=1 -> 0',
-                    'stdin': '1',
-                    'expected_stdout': '0',
-                    'hidden': True,
-                },
-                {
-                    'name': 'N=6 -> 3',
-                    'stdin': '6',
-                    'expected_stdout': '3',
-                    'hidden': True,
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Hoş geldin, Coderun!",
+                    "hidden": True,
                 },
             ],
         },
+        # ------------------------------------------------------------------
+        # 4. Tekrarlı Çıktı (medium)
+        # ------------------------------------------------------------------
         {
-            'question_text': 'String Tersine Cevir',
-            'question_type': 'code_editor',
-            'language': 'python',
-            'assignment_instructions': (
-                "Girilen string'i tersine cevirip yazdirin.\n"
-                "\n"
-                "Giris: Bir string\n"
-                "Cikti: Tersine cevrilmis string"
+            "question_text": "Tekrarlı Çıktı",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "medium",
+            "assignment_instructions": (
+                "Bir for döngüsü kullanarak 'Python' kelimesini 3 kez alt alta yazdır.\n\n"
+                "Beklenen çıktı:\nPython\nPython\nPython"
             ),
-            'starter_code': (
-                "s = input()\n"
-                "# String'i tersine ceviriniz\n"
-                ""
-            ),
-            'correct_answer': '__code_editor__',
-            'hint': "Python'da s[::-1] ifadesi string'i tersine cevirir.",
-            'explanation': "print(s[::-1]) veya print(''.join(reversed(s))) kullanilabilir.",
-            'max_runtime_ms': 5000,
-            'memory_limit_mb': 128,
-            'order': 4,
-            'test_cases': [
+            "starter_code": "# for döngüsü kullan\n",
+            "correct_answer": "__code_editor__",
+            "hint": "for i in range(3): kullanarak döngü kur.",
+            "explanation": "range(3) → 0, 1, 2 değerlerini üretir. Döngü 3 kez çalışır.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 4,
+            "test_cases": [
                 {
-                    'name': 'hello -> olleh',
-                    'stdin': 'hello',
-                    'expected_stdout': 'olleh',
-                    'hidden': False,
+                    "name": "Python 3 kez",
+                    "stdin": "",
+                    "expected_stdout": "Python\nPython\nPython",
+                    "hidden": False,
                 },
                 {
-                    'name': 'python -> nohtyp',
-                    'stdin': 'python',
-                    'expected_stdout': 'nohtyp',
-                    'hidden': True,
-                },
-                {
-                    'name': 'Tek karakter',
-                    'stdin': 'a',
-                    'expected_stdout': 'a',
-                    'hidden': True,
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Python\nPython\nPython",
+                    "hidden": True,
                 },
             ],
         },
+        # ------------------------------------------------------------------
+        # 5. Formatlı Çıktı (hard)
+        # ------------------------------------------------------------------
         {
-            'question_text': 'FizzBuzz Mini',
-            'question_type': 'code_editor',
-            'language': 'python',
-            'assignment_instructions': (
-                "1'den 15'e kadar sayilari yazdirin.\n"
-                "3'un katlari icin 'Fizz', 5'in katlari icin 'Buzz',\n"
-                "her ikisinin katlari icin 'FizzBuzz' yazdirin."
+            "question_text": "Formatlı Çıktı",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "hard",
+            "assignment_instructions": (
+                "1'den 5'e kadar (dahil) sayıları 'Sayı: X' formatında alt alta yazdır.\n\n"
+                "Beklenen çıktı:\nSayı: 1\nSayı: 2\nSayı: 3\nSayı: 4\nSayı: 5"
             ),
-            'starter_code': (
-                "for i in range(1, 16):\n"
-                "    # Kosullari kontrol ediniz\n"
-                "    pass\n"
-                ""
+            "starter_code": "# range ve f-string kullan\n",
+            "correct_answer": "__code_editor__",
+            "hint": "for i in range(1, 6): ile döngü kur, f-string ile formatla.",
+            "explanation": (
+                "range(1, 6) → 1, 2, 3, 4, 5 üretir. "
+                "Son değer dahil değildir bu yüzden 6 yazıyoruz."
             ),
-            'correct_answer': '__code_editor__',
-            'hint': "Once 15'in katlarini (FizzBuzz), sonra 3 ve 5'in katlarini kontrol edin.",
-            'explanation': (
-                "if i % 15 == 0: print('FizzBuzz')\n"
-                "elif i % 3 == 0: print('Fizz')\n"
-                "elif i % 5 == 0: print('Buzz')\n"
-                "else: print(i)"
-            ),
-            'max_runtime_ms': 5000,
-            'memory_limit_mb': 128,
-            'order': 5,
-            'test_cases': [
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 5,
+            "test_cases": [
                 {
-                    'name': '1-15 tam cikti',
-                    'stdin': '',
-                    'expected_stdout': (
-                        "1\n"
-                        "2\n"
-                        "Fizz\n"
-                        "4\n"
-                        "Buzz\n"
-                        "Fizz\n"
-                        "7\n"
-                        "8\n"
-                        "Fizz\n"
-                        "Buzz\n"
-                        "11\n"
-                        "Fizz\n"
-                        "13\n"
-                        "14\n"
-                        "FizzBuzz"
-                    ),
-                    'hidden': False,
+                    "name": "Sayı 1-5 formatlı",
+                    "stdin": "",
+                    "expected_stdout": "Sayı: 1\nSayı: 2\nSayı: 3\nSayı: 4\nSayı: 5",
+                    "hidden": False,
                 },
                 {
-                    'name': 'Gizli dogrulama',
-                    'stdin': '',
-                    'expected_stdout': (
-                        "1\n"
-                        "2\n"
-                        "Fizz\n"
-                        "4\n"
-                        "Buzz\n"
-                        "Fizz\n"
-                        "7\n"
-                        "8\n"
-                        "Fizz\n"
-                        "Buzz\n"
-                        "11\n"
-                        "Fizz\n"
-                        "13\n"
-                        "14\n"
-                        "FizzBuzz"
-                    ),
-                    'hidden': True,
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Sayı: 1\nSayı: 2\nSayı: 3\nSayı: 4\nSayı: 5",
+                    "hidden": True,
                 },
             ],
         },
     ],
 }
+
+
+# =============================================================================
+# PYTHON DEĞİŞKENLER — Ek ders 2 (code_editor tipi)
+# =============================================================================
+
+CODING_VARIABLES_LESSON: dict = {
+    "title": "Değişkenler — Kod Pratiği",
+    "lesson_type": "code_editor",
+    "order": 28,
+    "xp_reward": 50,
+    "questions": [
+        # ------------------------------------------------------------------
+        # 1. Değişken Tanımlama (easy)
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Değişken Tanımlama",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "easy",
+            "assignment_instructions": (
+                "isim adlı bir değişkene herhangi bir isim ata ve ekrana yazdır.\n\n"
+                "Örnek çıktı: Ömer (ya da seçtiğin herhangi bir isim)"
+            ),
+            "starter_code": "isim = ___\nprint(___)\n",
+            "correct_answer": "__code_editor__",
+            "hint": "isim = 'Ömer' gibi bir atama yap, sonra print(isim)",
+            "explanation": "Python'da değişken tanımlamak için = operatörü kullanılır.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 1,
+            "test_cases": [],  # Herhangi bir isim geçerlidir, test cases yok
+        },
+        # ------------------------------------------------------------------
+        # 2. Sayı İşlemi (easy)
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Sayı İşlemi",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "easy",
+            "assignment_instructions": (
+                "a değişkenine 10, b değişkenine 20 ata. İkisinin toplamını ekrana yazdır.\n\n"
+                "Beklenen çıktı: 30"
+            ),
+            "starter_code": "a = ___\nb = ___\nprint(___)\n",
+            "correct_answer": "__code_editor__",
+            "hint": "print(a + b) veya toplam = a + b",
+            "explanation": "Python'da sayılar + operatörü ile toplanır.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 2,
+            "test_cases": [
+                {
+                    "name": "10 + 20 = 30",
+                    "stdin": "",
+                    "expected_stdout": "30",
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "30",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 3. Tip Dönüşümü (medium)
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Tip Dönüşümü",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "medium",
+            "assignment_instructions": (
+                "yas değişkenine 25 ata. Ekrana 'Yaşım: 25' yazdır.\n\n"
+                "Beklenen çıktı: Yaşım: 25"
+            ),
+            "starter_code": "yas = 25\nprint(___)\n",
+            "correct_answer": "__code_editor__",
+            "hint": "f'Yaşım: {yas}' veya 'Yaşım: ' + str(yas)",
+            "explanation": "String ile integer'ı birleştirmek için str() veya f-string kullan.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 3,
+            "test_cases": [
+                {
+                    "name": "Yaşım: 25",
+                    "stdin": "",
+                    "expected_stdout": "Yaşım: 25",
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Yaşım: 25",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 4. Çoklu Değişken (medium)
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Çoklu Değişken",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "medium",
+            "assignment_instructions": (
+                "ad='Python', versiyon=3.12, yil=1991 tanımla.\n"
+                "Ekrana 'Python 3.12 yılında 1991 çıktı' yazdır.\n\n"
+                "Beklenen çıktı: Python 3.12 yılında 1991 çıktı"
+            ),
+            "starter_code": (
+                "ad = 'Python'\n"
+                "versiyon = ___\n"
+                "yil = ___\n"
+                "print(___)\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "f'{ad} {versiyon} yılında {yil} çıktı' şeklinde f-string kullan.",
+            "explanation": "f-string ile birden fazla değişkeni tek bir string içinde kullanabilirsin.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 4,
+            "test_cases": [
+                {
+                    "name": "Python 3.12 yılında 1991 çıktı",
+                    "stdin": "",
+                    "expected_stdout": "Python 3.12 yılında 1991 çıktı",
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "Python 3.12 yılında 1991 çıktı",
+                    "hidden": True,
+                },
+            ],
+        },
+        # ------------------------------------------------------------------
+        # 5. Takas Problemi (hard)
+        # ------------------------------------------------------------------
+        {
+            "question_text": "Takas Problemi",
+            "question_type": "code_editor",
+            "language": "python",
+            "difficulty": "hard",
+            "assignment_instructions": (
+                "a=5 ve b=10 değerlerini üçüncü bir değişken kullanmadan takas et.\n"
+                "Son olarak 'a=10, b=5' yazdır.\n\n"
+                "Beklenen çıktı: a=10, b=5"
+            ),
+            "starter_code": (
+                "a = 5\n"
+                "b = 10\n"
+                "# Takas yap\n\n"
+                "print(f'a={a}, b={b}')\n"
+            ),
+            "correct_answer": "__code_editor__",
+            "hint": "Python'da a, b = b, a ile tek satırda takas yapabilirsin.",
+            "explanation": "Python'da a, b = b, a ifadesi geçici değişken kullanmadan takas yapar.",
+            "max_runtime_ms": 5000,
+            "memory_limit_mb": 128,
+            "order": 5,
+            "test_cases": [
+                {
+                    "name": "a=10, b=5",
+                    "stdin": "",
+                    "expected_stdout": "a=10, b=5",
+                    "hidden": False,
+                },
+                {
+                    "name": "Gizli doğrulama",
+                    "stdin": "",
+                    "expected_stdout": "a=10, b=5",
+                    "hidden": True,
+                },
+            ],
+        },
+    ],
+}
+

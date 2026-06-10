@@ -21,6 +21,8 @@ class QuestionSimpleResponse(BaseModel):
     correct_line_index: int | None = None
     is_reinforcement: bool = False
     order: int
+    # Difficulty: "easy" | "medium" | "hard"
+    difficulty: str | None = None
     # Code assignment fields (code_editor type)
     language: str | None = None
     starter_code: str | None = None
@@ -145,6 +147,7 @@ class QuestionCreateSchema(BaseModel):
     is_reinforcement: bool = False
     order: int = 0
     reinforcement_question_id: uuid.UUID | None = None
+    difficulty: str | None = None
     # Code assignment fields
     language: str | None = None
     starter_code: str | None = None
@@ -169,6 +172,7 @@ class QuestionUpdateSchema(BaseModel):
     is_reinforcement: bool | None = None
     order: int | None = None
     reinforcement_question_id: uuid.UUID | None = None
+    difficulty: str | None = None
     # Code assignment fields
     language: str | None = None
     starter_code: str | None = None

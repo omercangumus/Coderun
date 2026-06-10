@@ -56,6 +56,8 @@ export interface QuestionResponse {
   isReinforcement: boolean;
   order: number;
   reinforcementQuestion: QuestionResponse | null;
+  /** Zorluk seviyesi: "easy" | "medium" | "hard" */
+  difficulty: 'easy' | 'medium' | 'hard' | null;
   // Code assignment fields (code_editor type)
   language: string | null;
   starterCode: string | null;

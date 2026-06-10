@@ -12,7 +12,7 @@ from app.models.lesson import Lesson
 from app.models.module import Module
 from app.models.question import Question
 from app.models.user import User
-from app.core.seed_data import SEED_DATA, CODING_ASSIGNMENTS_LESSON, PYTHON_EXTRA_QUIZ_LESSON
+from app.core.seed_data import SEED_DATA, CODING_ASSIGNMENTS_LESSON, CODING_VARIABLES_LESSON, PYTHON_EXTRA_QUIZ_LESSON
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,11 @@ async def seed_database(db: AsyncSession) -> None:
             # Python modülüne kodlama ödevleri dersini ekle
             lessons_data = list(module_data.get("lessons", []))
             if module_data.get("slug") == "python":
-                lessons_data = lessons_data + [PYTHON_EXTRA_QUIZ_LESSON, CODING_ASSIGNMENTS_LESSON]
+                lessons_data = lessons_data + [
+                    PYTHON_EXTRA_QUIZ_LESSON,
+                    CODING_ASSIGNMENTS_LESSON,
+                    CODING_VARIABLES_LESSON,
+                ]
             module_id = uuid4()
 
             module = Module(
@@ -138,6 +142,7 @@ async def seed_database(db: AsyncSession) -> None:
                         correct_line_index=question_data.get("correct_line_index"),
                         is_reinforcement=question_data.get("is_reinforcement", False),
                         order=question_data["order"],
+                        difficulty=question_data.get("difficulty"),
                         # Code assignment fields
                         language=question_data.get("language"),
                         starter_code=question_data.get("starter_code"),

@@ -76,6 +76,11 @@ class Question(BaseModel):
         nullable=False,
     )
 
+    # --- Difficulty (tüm soru tipleri için) ---
+    difficulty: Mapped[str | None] = mapped_column(
+        String, nullable=True, server_default="easy"
+    )
+
     # --- Code Assignment Fields (code_editor type) ---
     language: Mapped[str | None] = mapped_column(
         String, nullable=True, server_default="python"

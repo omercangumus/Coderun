@@ -11,7 +11,6 @@ import {
   onPyodideStatusChange,
   type PyodideStatus,
 } from '@/lib/utils/pyodide-runner';
-import { GhostieReaction } from '@/components/ghostie/GhostieReaction';
 import type { GhostieState } from '@/lib/ghostie-assets';
 import {
   CodingLabShell,
@@ -20,26 +19,11 @@ import {
 } from '@/components/coding-lab/CodingLabShell';
 import { FloatingGhostieMentor } from '@/components/coding-lab/FloatingGhostieMentor';
 import { cn } from '@/lib/utils/cn';
-
-type RunState = 'idle' | 'loading' | 'success' | 'error';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function formatRunDuration(ms: number): string {
   if (ms < 1000) return `${ms} ms`;
   return `${(ms / 1000).toFixed(2)} sn`;
-}
-
-function getButtonClass(state: RunState) {
-  switch (state) {
-    case 'loading':
-      return "rounded-xl px-4 py-2 text-xs font-bold bg-gray-600 cursor-not-allowed text-gray-300 flex items-center justify-center transition-all duration-200";
-    case 'success':
-      return "rounded-xl px-4 py-2 text-xs font-bold bg-green-600 text-white flex items-center justify-center transition-all duration-200";
-    case 'error':
-      return "rounded-xl px-4 py-2 text-xs font-bold bg-red-600 text-white flex items-center justify-center transition-all duration-200";
-    case 'idle':
-    default:
-      return "rounded-xl px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center transition-all duration-200";
-  }
 }
 
 type ResultTab = 'output' | 'errors' | 'tests';
@@ -112,7 +96,12 @@ function getGhostieMessage(
   return 'Kodunu yaz, Çalıştır\'a bas.';
 }
 
-function inferDifficulty(index: number): ChallengeDifficulty {
+type ExtendedQuestion = QuestionResponse & { difficulty?: string; title?: string };
+
+function getDifficultyFromQuestion(question: ExtendedQuestion, index: number): ChallengeDifficulty {
+  if (question.difficulty === 'easy') return 'Kolay';
+  if (question.difficulty === 'medium') return 'Orta';
+  if (question.difficulty === 'hard') return 'Zor';
   if (index <= 1) return 'Kolay';
   if (index <= 3) return 'Orta';
   return 'Zor';
@@ -121,45 +110,30 @@ function inferDifficulty(index: number): ChallengeDifficulty {
 function TerminalOutput({ result }: { result: CodeRunResponse | null }) {
   if (!result) {
     return (
-      <div className="min-h-[150px] overflow-y-auto bg-gray-900 rounded p-4 font-mono text-sm text-slate-500 flex items-center">
+      <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
         <span className="mr-2 animate-pulse">$_</span>
         Kodunu yaz, Çalıştır&apos;a bas.
       </div>
     );
   }
 
-  const { stdout, stderr, exitCode } = result;
-  const hasStdout = !!stdout;
-  const hasStderr = !!stderr;
-  const bothEmpty = !hasStdout && !hasStderr;
-
   return (
-    <div className="min-h-[150px] overflow-y-auto bg-gray-900 rounded p-4 font-mono text-sm">
+    <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs">
       {result.timedOut && (
-        <div className="mb-2 rounded-lg border border-orange-500/40 bg-orange-950/60 px-3 py-1.5 text-orange-400 text-xs">
+        <div className="mb-2 rounded-lg border border-orange-500/40 bg-orange-950/60 px-3 py-1.5 text-orange-400">
           ⏱ Zaman aşımı
         </div>
       )}
-      {bothEmpty && (
-        <div className="text-slate-500 italic">Program herhangi bir çıktı üretmedi.</div>
-      )}
-      {hasStdout && (
-        <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap">{stdout}</pre>
-      )}
-      {hasStdout && hasStderr && (
-        <div className="border-t border-gray-600 my-2 opacity-50" />
-      )}
-      {hasStderr && (
-        <div className="text-red-400 font-mono text-sm">
-          <span className="font-bold">⚠ Hata Çıktısı:</span>
-          <pre className="text-red-400 font-mono text-sm whitespace-pre-wrap mt-1">{stderr}</pre>
-        </div>
+      {result.stdout && <pre className="whitespace-pre-wrap text-[#39ff14]">{result.stdout}</pre>}
+      {result.stderr && <pre className="mt-1 whitespace-pre-wrap text-rose-400">{result.stderr}</pre>}
+      {!result.stdout && !result.stderr && (
+        <span className="italic text-slate-500">(çıktı yok)</span>
       )}
       <div className="mt-3 flex gap-4 border-t border-slate-800/80 pt-2 text-[10px] text-slate-500">
         <span>
           EXIT:{' '}
-          <span className={exitCode === 0 ? 'font-bold text-green-400' : 'font-bold text-red-400'}>
-            {exitCode}
+          <span className={result.exitCode === 0 ? 'font-bold text-green-400' : 'font-bold text-red-400'}>
+            {result.exitCode}
           </span>
         </span>
         <span>
@@ -208,7 +182,6 @@ function TestResultsPanel({ results }: { results: TestCaseResult[] }) {
   );
 }
 
-// Pyodide loading indicator component
 function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
   if (status === 'ready' || status === 'idle') return null;
 
@@ -243,6 +216,43 @@ function PyodideLoadingBanner({ status }: { status: PyodideStatus }) {
   );
 }
 
+/** Doğru cevap banner'ı: 1.5 sn görünür, sonra onSuccess çağrılır */
+function CorrectAnswerBanner({
+  explanation,
+  onSuccess,
+}: {
+  explanation?: string | null;
+  onSuccess: () => void;
+}) {
+  useEffect(() => {
+    const timer = setTimeout(onSuccess, 1500);
+    return () => clearTimeout(timer);
+  }, [onSuccess]);
+
+  return (
+    <div className="rounded-xl border border-secondary/40 bg-secondary/10 px-4 py-3">
+      <p className="font-bold text-secondary">✓ Doğru! Harika iş çıkardın!</p>
+      {explanation && (
+        <p className="mt-1 text-xs text-on-surface-variant">{explanation}</p>
+      )}
+    </div>
+  );
+}
+
+/** Yanlış cevap banner'ı: 3 sn görünür, sonra kaybolur — editör temizlenmez */
+function WrongAnswerBanner({ onDismiss }: { onDismiss: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 3000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <div className="rounded-xl border border-error/40 bg-error-container/20 px-4 py-3">
+      <p className="font-bold text-error">✗ Yanlış. Tekrar dene!</p>
+    </div>
+  );
+}
+
 export function CodeRunnerAssignment({
   question,
   currentAnswer,
@@ -254,42 +264,44 @@ export function CodeRunnerAssignment({
   canPrev = false,
   canNext = false,
 }: CodeRunnerAssignmentProps) {
-  const starterCode = question.starterCode ?? '# Kodunu buraya yaz\n';
+  const q = question as ExtendedQuestion;
+  const starterCode = question.starterCode ?? '# Çözümünü buraya yaz\n';
+
   const [code, setCode] = useState(
     currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starterCode,
   );
   const [editorState, setEditorState] = useState<EditorState>('idle');
+  const [editorTab, setEditorTab] = useState<'editor' | 'terminal'>('editor');
   const [resultTab, setResultTab] = useState<ResultTab>('output');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useTextarea, setUseTextarea] = useState(false);
   const [pyodideStatus, setPyodideStatus] = useState<PyodideStatus>(getPyodideStatus());
+  const [feedbackState, setFeedbackState] = useState<'none' | 'correct' | 'wrong'>('none');
+  const [showHint, setShowHint] = useState(false);
 
-  const [runState, setRunState] = useState<RunState>('idle');
-  const [submitState, setSubmitState] = useState<RunState>('idle');
-  const isRunningRef = useRef(false);
-  const isSubmittingRef = useRef(false);
+  // Soru değişince tüm state'i sıfırla
+  const prevQuestionId = useRef(question.id);
+  useEffect(() => {
+    if (prevQuestionId.current !== question.id) {
+      prevQuestionId.current = question.id;
+      const newCode = question.starterCode ?? '# Çözümünü buraya yaz\n';
+      setCode(newCode);
+      setRunResult(null);
+      setSubmitResult(null);
+      setError(null);
+      setFeedbackState('none');
+      setEditorTab('editor');
+      setResultTab('output');
+      setShowHint(false);
+    }
+  }, [question.id, question.starterCode]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) setUseTextarea(true);
   }, []);
 
-  // Reset state when navigating to a new question
-  useEffect(() => {
-    const starter = question.starterCode ?? '# Kodunu buraya yaz\n';
-    setCode(currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starter);
-    setRunResult(null);
-    setSubmitResult(null);
-    setError(null);
-    setEditorState('idle');
-    setResultTab('output');
-    isRunningRef.current = false;
-    isSubmittingRef.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [question.id]);
-
-  // Listen to Pyodide status changes
   useEffect(() => {
     return onPyodideStatusChange(setPyodideStatus);
   }, []);
@@ -300,6 +312,8 @@ export function CodeRunnerAssignment({
       .slice(0, 2)
       .map((tc) => ({ input: tc.stdin.replace(/\n/g, ' / '), output: tc.expectedStdout })) ?? [];
 
+  const expectedOutput = question.testCases?.find((tc) => !tc.hidden)?.expectedStdout ?? null;
+
   const handleCodeChange = useCallback(
     (value: string | undefined) => {
       const v = value ?? '';
@@ -309,59 +323,42 @@ export function CodeRunnerAssignment({
     [onChange],
   );
 
-  // Pyodide-based run (no Docker needed!)
+  /** Çalıştır: sadece kodu çalıştırır, ilerlemez */
   const handleRun = async () => {
-    if (isRunningRef.current || isSubmittingRef.current) return;
-    isRunningRef.current = true;
-    setRunState('loading');
+    if (editorState !== 'idle') return;
     setEditorState('running');
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
+    setEditorTab('terminal');
     setResultTab('output');
 
     try {
-      const result = await runPython(
-        code,
-        '',
-        question.maxRuntimeMs ?? 5000,
-      );
+      const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
       setRunResult(result);
       setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
-
-      if (result.error || (result.stderr && result.exitCode !== 0)) {
-        setRunState('error');
-        setTimeout(() => setRunState('idle'), 1500);
-      } else {
-        setRunState('success');
-        setTimeout(() => setRunState('idle'), 1500);
-      }
+      setEditorTab('terminal');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Kod çalıştırılamadı.';
       setError(msg);
-      setRunState('error');
-      setTimeout(() => setRunState('idle'), 1500);
     } finally {
-      isRunningRef.current = false;
       setEditorState('idle');
     }
   };
 
-  // Pyodide-based submit (client-side test evaluation)
+  /** Gönder: cevabı kontrol eder, doğruysa 1.5 sn sonra ilerler */
   const handleSubmit = async () => {
-    if (isRunningRef.current || isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
-    setSubmitState('loading');
+    if (editorState !== 'idle') return;
     setEditorState('submitting');
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
+    setFeedbackState('none');
 
     try {
       const testCases = question.testCases ?? [];
       let outcome;
       if (testCases.length === 0) {
-        // No test cases — just run the code and mark as submitted
         const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
         outcome = {
           passed: result.exitCode === 0,
@@ -369,40 +366,28 @@ export function CodeRunnerAssignment({
           stdout: result.stdout,
           stderr: result.stderr,
           testResults: [],
-          feedback: result.exitCode === 0
-            ? 'Kod başarıyla çalıştı! ✓'
-            : 'Kodda hata var, kontrol et.',
+          feedback: result.exitCode === 0 ? 'Kod başarıyla çalıştı! ✓' : 'Kodda hata var, kontrol et.',
         };
         setSubmitResult(outcome);
         setResultTab('output');
       } else {
-        outcome = await evaluateTestCases(
-          code,
-          testCases,
-          question.maxRuntimeMs ?? 5000,
-        );
+        outcome = await evaluateTestCases(code, testCases, question.maxRuntimeMs ?? 5000);
         setSubmitResult(outcome);
         setResultTab('tests');
       }
+
       if (outcome.passed) {
+        setFeedbackState('correct');
         onChange('__code_editor__');
-        setSubmitState('success');
-        const isLast = questionIndex >= totalQuestions - 1;
-        setTimeout(() => {
-          setSubmitState('idle');
-          if (!isLast && onNext) onNext();
-        }, 1500);
+        // Auto-advance after 1.5s handled by CorrectAnswerBanner
       } else {
-        setSubmitState('error');
-        setTimeout(() => setSubmitState('idle'), 1500);
+        setFeedbackState('wrong');
+        // Editör TEMİZLENMEZ — sadece banner 3 sn sonra kaybolur
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gönderim başarısız.';
       setError(msg);
-      setSubmitState('error');
-      setTimeout(() => setSubmitState('idle'), 1500);
     } finally {
-      isSubmittingRef.current = false;
       setEditorState('idle');
     }
   };
@@ -413,9 +398,21 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
+    setFeedbackState('none');
   };
 
+  const handleCorrectAutoAdvance = useCallback(() => {
+    setFeedbackState('none');
+    if (onNext) onNext();
+  }, [onNext]);
+
+  const handleWrongDismiss = useCallback(() => {
+    setFeedbackState('none');
+  }, []);
+
   const isLoading = editorState !== 'idle';
+  // Sonraki buton sadece soru cevaplanmışsa aktif
+  const isAnswered = currentAnswer === '__code_editor__';
 
   const resultsPanelContent = () => {
     if (submitResult && resultTab === 'tests') {
@@ -436,47 +433,33 @@ export function CodeRunnerAssignment({
 
   const ghostieState = getGhostieState(editorState, runResult, submitResult);
   const ghostieMessage = getGhostieMessage(editorState, runResult, submitResult, pyodideStatus);
+  const difficulty = getDifficultyFromQuestion(q, questionIndex);
+  const questionTitle = q.title ?? question.questionText;
 
   const toolbar = (
     <>
       <button
         type="button"
         onClick={handleRun}
-        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
-        className={getButtonClass(runState)}
+        disabled={isLoading}
+        title="Kodu çalıştırır ve çıktıyı gösterir — ilerlemez"
+        className="rounded-xl bg-secondary px-4 py-2 text-xs font-bold text-on-secondary transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {runState === 'loading' && (
-          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        )}
-        {runState === 'loading' && 'Çalışıyor...'}
-        {runState === 'success' && '✓ Tamamlandı'}
-        {runState === 'error' && '✗ Hata'}
-        {runState === 'idle' && '▶ Çalıştır'}
+        {editorState === 'running' ? '⟳ Çalışıyor...' : '▶ Çalıştır'}
       </button>
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
-        className={getButtonClass(submitState)}
+        disabled={isLoading}
+        title="Cevabı kontrol eder — doğruysa sonraki soruya geçer"
+        className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {submitState === 'loading' && (
-          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        )}
-        {submitState === 'loading' && 'Gönderiliyor...'}
-        {submitState === 'success' && '✓ Tamamlandı'}
-        {submitState === 'error' && '✗ Hata'}
-        {submitState === 'idle' && '✓ Gönder'}
+        {editorState === 'submitting' ? '⟳ Gönderiliyor...' : '✓ Gönder'}
       </button>
       <button
         type="button"
         onClick={handleReset}
-        disabled={isLoading || runState !== 'idle' || submitState !== 'idle'}
+        disabled={isLoading}
         className="rounded-xl border border-outline-variant px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container disabled:opacity-50"
       >
         ↺ Sıfırla
@@ -486,10 +469,39 @@ export function CodeRunnerAssignment({
 
   const editorPanel = (
     <div className="flex h-full min-h-[360px] flex-col">
+      {/* Feedback banners */}
+      {feedbackState === 'correct' && (
+        <div className="px-3 pt-3">
+          <CorrectAnswerBanner explanation={question.explanation} onSuccess={handleCorrectAutoAdvance} />
+        </div>
+      )}
+      {feedbackState === 'wrong' && (
+        <div className="px-3 pt-3">
+          <WrongAnswerBanner onDismiss={handleWrongDismiss} />
+        </div>
+      )}
+
       <div className="flex items-center gap-2 border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
-        <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+        <button
+          type="button"
+          onClick={() => setEditorTab('editor')}
+          className={cn(
+            'rounded-lg px-3 py-1 text-xs font-semibold',
+            editorTab === 'editor' ? 'bg-white/10 text-white' : 'text-white/50',
+          )}
+        >
           solution.py
-        </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setEditorTab('terminal')}
+          className={cn(
+            'rounded-lg px-3 py-1 text-xs font-semibold',
+            editorTab === 'terminal' ? 'bg-white/10 text-white' : 'text-white/50',
+          )}
+        >
+          Terminal
+        </button>
         <button
           type="button"
           onClick={() => setUseTextarea(!useTextarea)}
@@ -505,35 +517,81 @@ export function CodeRunnerAssignment({
             <span className="animate-pulse text-sm text-white">İşleniyor...</span>
           </div>
         )}
-        {useTextarea ? (
-          <textarea
-            value={code}
-            onChange={(e) => handleCodeChange(e.target.value)}
-            className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
-          />
+        {editorTab === 'editor' ? (
+          useTextarea ? (
+            <textarea
+              value={code}
+              onChange={(e) => handleCodeChange(e.target.value)}
+              className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
+            />
+          ) : (
+            // key prop force-remounts Monaco on question change
+            <MonacoEditor
+              key={`editor-${questionIndex}`}
+              height="100%"
+              language="python"
+              theme="vs-dark"
+              value={code}
+              onChange={handleCodeChange}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                automaticLayout: true,
+              }}
+            />
+          )
         ) : (
-          <MonacoEditor
-            height="100%"
-            language="python"
-            theme="vs-dark"
-            value={code}
-            onChange={handleCodeChange}
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-              automaticLayout: true,
-            }}
-          />
+          <TerminalOutput result={runResult} />
         )}
       </div>
     </div>
   );
 
+  const problemPanel = (
+    <div className="flex flex-col gap-4">
+      <CodingLabProblemContent
+        instructions={question.assignmentInstructions ?? question.questionText}
+        hint={undefined}
+        examples={publicExamples}
+      />
+
+      {/* Beklenen çıktı */}
+      {expectedOutput && (
+        <div>
+          <p className="mb-1 font-label text-label-sm uppercase tracking-wide text-on-surface-variant">
+            Beklenen Çıktı
+          </p>
+          <pre className="rounded-xl border border-outline-variant bg-[#0d1117] p-3 font-mono text-xs text-green-400 overflow-x-auto whitespace-pre-wrap">
+            {expectedOutput}
+          </pre>
+        </div>
+      )}
+
+      {/* İpucu — tıklanınca açılır, kapatılabilir */}
+      {question.hint && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowHint((v) => !v)}
+            className="flex w-full items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300 hover:bg-amber-500/15 transition-colors"
+          >
+            <span className="font-semibold">💡 İpucu</span>
+            {showHint ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+          {showHint && (
+            <div className="mt-1 rounded-b-xl border border-t-0 border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
+              {question.hint}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-3">
-      {/* Pyodide loading status */}
       <PyodideLoadingBanner status={pyodideStatus} />
 
       {error && (
@@ -544,8 +602,8 @@ export function CodeRunnerAssignment({
 
       <CodingLabShell
         meta={{
-          title: question.questionText,
-          difficulty: inferDifficulty(questionIndex),
+          title: `Soru ${questionIndex + 1}/${totalQuestions}: ${questionTitle}`,
+          difficulty,
           topic: 'Python',
           estimatedMinutes: 5 + questionIndex * 2,
           questionIndex,
@@ -555,14 +613,8 @@ export function CodeRunnerAssignment({
         onPrev={onPrev}
         onNext={onNext}
         canPrev={canPrev}
-        canNext={canNext}
-        problemPanel={
-          <CodingLabProblemContent
-            instructions={question.assignmentInstructions ?? question.questionText}
-            hint={question.hint}
-            examples={publicExamples}
-          />
-        }
+        canNext={isAnswered && canNext}
+        problemPanel={problemPanel}
         editorPanel={editorPanel}
         resultsPanel={
           <div className="flex h-full min-h-[140px] flex-col">
