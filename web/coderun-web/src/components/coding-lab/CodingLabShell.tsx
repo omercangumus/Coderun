@@ -98,7 +98,7 @@ export function CodingLabShell({
               type="button"
               onClick={onPrev}
               disabled={!canPrev}
-              className="inline-flex items-center gap-1 rounded-xl border border-outline-variant px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-semibold text-gray-400 transition-colors hover:text-white disabled:opacity-30"
             >
               <ChevronLeft className="h-4 w-4" /> Önceki
             </button>
@@ -111,7 +111,7 @@ export function CodingLabShell({
               type="button"
               onClick={onNext}
               disabled={!canNext}
-              className="inline-flex items-center gap-1 rounded-xl border border-outline-variant px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-semibold text-gray-400 transition-colors hover:text-white disabled:opacity-30"
             >
               Sonraki <ChevronRight className="h-4 w-4" />
             </button>
@@ -164,9 +164,9 @@ export function CodingLabShell({
               </button>
             </div>
           )}
-          <div className="min-h-0 flex-1 overflow-hidden">{editorPanel}</div>
+          <div className="min-h-[300px] flex-1 overflow-hidden">{editorPanel}</div>
           {resultsPanel && (
-            <div className="h-60 max-h-[40vh] shrink-0 overflow-hidden border-t border-outline-variant">
+            <div className="h-[220px] shrink-0 overflow-hidden border-t border-gray-700">
               {resultsPanel}
             </div>
           )}
