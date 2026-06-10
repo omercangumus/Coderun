@@ -271,7 +271,7 @@ export function CodeRunnerAssignment({
     currentAnswer && currentAnswer !== '__code_editor__' ? currentAnswer : starterCode,
   );
   const [editorState, setEditorState] = useState<EditorState>('idle');
-  const [editorTab, setEditorTab] = useState<'editor' | 'terminal'>('editor');
+
   const [resultTab, setResultTab] = useState<ResultTab>('output');
   const [runResult, setRunResult] = useState<CodeRunResponse | null>(null);
   const [submitResult, setSubmitResult] = useState<CodeSubmitResponse | null>(null);
@@ -292,7 +292,6 @@ export function CodeRunnerAssignment({
       setSubmitResult(null);
       setError(null);
       setFeedbackState('none');
-      setEditorTab('editor');
       setResultTab('output');
       setShowHint(false);
     }
@@ -330,14 +329,12 @@ export function CodeRunnerAssignment({
     setRunResult(null);
     setSubmitResult(null);
     setError(null);
-    setEditorTab('terminal');
     setResultTab('output');
 
     try {
       const result = await runPython(code, '', question.maxRuntimeMs ?? 5000);
       setRunResult(result);
       setResultTab(result.stderr && result.exitCode !== 0 ? 'errors' : 'output');
-      setEditorTab('terminal');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Kod çalıştırılamadı.';
       setError(msg);
@@ -369,11 +366,11 @@ export function CodeRunnerAssignment({
           feedback: result.exitCode === 0 ? 'Kod başarıyla çalıştı! ✓' : 'Kodda hata var, kontrol et.',
         };
         setSubmitResult(outcome);
-        setResultTab('output');
+        setResultTab(outcome.stderr ? 'errors' : 'output');
       } else {
         outcome = await evaluateTestCases(code, testCases, question.maxRuntimeMs ?? 5000);
         setSubmitResult(outcome);
-        setResultTab('tests');
+        setResultTab(outcome.stderr ? 'errors' : 'tests');
       }
 
       if (outcome.passed) {
@@ -415,18 +412,46 @@ export function CodeRunnerAssignment({
   const isAnswered = currentAnswer === '__code_editor__';
 
   const resultsPanelContent = () => {
-    if (submitResult && resultTab === 'tests') {
-      return <TestResultsPanel results={submitResult.testResults} />;
+    if (resultTab === 'tests') {
+      if (submitResult) {
+        return <TestResultsPanel results={submitResult.testResults} />;
+      }
+      return <TerminalOutput result={null} />;
     }
-    if (runResult && resultTab === 'errors') {
+
+    if (resultTab === 'errors') {
+      const currentStderr = runResult ? runResult.stderr : (submitResult ? submitResult.stderr : null);
+      if (currentStderr) {
+        return (
+          <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs text-rose-400">
+            {currentStderr}
+          </div>
+        );
+      }
       return (
-        <div className="h-full overflow-auto bg-[#090d16] p-4 font-mono text-xs text-rose-400">
-          {runResult.stderr || '(hata çıktısı yok)'}
+        <div className="flex h-full items-center bg-[#090d16] p-4 font-mono text-xs text-slate-500">
+          <span className="mr-2">$_</span>
+          Hata çıktısı yok.
         </div>
       );
     }
+
+    // Default or output tab
     if (runResult) {
       return <TerminalOutput result={runResult} />;
+    }
+    if (submitResult) {
+      return (
+        <TerminalOutput
+          result={{
+            stdout: submitResult.stdout,
+            stderr: submitResult.stderr,
+            exitCode: submitResult.passed ? 0 : 1,
+            durationMs: submitResult.testResults.reduce((acc, r) => acc + r.durationMs, 0),
+            timedOut: false,
+          }}
+        />
+      );
     }
     return <TerminalOutput result={null} />;
   };
@@ -468,7 +493,7 @@ export function CodeRunnerAssignment({
   );
 
   const editorPanel = (
-    <div className="flex h-full min-h-[360px] flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* Feedback banners */}
       {feedbackState === 'correct' && (
         <div className="px-3 pt-3">
@@ -482,26 +507,9 @@ export function CodeRunnerAssignment({
       )}
 
       <div className="flex items-center gap-2 border-b border-[#3c3c3c] bg-[#252526] px-3 py-2">
-        <button
-          type="button"
-          onClick={() => setEditorTab('editor')}
-          className={cn(
-            'rounded-lg px-3 py-1 text-xs font-semibold',
-            editorTab === 'editor' ? 'bg-white/10 text-white' : 'text-white/50',
-          )}
-        >
+        <span className="rounded-lg px-3 py-1 text-xs font-semibold bg-white/10 text-white">
           solution.py
-        </button>
-        <button
-          type="button"
-          onClick={() => setEditorTab('terminal')}
-          className={cn(
-            'rounded-lg px-3 py-1 text-xs font-semibold',
-            editorTab === 'terminal' ? 'bg-white/10 text-white' : 'text-white/50',
-          )}
-        >
-          Terminal
-        </button>
+        </span>
         <button
           type="button"
           onClick={() => setUseTextarea(!useTextarea)}
@@ -517,33 +525,29 @@ export function CodeRunnerAssignment({
             <span className="animate-pulse text-sm text-white">İşleniyor...</span>
           </div>
         )}
-        {editorTab === 'editor' ? (
-          useTextarea ? (
-            <textarea
-              value={code}
-              onChange={(e) => handleCodeChange(e.target.value)}
-              className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
-            />
-          ) : (
-            // key prop force-remounts Monaco on question change
-            <MonacoEditor
-              key={`editor-${questionIndex}`}
-              height="100%"
-              language="python"
-              theme="vs-dark"
-              value={code}
-              onChange={handleCodeChange}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                wordWrap: 'on',
-                automaticLayout: true,
-              }}
-            />
-          )
+        {useTextarea ? (
+          <textarea
+            value={code}
+            onChange={(e) => handleCodeChange(e.target.value)}
+            className="h-full min-h-[280px] w-full resize-none border-0 bg-[#1e1e1e] p-4 font-mono text-sm leading-relaxed text-slate-100 focus:outline-none"
+          />
         ) : (
-          <TerminalOutput result={runResult} />
+          // key prop force-remounts Monaco on question change
+          <MonacoEditor
+            key={`editor-${questionIndex}`}
+            height="100%"
+            language="python"
+            theme="vs-dark"
+            value={code}
+            onChange={handleCodeChange}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+              automaticLayout: true,
+            }}
+          />
         )}
       </div>
     </div>
@@ -591,7 +595,7 @@ export function CodeRunnerAssignment({
   );
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex h-full min-h-0 flex-col gap-3">
       <PyodideLoadingBanner status={pyodideStatus} />
 
       {error && (

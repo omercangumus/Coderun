@@ -53,7 +53,7 @@ export function CodingLabShell({
   return (
     <div
       className={cn(
-        'relative flex min-h-[calc(100vh-5rem)] flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-sm',
+        'relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-sm',
         className,
       )}
     >
