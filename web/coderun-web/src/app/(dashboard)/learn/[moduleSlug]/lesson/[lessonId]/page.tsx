@@ -62,6 +62,12 @@ export default function LessonPage({
   const currentQuestion = lesson?.questions[currentQuestionIndex];
   const currentAnswer = currentQuestion ? (answers[currentQuestion.id] ?? '') : '';
   const isLastQuestion = currentQuestionIndex === total - 1;
+
+  const isQuestionAnswered = currentQuestion
+    ? currentQuestion.questionType === 'code_editor'
+      ? currentAnswer === '__code_editor__'
+      : !!currentAnswer
+    : false;
   const answeredIndices = lesson?.questions
     .map((q, i) => (answers[q.id] ? i : -1))
     .filter((i) => i >= 0) ?? [];
@@ -226,13 +232,13 @@ export default function LessonPage({
             onPrevQuestion={() => prevQuestion()}
             onNextQuestion={handleNextQuestion}
             canPrevQuestion={currentQuestionIndex > 0}
-            canNextQuestion={!isLastQuestion && !!currentAnswer}
+            canNextQuestion={!isLastQuestion && isQuestionAnswered}
           />
         </div>
 
         {isLastQuestion && (
           <div className="mt-3 flex shrink-0 justify-end">
-            <Button onClick={() => handleSubmit()} isLoading={isSubmitting} disabled={!currentAnswer} size="lg">
+            <Button onClick={() => handleSubmit()} isLoading={isSubmitting} disabled={!isQuestionAnswered} size="lg">
               Dersi Tamamla
             </Button>
           </div>
@@ -360,7 +366,7 @@ export default function LessonPage({
                 <Button
                   onClick={() => handleSubmit()}
                   isLoading={isSubmitting}
-                  disabled={!currentAnswer}
+                  disabled={!isQuestionAnswered}
                   size="lg"
                 >
                   Tamamla
@@ -368,7 +374,7 @@ export default function LessonPage({
               ) : (
                 <Button
                   onClick={handleNextQuestion}
-                  disabled={!currentAnswer}
+                  disabled={!isQuestionAnswered}
                   className="gap-2"
                 >
                   İleri
